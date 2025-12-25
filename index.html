@@ -49,9 +49,9 @@
           .phase-info { background: rgba(0, 212, 255, 0.1); border: 1px solid #00d4ff; border-radius: 10px; padding: 15px; margin-bottom: 20px; font-size: 13px; line-height: 1.6; }
           .phase-info h3 { color: #00d4ff; margin-bottom: 10px; font-size: 16px; }
           .reset-btn { background: rgba(255, 0, 0, 0.2); border: 1px solid #ff4444; color: #ff4444; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-top: 20px; width: 100%; }
-          .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); justify-content: center; align-items: center; z-index: 1000; }
+          .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); justify-content: center; align-items: center; z-index: 1000; overflow-y: auto; }
           .modal.active { display: flex; }
-          .modal-content { background: #16213e; padding: 30px; border-radius: 15px; border: 2px solid #ffd700; max-width: 400px; text-align: center; }
+          .modal-content { background: #16213e; padding: 30px; border-radius: 15px; border: 2px solid #ffd700; max-width: 500px; max-height: 90vh; overflow-y: auto; text-align: center; margin: 20px; }
           .modal-title { font-size: 24px; color: #ffd700; margin-bottom: 15px; }
           .modal-text { margin-bottom: 20px; line-height: 1.6; }
           .modal-buttons { display: flex; gap: 10px; }
@@ -61,6 +61,15 @@
           .title-display { font-size: 14px; color: #ffd700; font-style: italic; }
           .phase-indicator { background: rgba(0, 212, 255, 0.2); border: 1px solid #00d4ff; padding: 8px 15px; border-radius: 20px; display: inline-block; margin-bottom: 10px; font-size: 12px; color: #00d4ff; }
           .time-remaining { font-size: 14px; color: #ff6b35; margin-top: 10px; }
+          .history-btn { position: fixed; bottom: 20px; right: 20px; width: 60px; height: 60px; border-radius: 50%; background: #ffd700; color: #000; border: none; font-size: 24px; cursor: pointer; box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4); transition: all 0.3s; z-index: 100; }
+          .history-btn:hover { transform: scale(1.1); }
+          .history-day { background: rgba(255, 255, 255, 0.05); border-radius: 15px; padding: 20px; margin-bottom: 20px; border: 2px solid rgba(255, 215, 0, 0.3); text-align: left; }
+          .history-day h3 { color: #ffd700; margin-bottom: 15px; }
+          .history-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 15px; }
+          .history-stat { background: rgba(255, 255, 255, 0.08); border-radius: 10px; padding: 10px; text-align: center; }
+          .history-stat-value { font-size: 20px; font-weight: bold; color: #00d4ff; }
+          .history-stat-label { font-size: 11px; color: #aaa; margin-top: 5px; }
+          .quest-summary { margin-top: 10px; font-size: 13px; color: #aaa; }
       </style>
   </head>
   <body>
@@ -120,6 +129,16 @@
           <button class="reset-btn" onclick="showResetModal()">Réinitialiser le Système</button>
       </div>
 
+      <button class="history-btn" onclick="showHistory()">📊</button>
+
+      <div class="modal" id="historyModal">
+          <div class="modal-content">
+              <div class="modal-title">📊 Historique de ton évolution</div>
+              <div id="historyContent"></div>
+              <button class="modal-btn modal-btn-confirm" onclick="closeHistory()" style="width: 100%; margin-top: 20px;">Fermer</button>
+          </div>
+      </div>
+
       <div class="modal" id="resetModal">
           <div class="modal-content">
               <div class="modal-title">⚠️ Réinitialisation</div>
@@ -143,7 +162,7 @@
           const LEVELS = [{xp:0,title:"L'Aspirant",bonus:""},{xp:100,title:"Le Disciple",bonus:"+5% XP"},{xp:250,title:"L'Apprenti Déterminé",bonus:"Carte Récup bonus"},{xp:450,title:"Le Pratiquant Assidu",bonus:"Quêtes bonus"},{xp:700,title:"L'Adepte Discipliné",bonus:"+10% XP"},{xp:1000,title:"Le Guerrier de l'Habitude",bonus:"-2 min quêtes"},{xp:1350,title:"Le Maître en Devenir",bonus:"+15% XP"},{xp:1750,title:"Le Champion Personnel",bonus:"Mode Élite"},{xp:2200,title:"L'Architecte de Soi",bonus:"Quêtes perso"},{xp:2700,title:"Le Souverain Éveillé",bonus:"Maîtrise totale"}];
           
           const PROGRAMMES = {
-              phase1: {name:"Phase 1 : Fondations",desc:"Établir les bases - 15 min par quête",
+              phase1: {name:"Phase 1 : Fondations",desc:"Établir les bases solides - 15 min par quête",
                   force:[{t:"10 Pompes (genoux ok)",c:"0/10"},{t:"15 Squats",c:"0/15"},{t:"20 sec Planche",c:"0/20s"},{t:"10 Fentes par jambe",c:"0/20"},{t:"15 Abdos crunch",c:"0/15"},{t:"Répéter 3 circuits",c:"0/3"}],
                   intelligence:[{t:"10 mots anglais débutant",c:"0/10"},{t:"1 Sudoku facile OU énigme",c:"0/1"},{t:"Lire 1 article anglais simple",c:"0/1"}],
                   sagesse:[{t:"5 min cohérence cardiaque",c:"0/5min"},{t:"8 min méditation guidée",c:"0/8min"},{t:"2 min gratitude (3 choses)",c:"0/2min"}],
@@ -160,7 +179,7 @@
                   volonte:[{t:"Routine matinale optimale",c:"⬜"},{t:"1h sans téléphone matin",c:"⬜"},{t:"4 blocs deep work",c:"0/4"},{t:"Refuser 2 distractions",c:"0/2"},{t:"Bilan hebdo complet",c:"⬜"}]}
           };
 
-          let gameState = {level:1,xp:0,currentDay:1,startDate:new Date().toDateString(),lastCompletedDate:null,streak:0,tokens:0,attributes:{force:10,intelligence:10,sagesse:10,volonte:10},quests:{force:false,intelligence:false,sagesse:false,volonte:false}};
+          let gameState = {level:1,xp:0,currentDay:1,startDate:new Date().toISOString().split('T')[0],lastCompletedDate:null,streak:0,tokens:0,attributes:{force:10,intelligence:10,sagesse:10,volonte:10},quests:{force:false,intelligence:false,sagesse:false,volonte:false},history:[]};
 
           function getCurrentPhase() {
               if (gameState.currentDay <= 28) return 'phase1';
@@ -170,19 +189,47 @@
 
           function loadGameState() {
               const saved = localStorage.getItem('evolutionSystem');
-              if (saved) { gameState = JSON.parse(saved); checkNewDay(); }
+              if (saved) { 
+                  gameState = JSON.parse(saved);
+                  if (!gameState.history) gameState.history = [];
+              }
+              checkNewDay();
               updateUI();
           }
 
           function saveGameState() { localStorage.setItem('evolutionSystem', JSON.stringify(gameState)); }
 
           function checkNewDay() {
-              const today = new Date().toDateString();
-              if (gameState.lastCompletedDate && gameState.lastCompletedDate !== today) {
-                  const allCompleted = Object.values(gameState.quests).every(q => q === true);
-                  if (!allCompleted) gameState.streak = 0;
-                  gameState.quests = {force:false,intelligence:false,sagesse:false,volonte:false};
+              const today = new Date().toISOString().split('T')[0];
+              if (gameState.startDate !== today) {
+                  // Sauvegarder le jour précédent dans l'historique
+                  const questsCompleted = Object.values(gameState.quests).filter(q => q === true).length;
+                  const isPerfectDay = questsCompleted === 4;
+                  
+                  gameState.history.push({
+                      day: gameState.currentDay,
+                      date: gameState.startDate,
+                      quests: {...gameState.quests},
+                      questsCompleted: questsCompleted,
+                      isPerfectDay: isPerfectDay,
+                      level: gameState.level,
+                      xp: gameState.xp,
+                      attributes: {...gameState.attributes}
+                  });
+                  
+                  // Mettre à jour la série
+                  if (questsCompleted >= 3) {
+                      gameState.streak++;
+                  } else {
+                      gameState.streak = 0;
+                  }
+                  
+                  // Passer au jour suivant
                   gameState.currentDay++;
+                  gameState.startDate = today;
+                  gameState.quests = {force:false,intelligence:false,sagesse:false,volonte:false};
+                  gameState.lastCompletedDate = null;
+                  
                   saveGameState();
               }
           }
@@ -195,7 +242,7 @@
 
           function completeQuest(questType) {
               if (gameState.quests[questType]) return;
-              const today = new Date().toDateString();
+              const today = new Date().toISOString().split('T')[0];
               gameState.quests[questType] = true;
               gameState.lastCompletedDate = today;
               gameState.attributes[questType] += 2;
@@ -208,7 +255,6 @@
               if (allCompleted) {
                   gameState.xp += 20;
                   gameState.tokens += 1;
-                  gameState.streak += 1;
                   document.getElementById('perfectDayBanner').style.display = 'block';
               }
               checkLevelUp();
@@ -319,6 +365,59 @@
               const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
               document.getElementById('timeRemaining').textContent = `⏰ Temps restant : ${hours}h ${minutes}min`;
           }
+
+          function showHistory() {
+              const modal = document.getElementById('historyModal');
+              const content = document.getElementById('historyContent');
+              
+              if (gameState.history.length === 0) {
+                  content.innerHTML = '<p style="text-align: center; color: #aaa; padding: 20px;">Aucun historique pour le moment.<br>Continue ton aventure ! 💪</p>';
+              } else {
+                  content.innerHTML = gameState.history.slice().reverse().map(day => `
+                      <div class="history-day">
+                          <h3>📅 Jour ${day.day} - ${new Date(day.date).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}</h3>
+                          <div class="quest-summary">
+                              ${day.isPerfectDay ? '🌟 <strong>PERFECT DAY !</strong><br>' : ''}
+                              Quêtes complétées : <strong>${day.questsCompleted}/4</strong>
+                              ${day.quests.force ? ' ⚔️' : ''} 
+                              ${day.quests.intelligence ? ' 🧠' : ''} 
+                              ${day.quests.sagesse ? ' 🧘' : ''} 
+                              ${day.quests.volonte ? ' 🎯' : ''}
+                          </div>
+                          <div class="history-stats">
+                              <div class="history-stat">
+                                  <div class="history-stat-value">Niv. ${day.level}</div>
+                                  <div class="history-stat-label">Niveau</div>
+                              </div>
+                              <div class="history-stat">
+                                  <div class="history-stat-value">${day.xp} XP</div>
+                                  <div class="history-stat-label">Expérience</div>
+                              </div>
+                              <div class="history-stat">
+                                  <div class="history-stat-value">${day.attributes.force}</div>
+                                  <div class="history-stat-label">⚔️ Force</div>
+                              </div>
+                              <div class="history-stat">
+                                  <div class="history-stat-value">${day.attributes.intelligence}</div>
+                                  <div class="history-stat-label">🧠 Intelligence</div>
+                              </div>
+                              <div class="history-stat">
+                                  <div class="history-stat-value">${day.attributes.sagesse}</div>
+                                  <div class="history-stat-label">🧘 Sagesse</div>
+                              </div>
+                              <div class="history-stat">
+                                  <div class="history-stat-value">${day.attributes.volonte}</div>
+                                  <div class="history-stat-label">🎯 Volonté</div>
+                              </div>
+                          </div>
+                      </div>
+                  `).join('');
+              }
+              
+              modal.classList.add('active');
+          }
+
+          function closeHistory() { document.getElementById('historyModal').classList.remove('active'); }
 
           function showResetModal() { document.getElementById('resetModal').classList.add('active'); }
           function closeResetModal() { document.getElementById('resetModal').classList.remove('active'); }
