@@ -2,6 +2,7 @@
   <html lang="fr">
   <head>
       <meta charset="UTF-8">
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Système d'Évolution</title>
       <style>
@@ -38,7 +39,7 @@
           .objective.completed { opacity: 0.6; text-decoration: line-through; }
           .checkbox { width: 20px; height: 20px; border: 2px solid #fff; border-radius: 5px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
           .checkbox.checked { background: #00ff88; border-color: #00ff88; }
-          .checkbox.checked::after { content: ''; color: #000; font-weight: bold; }
+          .checkbox.checked::after { content: '\2713'; color: #000; font-weight: bold; }
           .exercise-counter { font-weight: bold; color: #00d4ff; margin-left: auto; padding: 2px 8px; background: rgba(0, 212, 255, 0.2); border-radius: 5px; font-size: 12px; }
           .complete-quest-btn { width: 100%; padding: 12px; background: linear-gradient(135deg, #00d4ff, #0099cc); border: none; border-radius: 10px; color: #fff; font-size: 16px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; }
           .complete-quest-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(0, 212, 255, 0.4); }
@@ -188,8 +189,8 @@
 
           function isRunningDay() {
               const date = new Date(gameState.startDate);
-              const dayOfWeek = date.getDay(); // 0 = Dimanche, 1 = Lundi, etc.
-              return dayOfWeek === 1 || dayOfWeek === 4; // Lundi et Jeudi
+              const dayOfWeek = date.getDay();
+              return dayOfWeek === 1 || dayOfWeek === 4;
           }
 
           function getCurrentPhase() {
@@ -214,7 +215,6 @@
           function checkNewDay() {
               const today = new Date().toISOString().split('T')[0];
               if (gameState.startDate !== today) {
-                  // Sauvegarder le jour précédent dans l'historique
                   const questsCompleted = Object.values(gameState.quests).filter(q => q === true).length;
                   const isPerfectDay = questsCompleted === 4;
                   
@@ -230,18 +230,16 @@
                       wasRunningDay: isRunningDay()
                   });
                   
-                  // Mettre à jour la série
                   if (questsCompleted >= 3) {
                       gameState.streak++;
                   } else {
                       gameState.streak = 0;
                   }
                   
-                  // Passer au jour suivant
                   gameState.currentDay++;
                   gameState.startDate = today;
                   gameState.quests = {force:false,intelligence:false,sagesse:false,volonte:false};
-                  gameState.objectivesChecked = {}; // Réinitialiser les cases cochées
+                  gameState.objectivesChecked = {};
                   gameState.lastCompletedDate = null;
                   
                   saveGameState();
@@ -252,7 +250,6 @@
               const checkbox = element.querySelector('.checkbox');
               const objKey = `${questType}-${index}`;
               
-              // Toggle l'état
               if (!gameState.objectivesChecked[objKey]) {
                   gameState.objectivesChecked[objKey] = true;
                   checkbox.classList.add('checked');
@@ -334,7 +331,6 @@
               document.getElementById('phaseIndicator').textContent = prog.name;
               document.getElementById('phaseDescription').textContent = prog.desc;
               
-              // Afficher le badge running si c'est un jour de running
               const runningBadge = document.getElementById('runningBadge');
               if (isRunningDay()) {
                   runningBadge.style.display = 'block';
@@ -347,7 +343,6 @@
               updateAttribute('sagesse', gameState.attributes.sagesse);
               updateAttribute('volonte', gameState.attributes.volonte);
               
-              // Utiliser le programme running si c'est un jour de running
               const forceProgram = isRunningDay() ? prog.forceRunning : prog.force;
               renderObjectives('force', forceProgram);
               renderObjectives('intelligence', prog.intelligence);
@@ -388,7 +383,7 @@
               if (completed) {
                   card.classList.add('completed');
                   btn.classList.add('completed');
-                  btn.textContent = ' Quête Complétée';
+                  btn.textContent = '\u2713 Quête Complétée';
                   btn.disabled = true;
               } else {
                   card.classList.remove('completed');
@@ -405,7 +400,7 @@
               const diff = midnight - now;
               const hours = Math.floor(diff / (1000 * 60 * 60));
               const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-              document.getElementById('timeRemaining').textContent = ` Temps restant : ${hours}h ${minutes}min`;
+              document.getElementById('timeRemaining').textContent = `\u23F0 Temps restant : ${hours}h ${minutes}min`;
           }
 
           function showHistory() {
@@ -413,19 +408,19 @@
               const content = document.getElementById('historyContent');
               
               if (gameState.history.length === 0) {
-                  content.innerHTML = '<p style="text-align: center; color: #aaa; padding: 20px;">Aucun historique pour le moment.<br>Continue ton aventure ! </p>';
+                  content.innerHTML = '<p style="text-align: center; color: #aaa; padding: 20px;">Aucun historique pour le moment.<br>Continue ton aventure ! \uD83D\uDCAA</p>';
               } else {
                   content.innerHTML = gameState.history.slice().reverse().map(day => `
                       <div class="history-day">
-                          <h3> Jour ${day.day} - ${new Date(day.date).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })} ${day.wasRunningDay ? '' : ''}</h3>
+                          <h3>\uD83D\uDCC5 Jour ${day.day} - ${new Date(day.date).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })} ${day.wasRunningDay ? '\uD83C\uDFC3' : ''}</h3>
                           <div class="quest-summary">
-                              ${day.isPerfectDay ? ' <strong>PERFECT DAY !</strong><br>' : ''}
-                              ${day.wasRunningDay ? ' <strong>Jour de running</strong><br>' : ''}
+                              ${day.isPerfectDay ? '\uD83C\uDF1F <strong>PERFECT DAY !</strong><br>' : ''}
+                              ${day.wasRunningDay ? '\uD83C\uDFC3 <strong>Jour de running</strong><br>' : ''}
                               Quêtes complétées : <strong>${day.questsCompleted}/4</strong>
-                              ${day.quests.force ? ' ' : ''} 
-                              ${day.quests.intelligence ? ' ' : ''} 
-                              ${day.quests.sagesse ? ' ' : ''} 
-                              ${day.quests.volonte ? ' ' : ''}
+                              ${day.quests.force ? ' \u2694\uFE0F' : ''} 
+                              ${day.quests.intelligence ? ' \uD83E\uDDE0' : ''} 
+                              ${day.quests.sagesse ? ' \uD83E\uDDD8' : ''} 
+                              ${day.quests.volonte ? ' \uD83C\uDFAF' : ''}
                           </div>
                           <div class="history-stats">
                               <div class="history-stat">
@@ -438,19 +433,19 @@
                               </div>
                               <div class="history-stat">
                                   <div class="history-stat-value">${day.attributes.force}</div>
-                                  <div class="history-stat-label"> Force</div>
+                                  <div class="history-stat-label">\u2694\uFE0F Force</div>
                               </div>
                               <div class="history-stat">
                                   <div class="history-stat-value">${day.attributes.intelligence}</div>
-                                  <div class="history-stat-label"> Intelligence</div>
+                                  <div class="history-stat-label">\uD83E\uDDE0 Intelligence</div>
                               </div>
                               <div class="history-stat">
                                   <div class="history-stat-value">${day.attributes.sagesse}</div>
-                                  <div class="history-stat-label"> Sagesse</div>
+                                  <div class="history-stat-label">\uD83E\uDDD8 Sagesse</div>
                               </div>
                               <div class="history-stat">
                                   <div class="history-stat-value">${day.attributes.volonte}</div>
-                                  <div class="history-stat-label"> Volonté</div>
+                                  <div class="history-stat-label">\uD83C\uDFAF Volonté</div>
                               </div>
                           </div>
                       </div>
