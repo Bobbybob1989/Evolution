@@ -3,7 +3,7 @@
   <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>SystÃ¨me d'Ã‰volution</title>
+      <title>Système d'évolution</title>
       <style>
           * { margin: 0; padding: 0; box-sizing: border-box; }
           body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: #fff; min-height: 100vh; padding: 10px; }
@@ -71,13 +71,14 @@
           .history-stat-label { font-size: 11px; color: #aaa; margin-top: 5px; }
           .quest-summary { margin-top: 10px; font-size: 13px; color: #aaa; }
           .running-badge { background: rgba(255, 100, 50, 0.3); border: 1px solid #ff6432; padding: 5px 10px; border-radius: 5px; font-size: 11px; color: #ff6432; display: inline-block; margin-top: 10px; }
+          .debug-info { background: rgba(255, 255, 0, 0.1); border: 1px solid #ffff00; padding: 10px; margin: 20px 0; border-radius: 5px; font-size: 11px; color: #ffff00; }
       </style>
   </head>
   <body>
       <div class="container">
           <div class="header">
               <div class="phase-indicator" id="phaseIndicator">Phase 1 : Fondations</div>
-              <h1> SystÃ¨me d'Ã‰volution</h1>
+              <h1> Système d'évolution</h1>
               <div class="title-display" id="titleDisplay">L'Aspirant</div>
               <div class="day-counter">Jour <span id="currentDay">1</span>/84</div>
               <div class="time-remaining" id="timeRemaining"></div>
@@ -86,56 +87,64 @@
           <div class="stats-grid">
               <div class="stat-card"><div class="stat-label">Niveau</div><div class="stat-value" id="level">1</div></div>
               <div class="stat-card"><div class="stat-label">XP</div><div class="stat-value"><span id="currentXP">0</span>/<span id="maxXP">100</span></div></div>
-              <div class="stat-card"><div class="stat-label">SÃ©rie </div><div class="stat-value" id="streak">0</div></div>
+              <div class="stat-card"><div class="stat-label">Série </div><div class="stat-value" id="streak">0</div></div>
               <div class="stat-card"><div class="stat-label">Jetons </div><div class="stat-value" id="tokens">0</div></div>
           </div>
 
           <div class="level-bar"><div class="level-progress" id="levelProgress" style="width: 0%"><span id="levelProgressText">0%</span></div></div>
 
           <div class="attributes">
-              <div class="attribute"><div class="attribute-header"><span> Force</span><span><span id="forceValue">10</span> pts</span></div><div class="attribute-bar"><div class="attribute-progress force-bar" id="forceBar" style="width: 3.5%"></div></div></div>
+              <div class="attribute"><div class="attribute-header"><span> Force</span><span><span id="forceValue">10</span> pts</span></div><div class="attribute-bar"><div class="attribute-progress force-bar" id="forceBar" style="width: 3.5%"></div></div></div>
               <div class="attribute"><div class="attribute-header"><span> Intelligence</span><span><span id="intelligenceValue">10</span> pts</span></div><div class="attribute-bar"><div class="attribute-progress intelligence-bar" id="intelligenceBar" style="width: 3.5%"></div></div></div>
               <div class="attribute"><div class="attribute-header"><span> Sagesse</span><span><span id="sagesseValue">10</span> pts</span></div><div class="attribute-bar"><div class="attribute-progress sagesse-bar" id="sagesseBar" style="width: 3.5%"></div></div></div>
-              <div class="attribute"><div class="attribute-header"><span> VolontÃ©</span><span><span id="volonteValue">10</span> pts</span></div><div class="attribute-bar"><div class="attribute-progress volonte-bar" id="volonteBar" style="width: 3.5%"></div></div></div>
+              <div class="attribute"><div class="attribute-header"><span> Volonté</span><span><span id="volonteValue">10</span> pts</span></div><div class="attribute-bar"><div class="attribute-progress volonte-bar" id="volonteBar" style="width: 3.5%"></div></div></div>
           </div>
 
-          <div id="perfectDayBanner" style="display: none;" class="perfect-day-banner"> PERFECT DAY ! <br>Toutes les quÃªtes complÃ©tÃ©es !</div>
+          <div id="perfectDayBanner" style="display: none;" class="perfect-day-banner"> PERFECT DAY ! <br>Toutes les quêtes complétées !</div>
 
           <div class="phase-info" id="phaseInfo"><h3> Programme du jour</h3><div id="phaseDescription"></div></div>
 
           <div class="quest-card" id="questForce">
-              <div class="quest-header"><div class="quest-title"><span class="quest-icon"></span><span>QuÃªte de Force</span></div><div class="quest-reward">+2 PTS +10 XP</div></div>
+              <div class="quest-header"><div class="quest-title"><span class="quest-icon"></span><span>Quête de Force</span></div><div class="quest-reward">+2 PTS +10 XP</div></div>
               <div class="quest-objectives" id="forceObjectives"></div>
               <div id="runningBadge" style="display: none;" class="running-badge"> Jour de running : 5km minimum</div>
-              <button class="complete-quest-btn" onclick="completeQuest('force')">Valider la QuÃªte</button>
+              <button class="complete-quest-btn" onclick="completeQuest('force')">Valider la Quête</button>
           </div>
 
           <div class="quest-card" id="questIntelligence">
-              <div class="quest-header"><div class="quest-title"><span class="quest-icon"></span><span>QuÃªte Intellectuelle</span></div><div class="quest-reward">+2 PTS +10 XP</div></div>
+              <div class="quest-header"><div class="quest-title"><span class="quest-icon"></span><span>Quête Intellectuelle</span></div><div class="quest-reward">+2 PTS +10 XP</div></div>
               <div class="quest-objectives" id="intelligenceObjectives"></div>
-              <button class="complete-quest-btn" onclick="completeQuest('intelligence')">Valider la QuÃªte</button>
+              <button class="complete-quest-btn" onclick="completeQuest('intelligence')">Valider la Quête</button>
           </div>
 
           <div class="quest-card" id="questSagesse">
-              <div class="quest-header"><div class="quest-title"><span class="quest-icon"></span><span>QuÃªte de SÃ©rÃ©nitÃ©</span></div><div class="quest-reward">+2 PTS +10 XP</div></div>
+              <div class="quest-header"><div class="quest-title"><span class="quest-icon"></span><span>Quête de Sérénité</span></div><div class="quest-reward">+2 PTS +10 XP</div></div>
               <div class="quest-objectives" id="sagesseObjectives"></div>
-              <button class="complete-quest-btn" onclick="completeQuest('sagesse')">Valider la QuÃªte</button>
+              <button class="complete-quest-btn" onclick="completeQuest('sagesse')">Valider la Quête</button>
           </div>
 
           <div class="quest-card" id="questVolonte">
-              <div class="quest-header"><div class="quest-title"><span class="quest-icon"></span><span>QuÃªte de Discipline</span></div><div class="quest-reward">+2 PTS +10 XP</div></div>
+              <div class="quest-header"><div class="quest-title"><span class="quest-icon"></span><span>Quête de Discipline</span></div><div class="quest-reward">+2 PTS +10 XP</div></div>
               <div class="quest-objectives" id="volonteObjectives"></div>
-              <button class="complete-quest-btn" onclick="completeQuest('volonte')">Valider la QuÃªte</button>
+              <button class="complete-quest-btn" onclick="completeQuest('volonte')">Valider la Quête</button>
           </div>
 
-          <button class="reset-btn" onclick="showResetModal()">RÃ©initialiser le SystÃ¨me</button>
+          <!-- Debug info -->
+          <div class="debug-info" id="debugInfo">
+              <strong> Debug Info:</strong><br>
+              Date actuelle: <span id="debugCurrentDate">-</span><br>
+              Date enregistrée: <span id="debugSavedDate">-</span><br>
+              Dernière vérification: <span id="debugLastCheck">-</span>
+          </div>
+
+          <button class="reset-btn" onclick="showResetModal()">Réinitialiser le Système</button>
       </div>
 
       <button class="history-btn" onclick="showHistory()"></button>
 
       <div class="modal" id="historyModal">
           <div class="modal-content">
-              <div class="modal-title"> Historique de ton Ã©volution</div>
+              <div class="modal-title"> Historique de ton évolution</div>
               <div id="historyContent"></div>
               <button class="modal-btn modal-btn-confirm" onclick="closeHistory()" style="width: 100%; margin-top: 20px;">Fermer</button>
           </div>
@@ -143,8 +152,8 @@
 
       <div class="modal" id="resetModal">
           <div class="modal-content">
-              <div class="modal-title"> RÃ©initialisation</div>
-              <div class="modal-text">Es-tu sÃ»r de vouloir rÃ©initialiser tout ton progrÃ¨s ?<br>Cette action est irrÃ©versible.</div>
+              <div class="modal-title"> Réinitialisation</div>
+              <div class="modal-text">Es-tu sûr de vouloir réinitialiser tout ton progrès ?<br>Cette action est irréversible.</div>
               <div class="modal-buttons">
                   <button class="modal-btn modal-btn-cancel" onclick="closeResetModal()">Annuler</button>
                   <button class="modal-btn modal-btn-confirm" onclick="confirmReset()">Confirmer</button>
@@ -161,58 +170,68 @@
       </div>
 
       <script>
-          const LEVELS = [{xp:0,title:"L'Aspirant",bonus:""},{xp:100,title:"Le Disciple",bonus:"+5% XP"},{xp:250,title:"L'Apprenti DÃ©terminÃ©",bonus:"Carte RÃ©cup bonus"},{xp:450,title:"Le Pratiquant Assidu",bonus:"QuÃªtes bonus"},{xp:700,title:"L'Adepte DisciplinÃ©",bonus:"+10% XP"},{xp:1000,title:"Le Guerrier de l'Habitude",bonus:"-2 min quÃªtes"},{xp:1350,title:"Le MaÃ®tre en Devenir",bonus:"+15% XP"},{xp:1750,title:"Le Champion Personnel",bonus:"Mode Ã‰lite"},{xp:2200,title:"L'Architecte de Soi",bonus:"QuÃªtes perso"},{xp:2700,title:"Le Souverain Ã‰veillÃ©",bonus:"MaÃ®trise totale"}];
+          const LEVELS = [{xp:0,title:"L'Aspirant",bonus:""},{xp:100,title:"Le Disciple",bonus:"+5% XP"},{xp:250,title:"L'Apprenti Déterminé",bonus:"Carte Récup bonus"},{xp:450,title:"Le Pratiquant Assidu",bonus:"Quêtes bonus"},{xp:700,title:"L'Adepte Discipliné",bonus:"+10% XP"},{xp:1000,title:"Le Guerrier de l'Habitude",bonus:"-2 min quêtes"},{xp:1350,title:"Le Maître en Devenir",bonus:"+15% XP"},{xp:1750,title:"Le Champion Personnel",bonus:"Mode élite"},{xp:2200,title:"L'Architecte de Soi",bonus:"Quêtes perso"},{xp:2700,title:"Le Souverain Éveillé",bonus:"Maîtrise totale"}];
           
           const PROGRAMMES = {
-              phase1: {name:"Phase 1 : Fondations",desc:"Ã‰tablir les bases solides - 15 min par quÃªte",
-                  force:[{t:"10 Pompes (genoux ok)",c:"0/10"},{t:"15 Squats",c:"0/15"},{t:"20 sec Planche",c:"0/20s"},{t:"10 Fentes par jambe",c:"0/20"},{t:"15 Abdos crunch",c:"0/15"},{t:"RÃ©pÃ©ter 3 circuits",c:"0/3"}],
-                  forceRunning:[{t:" Running 5km minimum",c:"0/5km"},{t:"Ã‰chauffement 5 min",c:""},{t:"Ã‰tirements 5 min",c:""}],
-                  intelligence:[{t:"10 mots anglais dÃ©butant",c:"0/10"},{t:"1 Sudoku facile OU Ã©nigme",c:"0/1"},{t:"Lire 1 article anglais simple",c:"0/1"}],
-                  sagesse:[{t:"5 min cohÃ©rence cardiaque",c:"0/5min"},{t:"8 min mÃ©ditation guidÃ©e",c:"0/8min"},{t:"2 min gratitude (3 choses)",c:"0/2min"}],
-                  volonte:[{t:"Faire son lit au rÃ©veil",c:""},{t:"Boire 1 verre d'eau",c:""},{t:"Noter 3 prioritÃ©s du jour",c:""},{t:"Identifier tÃ¢che difficile",c:""},{t:"Visualiser journÃ©e (2 min)",c:""},{t:"Revue du soir",c:""},{t:"PrÃ©parer vÃªtements demain",c:""}]},
-              phase2: {name:"Phase 2 : Progression",desc:"Augmenter l'intensitÃ© - 20 min par quÃªte",
-                  force:[{t:"15 Pompes standard",c:"0/15"},{t:"20 Squats sautÃ©s",c:"0/20"},{t:"30 sec Planche",c:"0/30s"},{t:"15 Fentes sautÃ©es/jambe",c:"0/30"},{t:"20 Abdos bicyclette",c:"0/20"},{t:"10 Burpees",c:"0/10"},{t:"RÃ©pÃ©ter 3 circuits",c:"0/3"}],
-                  forceRunning:[{t:" Running 5km minimum",c:"0/5km"},{t:"Ã‰chauffement 5 min",c:""},{t:"Ã‰tirements 5 min",c:""}],
-                  intelligence:[{t:"15 mots anglais intermÃ©diaire",c:"0/15"},{t:"1 Sudoku moyen OU 2 Ã©nigmes",c:"0/1"},{t:"10 min podcast anglais",c:"0/10min"},{t:"Ã‰crire 5 phrases anglais",c:"0/5"}],
-                  sagesse:[{t:"5 min cohÃ©rence cardiaque",c:"0/5min"},{t:"10 min mÃ©ditation non-guidÃ©e",c:"0/10min"},{t:"3 min journaling Ã©motionnel",c:"0/3min"},{t:"2 min gratitude approfondie",c:"0/2min"}],
-                  volonte:[{t:"Routine matinale < 10 min",c:""},{t:"Pas de tÃ©lÃ©phone 30 min",c:""},{t:"Manger la grenouille en 1er",c:""},{t:"3 blocs focus sans distraction",c:"0/3"},{t:"Dire non Ã  1 distraction",c:""},{t:"Revue soir + plan demain",c:""},{t:"Ranger espace de travail",c:""}]},
-              phase3: {name:"Phase 3 : Intensification",desc:"DÃ©fis avancÃ©s - 25 min par quÃªte",
-                  force:[{t:"20 Pompes diamant",c:"0/20"},{t:"25 Squats pistol assistÃ©s",c:"0/25"},{t:"45 sec Planche",c:"0/45s"},{t:"20 Fentes bulgares/jambe",c:"0/40"},{t:"25 Abdos V-ups",c:"0/25"},{t:"15 Burpees",c:"0/15"},{t:"RÃ©pÃ©ter 3 circuits",c:"0/3"}],
-                  forceRunning:[{t:" Running 5km minimum",c:"0/5km"},{t:"Ã‰chauffement 5 min",c:""},{t:"Ã‰tirements 5 min",c:""}],
-                  intelligence:[{t:"20 mots anglais avancÃ©",c:"0/20"},{t:"1 Sudoku difficile",c:"0/1"},{t:"15 min vidÃ©o anglais",c:"0/15min"},{t:"Conversation 10 min anglais",c:"0/10min"}],
-                  sagesse:[{t:"10 min cohÃ©rence cardiaque",c:"0/10min"},{t:"15 min mÃ©ditation silencieuse",c:"0/15min"},{t:"Visualisation objectifs",c:"0/1"}],
-                  volonte:[{t:"Routine matinale optimale",c:""},{t:"1h sans tÃ©lÃ©phone matin",c:""},{t:"4 blocs deep work",c:"0/4"},{t:"Refuser 2 distractions",c:"0/2"},{t:"Bilan hebdo complet",c:""}]}
+              phase1: {name:"Phase 1 : Fondations",desc:"Établir les bases solides - 15 min par quête",
+                  force:[{t:"10 Pompes (genoux ok)",c:"0/10"},{t:"15 Squats",c:"0/15"},{t:"20 sec Planche",c:"0/20s"},{t:"10 Fentes par jambe",c:"0/20"},{t:"15 Abdos crunch",c:"0/15"},{t:"Répéter 3 circuits",c:"0/3"}],
+                  forceRunning:[{t:" Running 5km minimum",c:"0/5km"},{t:"Échauffement 5 min",c:""},{t:"Étirements 5 min",c:""}],
+                  intelligence:[{t:"10 mots anglais débutant",c:"0/10"},{t:"1 Sudoku facile OU énigme",c:"0/1"},{t:"Lire 1 article anglais simple",c:"0/1"}],
+                  sagesse:[{t:"5 min cohérence cardiaque",c:"0/5min"},{t:"8 min méditation guidée",c:"0/8min"},{t:"2 min gratitude (3 choses)",c:"0/2min"}],
+                  volonte:[{t:"Faire son lit au réveil",c:""},{t:"Boire 1 verre d'eau",c:""},{t:"Noter 3 priorités du jour",c:""},{t:"Identifier tâche difficile",c:""},{t:"Visualiser journée (2 min)",c:""},{t:"Revue du soir",c:""},{t:"Préparer vêtements demain",c:""}]},
+              phase2: {name:"Phase 2 : Progression",desc:"Augmenter l'intensité - 20 min par quête",
+                  force:[{t:"15 Pompes standard",c:"0/15"},{t:"20 Squats sautés",c:"0/20"},{t:"30 sec Planche",c:"0/30s"},{t:"15 Fentes sautées/jambe",c:"0/30"},{t:"20 Abdos bicyclette",c:"0/20"},{t:"10 Burpees",c:"0/10"},{t:"Répéter 3 circuits",c:"0/3"}],
+                  forceRunning:[{t:" Running 5km minimum",c:"0/5km"},{t:"Échauffement 5 min",c:""},{t:"Étirements 5 min",c:""}],
+                  intelligence:[{t:"15 mots anglais intermédiaire",c:"0/15"},{t:"1 Sudoku moyen OU 2 énigmes",c:"0/1"},{t:"10 min podcast anglais",c:"0/10min"},{t:"Écrire 5 phrases anglais",c:"0/5"}],
+                  sagesse:[{t:"5 min cohérence cardiaque",c:"0/5min"},{t:"10 min méditation non-guidée",c:"0/10min"},{t:"3 min journaling émotionnel",c:"0/3min"},{t:"2 min gratitude approfondie",c:"0/2min"}],
+                  volonte:[{t:"Routine matinale < 10 min",c:""},{t:"Pas de téléphone 30 min",c:""},{t:"Manger la grenouille en 1er",c:""},{t:"3 blocs focus sans distraction",c:"0/3"},{t:"Dire non à 1 distraction",c:""},{t:"Revue du soir détaillée",c:""},{t:"Préparer demain (10 min)",c:""}]},
+              phase3: {name:"Phase 3 : Maîtrise",desc:"Atteindre l'excellence - 25 min par quête",
+                  force:[{t:"20 Pompes diamant",c:"0/20"},{t:"25 Squats pistol (assistés)",c:"0/25"},{t:"45 sec Planche",c:"0/45s"},{t:"20 Fentes bulgares/jambe",c:"0/40"},{t:"25 Abdos V-ups",c:"0/25"},{t:"15 Burpees",c:"0/15"},{t:"30 sec Mountain climbers",c:"0/30s"},{t:"Répéter 3 circuits",c:"0/3"}],
+                  forceRunning:[{t:" Running 5km minimum",c:"0/5km"},{t:"Échauffement 5 min",c:""},{t:"Étirements 5 min",c:""}],
+                  intelligence:[{t:"20 mots anglais avancé",c:"0/20"},{t:"1 Sudoku difficile OU 3 énigmes",c:"0/1"},{t:"15 min podcast anglais",c:"0/15min"},{t:"Écrire 10 phrases anglais",c:"0/10"},{t:"Lire 1 article technique",c:"0/1"}],
+                  sagesse:[{t:"7 min cohérence cardiaque",c:"0/7min"},{t:"15 min méditation profonde",c:"0/15min"},{t:"5 min journaling introspectif",c:"0/5min"},{t:"3 min visualisation objectifs",c:"0/3min"}],
+                  volonte:[{t:"Routine matinale optimisée",c:""},{t:"Pas de téléphone 1h",c:""},{t:"Grenouille + tâche bonus",c:""},{t:"4 blocs focus Pomodoro",c:"0/4"},{t:"Dire non à 2 distractions",c:"0/2"},{t:"Revue hebdomadaire (si dim.)",c:""},{t:"Planification semaine",c:""},{t:"Préparer demain (15 min)",c:""}]}
           };
 
-          let gameState = {level:1,xp:0,currentDay:1,startDate:new Date().toISOString().split('T')[0],lastCompletedDate:null,streak:0,tokens:0,attributes:{force:10,intelligence:10,sagesse:10,volonte:10},quests:{force:false,intelligence:false,sagesse:false,volonte:false},objectivesChecked:{},history:[]};
+          let gameState = {
+              level: 1, xp: 0, currentDay: 1, streak: 0, tokens: 0,
+              attributes: {force:10,intelligence:10,sagesse:10,volonte:10},
+              quests: {force:false,intelligence:false,sagesse:false,volonte:false},
+              objectivesChecked: {}, startDate: null, lastCompletedDate: null, history: []
+          };
 
-          function isRunningDay() {
-              const date = new Date(gameState.startDate);
-              const dayOfWeek = date.getDay();
-              return dayOfWeek === 1 || dayOfWeek === 4;
+          //  NOUVELLE FONCTION : Obtenir la date locale (pas UTC)
+          function getTodayLocal() {
+              const now = new Date();
+              const year = now.getFullYear();
+              const month = String(now.getMonth() + 1).padStart(2, '0');
+              const day = String(now.getDate()).padStart(2, '0');
+              return `${year}-${month}-${day}`;
           }
 
-          function getCurrentPhase() {
-              if (gameState.currentDay <= 28) return 'phase1';
-              if (gameState.currentDay <= 56) return 'phase2';
-              return 'phase3';
+          function saveGameState() {
+              localStorage.setItem('evolutionSystem', JSON.stringify(gameState));
           }
 
           function loadGameState() {
               const saved = localStorage.getItem('evolutionSystem');
-              if (saved) { 
+              if (saved) {
                   gameState = JSON.parse(saved);
-                  if (!gameState.history) gameState.history = [];
-                  if (!gameState.objectivesChecked) gameState.objectivesChecked = {};
+              } else {
+                  gameState.startDate = getTodayLocal(); //  Utilise date locale
               }
               checkNewDay();
-              updateUI();
           }
 
-          function saveGameState() { localStorage.setItem('evolutionSystem', JSON.stringify(gameState)); }
-
+          //  FONCTION MODIFIÉE : Vérification du changement de jour
           function checkNewDay() {
-              const today = new Date().toISOString().split('T')[0];
+              const today = getTodayLocal(); //  Utilise date locale
+              
+              // Debug info
+              document.getElementById('debugCurrentDate').textContent = today;
+              document.getElementById('debugSavedDate').textContent = gameState.startDate || 'Non défini';
+              document.getElementById('debugLastCheck').textContent = new Date().toLocaleTimeString('fr-FR');
+              
               if (gameState.startDate !== today) {
                   const questsCompleted = Object.values(gameState.quests).filter(q => q === true).length;
                   const isPerfectDay = questsCompleted === 4;
@@ -229,6 +248,7 @@
                       wasRunningDay: isRunningDay()
                   });
                   
+                  //  RÈGLE CRITIQUE : 3/4 minimum pour maintenir la série
                   if (questsCompleted >= 3) {
                       gameState.streak++;
                   } else {
@@ -245,224 +265,238 @@
               }
           }
 
-          function toggleObjective(element, questType, index) {
-              const checkbox = element.querySelector('.checkbox');
-              const objKey = `${questType}-${index}`;
+          function getCurrentPhase() {
+              if (gameState.currentDay <= 28) return 'phase1';
+              if (gameState.currentDay <= 56) return 'phase2';
+              return 'phase3';
+          }
+
+          function isRunningDay() {
+              const dayOfWeek = new Date().getDay();
+              return [2, 4, 6].includes(dayOfWeek);
+          }
+
+          function updateUI() {
+              document.getElementById('currentDay').textContent = gameState.currentDay;
+              document.getElementById('level').textContent = gameState.level;
+              document.getElementById('currentXP').textContent = gameState.xp;
+              document.getElementById('streak').textContent = gameState.streak;
+              document.getElementById('tokens').textContent = gameState.tokens;
               
-              if (!gameState.objectivesChecked[objKey]) {
-                  gameState.objectivesChecked[objKey] = true;
-                  checkbox.classList.add('checked');
-                  element.classList.add('completed');
-              } else {
-                  gameState.objectivesChecked[objKey] = false;
-                  checkbox.classList.remove('checked');
-                  element.classList.remove('completed');
-              }
+              const currentLevel = LEVELS[gameState.level - 1];
+              const nextLevel = LEVELS[gameState.level] || LEVELS[LEVELS.length - 1];
+              const maxXP = nextLevel.xp - currentLevel.xp;
+              const currentXPInLevel = gameState.xp - currentLevel.xp;
+              const progress = Math.min((currentXPInLevel / maxXP) * 100, 100);
               
+              document.getElementById('maxXP').textContent = maxXP;
+              document.getElementById('levelProgress').style.width = progress + '%';
+              document.getElementById('levelProgressText').textContent = Math.round(progress) + '%';
+              document.getElementById('titleDisplay').textContent = currentLevel.title;
+              
+              ['force','intelligence','sagesse','volonte'].forEach(attr => {
+                  const value = gameState.attributes[attr];
+                  document.getElementById(attr + 'Value').textContent = value;
+                  const barProgress = Math.min((value / 280) * 100, 100);
+                  document.getElementById(attr + 'Bar').style.width = barProgress + '%';
+              });
+              
+              const phase = getCurrentPhase();
+              const programme = PROGRAMMES[phase];
+              document.getElementById('phaseIndicator').textContent = programme.name;
+              document.getElementById('phaseDescription').textContent = programme.desc;
+              
+              const runningDay = isRunningDay();
+              document.getElementById('runningBadge').style.display = runningDay ? 'block' : 'none';
+              
+              ['force','intelligence','sagesse','volonte'].forEach(questType => {
+                  const objectives = runningDay && questType === 'force' ? programme.forceRunning : programme[questType];
+                  const container = document.getElementById(questType + 'Objectives');
+                  container.innerHTML = '';
+                  
+                  objectives.forEach((obj, index) => {
+                      const isChecked = gameState.objectivesChecked[questType + '_' + index];
+                      const div = document.createElement('div');
+                      div.className = 'objective' + (isChecked ? ' completed' : '');
+                      div.onclick = () => toggleObjective(questType, index);
+                      div.innerHTML = `<div class="checkbox${isChecked ? ' checked' : ''}"></div><span>${obj.t}</span>`;
+                      container.appendChild(div);
+                  });
+                  
+                  const questCard = document.getElementById('quest' + questType.charAt(0).toUpperCase() + questType.slice(1));
+                  const btn = questCard.querySelector('.complete-quest-btn');
+                  
+                  if (gameState.quests[questType]) {
+                      questCard.classList.add('completed');
+                      btn.textContent = ' Quête Complétée';
+                      btn.classList.add('completed');
+                      btn.disabled = true;
+                  } else {
+                      questCard.classList.remove('completed');
+                      btn.textContent = 'Valider la Quête';
+                      btn.classList.remove('completed');
+                      btn.disabled = false;
+                  }
+              });
+              
+              const allCompleted = Object.values(gameState.quests).every(q => q === true);
+              document.getElementById('perfectDayBanner').style.display = allCompleted ? 'block' : 'none';
+          }
+
+          function toggleObjective(questType, index) {
+              checkNewDay(); //  Vérifier à chaque interaction
+              const key = questType + '_' + index;
+              gameState.objectivesChecked[key] = !gameState.objectivesChecked[key];
               saveGameState();
+              updateUI();
           }
 
           function completeQuest(questType) {
-              if (gameState.quests[questType]) return;
-              const today = new Date().toISOString().split('T')[0];
+              checkNewDay();
+              
+              if (gameState.quests[questType]) {
+                  alert('Cette quête est déjà complétée aujourd\'hui !');
+                  return;
+              }
+              
+              const today = getTodayLocal();
+              if (gameState.lastCompletedDate === today) {
+                  const completedCount = Object.values(gameState.quests).filter(q => q === true).length;
+                  if (completedCount >= 4) {
+                      alert('Tu as déjà validé toutes tes quêtes aujourd\'hui !');
+                      return;
+                  }
+              }
+              
               gameState.quests[questType] = true;
               gameState.lastCompletedDate = today;
+              
               gameState.attributes[questType] += 2;
-              let xpGain = 10;
-              if (gameState.level >= 2) xpGain = Math.floor(xpGain * 1.05);
-              if (gameState.level >= 5) xpGain = Math.floor(xpGain * 1.10);
-              if (gameState.level >= 7) xpGain = Math.floor(xpGain * 1.15);
-              gameState.xp += xpGain;
+              gameState.xp += 10;
+              
               const allCompleted = Object.values(gameState.quests).every(q => q === true);
-              if (allCompleted) {
-                  gameState.xp += 20;
+              if (allCompleted && gameState.lastCompletedDate === today) {
+                  gameState.xp += 10;
                   gameState.tokens += 1;
-                  document.getElementById('perfectDayBanner').style.display = 'block';
               }
+              
               checkLevelUp();
               saveGameState();
               updateUI();
           }
 
           function checkLevelUp() {
-              let newLevel = gameState.level;
-              for (let i = LEVELS.length - 1; i >= 0; i--) {
-                  if (gameState.xp >= LEVELS[i].xp) { newLevel = i + 1; break; }
-              }
-              if (newLevel > gameState.level) {
-                  gameState.level = newLevel;
-                  showLevelUpModal(newLevel);
+              const nextLevel = LEVELS[gameState.level];
+              if (nextLevel && gameState.xp >= nextLevel.xp) {
+                  gameState.level++;
+                  showLevelUpModal();
               }
           }
 
-          function showLevelUpModal(level) {
-              const modal = document.getElementById('levelUpModal');
-              const text = document.getElementById('levelUpText');
-              const levelData = LEVELS[level - 1];
-              text.innerHTML = `Tu as atteint le niveau ${level} !<br><br><strong style="color: #ffd700;">${levelData.title}</strong><br><br>${levelData.bonus ? `Nouveau bonus : ${levelData.bonus}` : ''}`;
-              modal.classList.add('active');
+          function showLevelUpModal() {
+              const level = LEVELS[gameState.level - 1];
+              document.getElementById('levelUpText').innerHTML = `
+                  <p style="font-size: 48px; margin: 20px 0;"></p>
+                  <p style="font-size: 24px; margin-bottom: 10px;">Niveau ${gameState.level}</p>
+                  <p style="font-size: 18px; color: #ffd700; margin-bottom: 20px;">${level.title}</p>
+                  <p style="font-size: 14px; color: #aaa;">${level.bonus}</p>
+              `;
+              document.getElementById('levelUpModal').classList.add('active');
           }
 
-          function closeLevelUpModal() { document.getElementById('levelUpModal').classList.remove('active'); }
-
-          function updateUI() {
-              document.getElementById('currentDay').textContent = gameState.currentDay;
-              document.getElementById('level').textContent = gameState.level;
-              document.getElementById('streak').textContent = gameState.streak;
-              document.getElementById('tokens').textContent = gameState.tokens;
-              
-              const currentLevelData = LEVELS[gameState.level - 1];
-              const nextLevelData = LEVELS[gameState.level] || LEVELS[LEVELS.length - 1];
-              const currentLevelXP = currentLevelData.xp;
-              const nextLevelXP = nextLevelData.xp;
-              const xpInLevel = gameState.xp - currentLevelXP;
-              const xpNeeded = nextLevelXP - currentLevelXP;
-              const progress = Math.min((xpInLevel / xpNeeded) * 100, 100);
-              
-              document.getElementById('currentXP').textContent = gameState.xp;
-              document.getElementById('maxXP').textContent = nextLevelXP;
-              document.getElementById('levelProgress').style.width = progress + '%';
-              document.getElementById('levelProgressText').textContent = Math.floor(progress) + '%';
-              document.getElementById('titleDisplay').textContent = currentLevelData.title;
-              
-              const phase = getCurrentPhase();
-              const prog = PROGRAMMES[phase];
-              document.getElementById('phaseIndicator').textContent = prog.name;
-              document.getElementById('phaseDescription').textContent = prog.desc;
-              
-              const runningBadge = document.getElementById('runningBadge');
-              if (isRunningDay()) {
-                  runningBadge.style.display = 'block';
-              } else {
-                  runningBadge.style.display = 'none';
-              }
-              
-              updateAttribute('force', gameState.attributes.force);
-              updateAttribute('intelligence', gameState.attributes.intelligence);
-              updateAttribute('sagesse', gameState.attributes.sagesse);
-              updateAttribute('volonte', gameState.attributes.volonte);
-              
-              const forceProgram = isRunningDay() ? prog.forceRunning : prog.force;
-              renderObjectives('force', forceProgram);
-              renderObjectives('intelligence', prog.intelligence);
-              renderObjectives('sagesse', prog.sagesse);
-              renderObjectives('volonte', prog.volonte);
-              
-              updateQuestUI('force', gameState.quests.force);
-              updateQuestUI('intelligence', gameState.quests.intelligence);
-              updateQuestUI('sagesse', gameState.quests.sagesse);
-              updateQuestUI('volonte', gameState.quests.volonte);
-              
-              updateTimeRemaining();
-          }
-
-          function renderObjectives(type, objectives) {
-              const container = document.getElementById(type + 'Objectives');
-              container.innerHTML = objectives.map((obj, index) => {
-                  const objKey = `${type}-${index}`;
-                  const isChecked = gameState.objectivesChecked[objKey] || false;
-                  return `<div class="objective ${isChecked ? 'completed' : ''}" onclick="toggleObjective(this, '${type}', ${index})">
-                      <div class="checkbox ${isChecked ? 'checked' : ''}"></div>
-                      <span>${obj.t}</span>
-                      <span class="exercise-counter">${obj.c}</span>
-                  </div>`;
-              }).join('');
-          }
-
-          function updateAttribute(name, value) {
-              const maxValue = 280;
-              const percentage = (value / maxValue) * 100;
-              document.getElementById(name + 'Value').textContent = value;
-              document.getElementById(name + 'Bar').style.width = percentage + '%';
-          }
-
-          function updateQuestUI(questType, completed) {
-              const card = document.getElementById('quest' + questType.charAt(0).toUpperCase() + questType.slice(1));
-              const btn = card.querySelector('.complete-quest-btn');
-              if (completed) {
-                  card.classList.add('completed');
-                  btn.classList.add('completed');
-                  btn.textContent = ' QuÃªte ComplÃ©tÃ©e';
-                  btn.disabled = true;
-              } else {
-                  card.classList.remove('completed');
-                  btn.classList.remove('completed');
-                  btn.textContent = 'Valider la QuÃªte';
-                  btn.disabled = false;
-              }
+          function closeLevelUpModal() {
+              document.getElementById('levelUpModal').classList.remove('active');
           }
 
           function updateTimeRemaining() {
               const now = new Date();
-              const midnight = new Date();
-              midnight.setHours(24, 0, 0, 0);
-              const diff = midnight - now;
+              const tomorrow = new Date(now);
+              tomorrow.setDate(tomorrow.getDate() + 1);
+              tomorrow.setHours(0, 0, 0, 0);
+              
+              const diff = tomorrow - now;
               const hours = Math.floor(diff / (1000 * 60 * 60));
               const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-              document.getElementById('timeRemaining').textContent = ` Temps restant : ${hours}h ${minutes}min`;
+              
+              document.getElementById('timeRemaining').textContent = ` ${hours}h ${minutes}min avant minuit`;
           }
 
           function showHistory() {
-              const modal = document.getElementById('historyModal');
+              checkNewDay(); //  Vérifier à chaque interaction
               const content = document.getElementById('historyContent');
               
               if (gameState.history.length === 0) {
-                  content.innerHTML = '<p style="text-align: center; color: #aaa; padding: 20px;">Aucun historique pour le moment.<br>Continue ton aventure ! </p>';
+                  content.innerHTML = '<p style="color: #aaa; padding: 20px;">Aucun historique pour le moment.<br>Complète ta première journée !</p>';
               } else {
                   content.innerHTML = gameState.history.slice().reverse().map(day => `
                       <div class="history-day">
-                          <h3> Jour ${day.day} - ${new Date(day.date).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })} ${day.wasRunningDay ? '' : ''}</h3>
+                          <h3>Jour ${day.day} - ${new Date(day.date).toLocaleDateString('fr-FR')}</h3>
                           <div class="quest-summary">
-                              ${day.isPerfectDay ? ' <strong>PERFECT DAY !</strong><br>' : ''}
-                              ${day.wasRunningDay ? ' <strong>Jour de running</strong><br>' : ''}
-                              QuÃªtes complÃ©tÃ©es : <strong>${day.questsCompleted}/4</strong>
-                              ${day.quests.force ? ' ' : ''} 
-                              ${day.quests.intelligence ? ' ' : ''} 
-                              ${day.quests.sagesse ? ' ' : ''} 
-                              ${day.quests.volonte ? ' ' : ''}
+                              ${day.quests.force ? '' : ''} Force | 
+                              ${day.quests.intelligence ? '' : ''} Intelligence | 
+                              ${day.quests.sagesse ? '' : ''} Sagesse | 
+                              ${day.quests.volonte ? '' : ''} Volonté
+                              ${day.isPerfectDay ? '<br><strong style="color: #ffd700;"> PERFECT DAY</strong>' : ''}
+                              ${day.wasRunningDay ? '<br><span style="color: #ff6432;"> Jour de running</span>' : ''}
                           </div>
                           <div class="history-stats">
+                              <div class="history-stat">
+                                  <div class="history-stat-value">${day.questsCompleted}/4</div>
+                                  <div class="history-stat-label">Quêtes</div>
+                              </div>
                               <div class="history-stat">
                                   <div class="history-stat-value">Niv. ${day.level}</div>
                                   <div class="history-stat-label">Niveau</div>
                               </div>
                               <div class="history-stat">
-                                  <div class="history-stat-value">${day.xp} XP</div>
-                                  <div class="history-stat-label">ExpÃ©rience</div>
+                                  <div class="history-stat-value">${day.xp}</div>
+                                  <div class="history-stat-label">XP Total</div>
                               </div>
                               <div class="history-stat">
                                   <div class="history-stat-value">${day.attributes.force}</div>
-                                  <div class="history-stat-label"> Force</div>
-                              </div>
-                              <div class="history-stat">
-                                  <div class="history-stat-value">${day.attributes.intelligence}</div>
-                                  <div class="history-stat-label"> Intelligence</div>
-                              </div>
-                              <div class="history-stat">
-                                  <div class="history-stat-value">${day.attributes.sagesse}</div>
-                                  <div class="history-stat-label"> Sagesse</div>
-                              </div>
-                              <div class="history-stat">
-                                  <div class="history-stat-value">${day.attributes.volonte}</div>
-                                  <div class="history-stat-label"> VolontÃ©</div>
+                                  <div class="history-stat-label">Force</div>
                               </div>
                           </div>
                       </div>
                   `).join('');
               }
               
-              modal.classList.add('active');
+              document.getElementById('historyModal').classList.add('active');
           }
 
-          function closeHistory() { document.getElementById('historyModal').classList.remove('active'); }
+          function closeHistory() {
+              document.getElementById('historyModal').classList.remove('active');
+          }
 
-          function showResetModal() { document.getElementById('resetModal').classList.add('active'); }
-          function closeResetModal() { document.getElementById('resetModal').classList.remove('active'); }
-          function confirmReset() { localStorage.removeItem('evolutionSystem'); location.reload(); }
+          function showResetModal() {
+              document.getElementById('resetModal').classList.add('active');
+          }
 
-          loadGameState();
-          setInterval(updateTimeRemaining, 60000);
-          setInterval(checkNewDay, 60000);
+          function closeResetModal() {
+              document.getElementById('resetModal').classList.remove('active');
+          }
+
+          function confirmReset() {
+              localStorage.removeItem('evolutionSystem');
+              location.reload();
+          }
+
+          //  VÉRIFICATION AUTOMATIQUE TOUTES LES MINUTES
+          setInterval(function() {
+              checkNewDay();
+              updateUI();
+              updateTimeRemaining();
+          }, 60000); // 60000 ms = 1 minute
+
+          //  VÉRIFICATION AU CHARGEMENT
+          window.onload = function() {
+              loadGameState();
+              updateUI();
+              updateTimeRemaining();
+              
+              // Mettre à jour le temps restant toutes les 10 secondes
+              setInterval(updateTimeRemaining, 10000);
+          };
       </script>
   </body>
   </html>
