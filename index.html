@@ -1358,6 +1358,207 @@ window.addEventListener('DOMContentLoaded', () => {
     updateUI();
     setInterval(updateTimeRemaining, 60000);
 });
+                          const barProgress=Math.min((value/280)*100,100);
+                  document.getElementById(attr+'Bar').style.width=barProgress+'%';
+              });
+              
+              if(gameState.healthStatus){
+                  const healthDiv = document.getElementById('healthStatus');
+                  const healthText = document.getElementById('healthStatusText');
+                  healthDiv.classList.add('active');
+                  healthText.innerHTML = `<strong>${gameState.healthStatus.location}</strong> (${gameState.healthStatus.type})<br>Gravité: ${gameState.healthStatus.severity}/10<br><em>Programme adapté pour favoriser ta récupération</em>`;
+              } else {
+                  document.getElementById('healthStatus').classList.remove('active');
+              }
+              
+              if(gameState.lastAIAdvice){
+                  const adviceDiv = document.getElementById('aiAdvice');
+                  adviceDiv.innerHTML = `
+                      <div class="ai-advice">
+                          <div class="ai-advice-title">⚡ Message du Système</div>
+                          <div>${gameState.lastAIAdvice}</div>
+                      </div>
+                  `;
+                  adviceDiv.style.display = 'block';
+              } else {
+                  document.getElementById('aiAdvice').style.display = 'none';
+              }
+              
+              const questsContainer = document.getElementById('questsContainer');
+              questsContainer.innerHTML = '';
+              
+              if(gameState.dailyProgram){
+                  const questIcons = {
+                      force: '💪',
+                      intelligence: '🧠',
+                      spirituel: '🧘',
+                      discipline: '⚡'
+                  };
+                  
+                  Object.keys(gameState.dailyProgram).forEach(questType => {
+                      const quest = gameState.dailyProgram[questType];
+                      const isCompleted = gameState.quests[questType];
+                      const isAdapted = gameState.healthStatus && questType === 'force';
+                      
+                      const questCard = document.createElement('div');
+                      questCard.className = `quest-card${isCompleted?' completed':''}${isAdapted?' adapted':''}`;
+                      questCard.id = `quest${questType.charAt(0).toUpperCase()+questType.slice(1)}`;
+                      
+                      let objectivesHTML = '';
+                      quest.objectives.forEach((obj, index) => {
+                          const isChecked = gameState.objectivesChecked[`${questType}_${index}`];
+                          objectivesHTML += `
+                              <div class="objective${isChecked?' completed':''}" onclick="toggleObjective('${questType}', ${index})">
+                                  <div class="checkbox${isChecked?' checked':''}"></div>
+                                  <span>${obj.t}</span>
+                              </div>
+                          `;
+                      });
+                      
+                      questCard.innerHTML = `
+                          <div class="quest-header">
+                              <div class="quest-title">
+                                  <span class="quest-icon">${questIcons[questType]}</span>
+                                  <span>${quest.name}</span>
+                              </div>
+                              <div class="quest-reward">+2 PTS +10 XP</div>
+                          </div>
+                          <div class="quest-objectives">${objectivesHTML}</div>
+                          <button class="complete-quest-btn${isCompleted?' completed':''}" 
+                                  onclick="completeQuest('${questType}')" 
+                                  ${isCompleted?'disabled':''}>
+                              ${isCompleted?'✅ Complété':'✅ Valider'}
+                          </button>
+                      `;
+                      
+                      questsContainer.appendChild(questCard);
+                  });
+              }
+              
+              const allCompleted = Object.keys(gameState.quests).length > 0 && 
+                                   Object.values(gameState.quests).every(q=>q===true);
+              document.getElementById('perfectDayBanner').style.display = allCompleted ? 'block' : 'none';
+              
+              updateTimeRemaining();
+          }
+          
+          function toggleObjective(questType, index){
+              checkNewDay();
+              const key = `${questType}_${index}`;
+              gameState.objectivesChecked[key] = !gameState.objectivesChecked[key];
+              saveGameState();
+              updateUI();
+          }
+          
+          function completeQuest(questType){
+              checkNewDay();
+              if(gameState.quests[questType]){
+                  alert('Cette quête est déjà complétée aujourd\'hui !');
+                  return;
+              }
+              
+              gameState.quests[questType] = true;
+              gameState.lastCompletedDate = getTodayLocal();
+              gameState.attributes[questType] += 2;
+              gameState.xp += 10;
+              
+              const allCompleted = Object.values(gameState.quests).every(q=>q===true);
+              if(allCompleted){
+                  gameState.xp += 10;
+                  gameState.tokens += 1;
+              }
+              
+              checkLevelUp();
+              saveGameState();
+              updateUI();
+          }
+          
+          function checkLevelUp(){
+              const nextLevel = LEVELS[gameState.level];
+              if(nextLevel && gameState.xp >= nextLevel.xp){
+                  gameState.level++;
+                  showLevelUpModal();
+              }
+          }
+          
+          function showLevelUpModal(){
+              const level = LEVELS[gameState.level-1];
+              document.getElementById('levelUpText').innerHTML = `
+                  <p style="font-size: 60px; margin: 20px 0;">⚡</p>
+                  <p style="font-size: 28px; margin-bottom: 10px;">Niveau ${gameState.level}</p>
+                  <p style="font-size: 20px; color: #ffd700; margin-bottom: 20px;">${level.title}</p>
+                  <p style="font-size: 14px; color: #aaa;">${level.bonus}</p>
+              `;
+              document.getElementById('levelUpModal').classList.add('active');
+          }
+          
+          function closeLevelUpModal(){
+              document.getElementById('levelUpModal').classList.remove('active');
+          }
+          
+          function showHistory(){
+              checkNewDay();
+              const content = document.getElementById('historyContent');
+              if(gameState.history.length === 0){
+                  content.innerHTML = '<p style="color: #aaa; padding: 20px;">Aucun historique pour le moment.<br>Complète ta première journée !</p>';
+              } else {
+                  content.innerHTML = gameState.history.slice().reverse().map(day => {
+                      return `<div class="history-day">
+                          <h3>Jour ${day.day} - ${new Date(day.date).toLocaleDateString('fr-FR')}</h3>
+                          <div class="quest-summary">
+                              ${day.questsCompleted}/${day.totalQuests} quêtes complétées
+                              ${day.isPerfectDay?'<br><strong style="color: #ffd700;">🎉 JOURNÉE PARFAITE</strong>':''}
+                              ${day.healthStatus?'<br><span style="color: #ff6b35;">🏥 Mode récupération</span>':''}
+                          </div>
+                          <div class="history-stats">
+                              <div class="history-stat">
+                                  <div class="history-stat-value">${day.questsCompleted}/${day.totalQuests}</div>
+                                  <div class="history-stat-label">Quêtes</div>
+                              </div>
+                              <div class="history-stat">
+                                  <div class="history-stat-value">Niv. ${day.level}</div>
+                                  <div class="history-stat-label">Niveau</div>
+                              </div>
+                              <div class="history-stat">
+                                  <div class="history-stat-value">${day.xp}</div>
+                                  <div class="history-stat-label">XP Total</div>
+                              </div>
+                              <div class="history-stat">
+                                  <div class="history-stat-value">${day.attributes.force}</div>
+                                  <div class="history-stat-label">Force</div>
+                              </div>
+                          </div>
+                      </div>`;
+                  }).join('');
+              }
+              document.getElementById('historyModal').classList.add('active');
+          }
+          
+          function closeHistory(){
+              document.getElementById('historyModal').classList.remove('active');
+          }
+          
+          function updateTimeRemaining(){
+              const now = new Date();
+              const tomorrow = new Date(now);
+              tomorrow.setDate(tomorrow.getDate() + 1);
+              tomorrow.setHours(0, 0, 0, 0);
+              const diff = tomorrow - now;
+              const hours = Math.floor(diff / (1000 * 60 * 60));
+              const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+              document.getElementById('timeRemaining').textContent = `⏰ ${hours}h ${minutes}min avant minuit`;
+          }
+          
+          window.addEventListener('DOMContentLoaded', () => {
+              loadGameState();
+              updateUI();
+              setInterval(updateTimeRemaining, 60000);
+          });
       </script>
   </body>
   </html>
+
+      </script>
+  </body>
+  </html>
+
