@@ -945,6 +945,7 @@
                 return;
             }
             
+            
             const btn=document.querySelector('.generate-daily-btn');
             btn.disabled=true;
             btn.classList.add('loading');
@@ -1008,15 +1009,16 @@ RÉPONDS UNIQUEMENT EN JSON (sans markdown):
   }
 }`;
 
-                log('🌐 Envoi requête API Gemini...');
+                                log('🌐 Envoi requête API Gemini...');
                 
-                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${gameState.apiKey}`;
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${gameState.apiKey}`;
                 log('📍 URL API: ' + url.substring(0, 70) + '...');
 
                 const requestBody = {
                     contents:[{parts:[{text:prompt}]}],
                     generationConfig:{temperature:0.9,maxOutputTokens:2000}
                 };
+
                 
                 log('📦 Taille prompt: ' + prompt.length + ' caractères');
 
