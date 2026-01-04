@@ -26,7 +26,7 @@
             pointer-events: none;
             z-index: 0;
         }
-        .container { max-width: 600px; margin: 0 auto; padding: 20px; position: relative; z-index: 1; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; position: relative; z-index: 1; padding-bottom: 220px; }
         
         .header { 
             text-align: center; 
@@ -814,6 +814,25 @@
     </div>
 
     <script>
+        // 🔍 CONSOLE DE DÉBOGAGE INTÉGRÉE
+        const debugLog = document.createElement('div');
+        debugLog.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:rgba(0,0,0,0.95);color:#0f0;padding:10px;font-size:10px;max-height:200px;overflow-y:auto;z-index:9999;font-family:monospace;border-top:2px solid #0f0;';
+        document.body.appendChild(debugLog);
+
+        function log(msg, isError = false) {
+            const time = new Date().toLocaleTimeString();
+            const color = isError ? '#f00' : '#0f0';
+            debugLog.innerHTML += `<div style="color:${color};margin:2px 0;">[${time}] ${msg}</div>`;
+            debugLog.scrollTop = debugLog.scrollHeight;
+            console.log(msg);
+        }
+
+        window.addEventListener('error', (e) => {
+            log(`❌ ERREUR GLOBALE: ${e.message} (${e.filename}:${e.lineno})`, true);
+        });
+
+        log('✅ Console de débogage initialisée');
+
         const LEVELS = [
             {xp:0,title:"L'Aspirant",bonus:"Début de l'aventure"},
             {xp:100,title:"Le Disciple",bonus:"+5% XP"},
@@ -852,12 +871,16 @@
 
         function saveGameState(){
             localStorage.setItem('soloLevelingState',JSON.stringify(gameState));
+            log('💾 État sauvegardé');
         }
 
         function loadGameState(){
             const saved=localStorage.getItem('soloLevelingState');
             if(saved){
                 gameState=JSON.parse(saved);
+                log('✅ État chargé depuis localStorage');
+            } else {
+                log('ℹ️ Nouveau joueur - état initial');
             }
             checkNewDay();
         }
@@ -865,6 +888,7 @@
         function checkNewDay(){
             const today=getTodayLocal();
             if(gameState.lastGeneratedDate && gameState.lastGeneratedDate!==today){
+                log(`🌅 Nouveau jour détecté: ${today}`);
                 const questsCompleted=Object.values(gameState.quests).filter(q=>q===true).length;
                 const totalQuests=Object.keys(gameState.quests).length;
                 const isPerfectDay=questsCompleted===totalQuests && totalQuests>0;
@@ -881,12 +905,15 @@
                         attributes:{...gameState.attributes},
                         healthStatus:gameState.healthStatus?true:false
                     });
+                    log(`📊 Historique ajouté: ${questsCompleted}/${totalQuests} quêtes`);
                 }
                 
                 if(isPerfectDay){
                     gameState.streak++;
+                    log(`🔥 Série: ${gameState.streak} jours`);
                 } else if(questsCompleted===0 && totalQuests>0){
                     gameState.streak=0;
+                    log('💔 Série perdue');
                 }
                 
                 gameState.currentDay++;
@@ -901,13 +928,19 @@
         async function generateDailyProgram(){
             checkNewDay();
             
+            log('🚀 Début génération programme...');
+            
             if(!gameState.apiKey){
+                log('❌ Pas de clé API configurée', true);
                 showSettings();
                 return;
             }
             
+            log('✅ Clé API présente: ' + gameState.apiKey.substring(0, 10) + '...');
+            
             const today=getTodayLocal();
             if(gameState.lastGeneratedDate===today){
+                log('⚠️ Programme déjà généré aujourd\'hui', true);
                 alert('Programme déjà généré aujourd\'hui ! Reviens demain pour de nouvelles quêtes.');
                 return;
             }
@@ -917,6 +950,8 @@
             btn.classList.add('loading');
             
             try{
+                log('📝 Création du prompt...');
+                
                 const prompt=`Tu es le Système Solo Leveling. Génère un programme d'entraînement quotidien ULTRA MOTIVANT pour le jour ${gameState.currentDay}/84.
 
 CONTEXTE UTILISATEUR:
@@ -973,47 +1008,81 @@ RÉPONDS UNIQUEMENT EN JSON (sans markdown):
   }
 }`;
 
-                const response=await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${gameState.apiKey}`,{
+                log('🌐 Envoi requête API Gemini...');
+                
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${gameState.apiKey}`;
+                log('📍 URL API: ' + url.substring(0, 70) + '...');
+
+                const requestBody = {
+                    contents:[{parts:[{text:prompt}]}],
+                    generationConfig:{temperature:0.9,maxOutputTokens:2000}
+                };
+                
+                log('📦 Taille prompt: ' + prompt.length + ' caractères');
+
+                const response = await fetch(url, {
                     method:'POST',
                     headers:{'Content-Type':'application/json'},
-                    body:JSON.stringify({
-                        contents:[{parts:[{text:prompt}]}],
-                        generationConfig:{temperature:0.9,maxOutputTokens:2000}
-                    })
+                    body:JSON.stringify(requestBody)
                 });
 
-                if(!response.ok) throw new Error('Erreur API');
+                log('📡 Réponse reçue, status: ' + response.status);
 
-                const data=await response.json();
-                let text=data.candidates[0].content.parts[0].text;
-                text=text.replace(/```json\n?/g,'').replace(/```\n?/g,'').trim();
+                if(!response.ok) {
+                    const errorText = await response.text();
+                    log('❌ Erreur HTTP ' + response.status + ': ' + errorText.substring(0, 200), true);
+                    throw new Error('Erreur API: ' + response.status);
+                }
+
+                const data = await response.json();
+                log('✅ JSON reçu de l\'API');
                 
-                const program=JSON.parse(text);
+                if(!data.candidates || !data.candidates[0]) {
+                    log('❌ Format de réponse invalide: ' + JSON.stringify(data).substring(0, 200), true);
+                    throw new Error('Format de réponse API invalide');
+                }
                 
-                gameState.dailyProgram=program;
-                gameState.lastGeneratedDate=today;
-                gameState.lastAIAdvice=program.advice;
-                gameState.quests={force:false,intelligence:false,spirituel:false,discipline:false};
+                let text = data.candidates[0].content.parts[0].text;
+                log('📄 Texte brut reçu: ' + text.substring(0, 100) + '...');
+                
+                text = text.replace(/```json\n?/g,'').replace(/```\n?/g,'').trim();
+                
+                log('📦 Parsing JSON...');
+                const program = JSON.parse(text);
+                
+                log('✅ Programme généré avec succès !');
+                log('🎯 Quêtes: ' + Object.keys(program).filter(k => k !== 'advice').length);
+                
+                gameState.dailyProgram = program;
+                gameState.lastGeneratedDate = today;
+                gameState.lastAIAdvice = program.advice;
+                gameState.quests = {force:false,intelligence:false,spirituel:false,discipline:false};
                 
                 saveGameState();
                 updateUI();
                 
             }catch(error){
+                log('❌ ERREUR FINALE: ' + error.message, true);
+                if(error.stack) {
+                    log('📍 Stack: ' + error.stack.substring(0, 300), true);
+                }
                 console.error(error);
-                alert('Erreur lors de la génération. Vérifie ta clé API dans les paramètres.');
+                alert('Erreur lors de la génération. Regarde la console en bas pour plus de détails.');
             }finally{
-                btn.disabled=false;
+                btn.disabled = false;
                 btn.classList.remove('loading');
+                log('🏁 Fin de la génération');
             }
         }
-
         function showSettings(){
+            log('⚙️ Ouverture des paramètres');
             document.getElementById('apiKeyInput').value=gameState.apiKey||'';
             document.getElementById('apiStatus').style.display='none';
             document.getElementById('settingsModal').classList.add('active');
         }
 
         function closeSettings(){
+            log('⚙️ Fermeture des paramètres');
             document.getElementById('settingsModal').classList.remove('active');
         }
 
@@ -1024,11 +1093,14 @@ RÉPONDS UNIQUEMENT EN JSON (sans markdown):
                 status.textContent='❌ La clé API ne peut pas être vide';
                 status.className='api-status error';
                 status.style.display='block';
+                log('❌ Tentative de sauvegarde clé vide', true);
                 return;
             }
             
             gameState.apiKey=key;
             saveGameState();
+            
+            log('✅ Clé API sauvegardée: ' + key.substring(0, 10) + '...');
             
             const status=document.getElementById('apiStatus');
             status.textContent='✅ Clé API enregistrée avec succès !';
@@ -1041,10 +1113,12 @@ RÉPONDS UNIQUEMENT EN JSON (sans markdown):
         }
 
         function showHealthReport(){
+            log('🏥 Ouverture rapport santé');
             document.getElementById('healthModal').classList.add('active');
         }
 
         function closeHealthReport(){
+            log('🏥 Fermeture rapport santé');
             document.getElementById('healthModal').classList.remove('active');
         }
 
@@ -1056,12 +1130,15 @@ RÉPONDS UNIQUEMENT EN JSON (sans markdown):
             
             if(!type||!location){
                 alert('Merci de remplir au moins le type et la zone affectée.');
+                log('⚠️ Formulaire santé incomplet', true);
                 return;
             }
             
             gameState.healthStatus={type,location,severity,details};
             gameState.dailyProgram=null;
             gameState.lastGeneratedDate=null;
+            
+            log(`🏥 Statut santé enregistré: ${type} - ${location} (${severity}/10)`);
             
             saveGameState();
             updateUI();
@@ -1075,6 +1152,8 @@ RÉPONDS UNIQUEMENT EN JSON (sans markdown):
             gameState.dailyProgram=null;
             gameState.lastGeneratedDate=null;
             
+            log('✅ Statut santé effacé - retour normal');
+            
             saveGameState();
             updateUI();
             closeHealthReport();
@@ -1083,6 +1162,8 @@ RÉPONDS UNIQUEMENT EN JSON (sans markdown):
         }
 
         function updateUI(){
+            log('🔄 Mise à jour de l\'interface');
+            
             document.getElementById('level').textContent=gameState.level;
             document.getElementById('currentDay').textContent=gameState.currentDay;
             document.getElementById('currentXP').textContent=gameState.xp;
@@ -1110,6 +1191,7 @@ RÉPONDS UNIQUEMENT EN JSON (sans markdown):
                 const healthText=document.getElementById('healthStatusText');
                 healthDiv.classList.add('active');
                 healthText.innerHTML=`<strong>${gameState.healthStatus.location}</strong> (${gameState.healthStatus.type})<br>Gravité: ${gameState.healthStatus.severity}/10<br><em>Programme adapté pour favoriser ta récupération</em>`;
+                log('⚠️ Mode récupération actif');
             }else{
                 document.getElementById('healthStatus').classList.remove('active');
             }
@@ -1178,6 +1260,8 @@ RÉPONDS UNIQUEMENT EN JSON (sans markdown):
                     
                     questsContainer.appendChild(questCard);
                 });
+                
+                log('✅ ' + Object.keys(gameState.dailyProgram).filter(k=>k!=='advice').length + ' quêtes affichées');
             }
             
             const allCompleted=Object.keys(gameState.quests).length>0&&Object.values(gameState.quests).every(q=>q===true);
@@ -1190,6 +1274,7 @@ RÉPONDS UNIQUEMENT EN JSON (sans markdown):
             checkNewDay();
             const key=`${questType}_${index}`;
             gameState.objectivesChecked[key]=!gameState.objectivesChecked[key];
+            log(`✓ Objectif ${key}: ${gameState.objectivesChecked[key]?'coché':'décoché'}`);
             saveGameState();
             updateUI();
         }
@@ -1198,6 +1283,7 @@ RÉPONDS UNIQUEMENT EN JSON (sans markdown):
             checkNewDay();
             if(gameState.quests[questType]){
                 alert('Cette quête est déjà complétée aujourd\'hui !');
+                log('⚠️ Tentative de compléter une quête déjà faite', true);
                 return;
             }
             
@@ -1206,10 +1292,13 @@ RÉPONDS UNIQUEMENT EN JSON (sans markdown):
             gameState.attributes[questType]+=2;
             gameState.xp+=10;
             
+            log(`🎉 Quête ${questType} complétée ! +2 ${questType}, +10 XP`);
+            
             const allCompleted=Object.values(gameState.quests).every(q=>q===true);
             if(allCompleted){
                 gameState.xp+=10;
                 gameState.tokens+=1;
+                log('🎊 JOURNÉE PARFAITE ! +10 XP bonus, +1 jeton');
             }
             
             checkLevelUp();
@@ -1221,6 +1310,7 @@ RÉPONDS UNIQUEMENT EN JSON (sans markdown):
             const nextLevel=LEVELS[gameState.level];
             if(nextLevel&&gameState.xp>=nextLevel.xp){
                 gameState.level++;
+                log(`🆙 LEVEL UP ! Niveau ${gameState.level}: ${LEVELS[gameState.level-1].title}`);
                 showLevelUpModal();
             }
         }
@@ -1242,6 +1332,7 @@ RÉPONDS UNIQUEMENT EN JSON (sans markdown):
 
         function showHistory(){
             checkNewDay();
+            log('📊 Ouverture historique');
             const content=document.getElementById('historyContent');
             if(gameState.history.length===0){
                 content.innerHTML='<p style="color: #aaa; padding: 20px;">Aucun historique pour le moment.<br>Complète ta première journée !</p>';
@@ -1279,6 +1370,7 @@ RÉPONDS UNIQUEMENT EN JSON (sans markdown):
         }
 
         function closeHistory(){
+            log('📊 Fermeture historique');
             document.getElementById('historyModal').classList.remove('active');
         }
 
@@ -1294,12 +1386,12 @@ RÉPONDS UNIQUEMENT EN JSON (sans markdown):
         }
 
         window.addEventListener('DOMContentLoaded',()=>{
+            log('🚀 Application démarrée');
             loadGameState();
             updateUI();
             setInterval(updateTimeRemaining,60000);
+            log('✅ Interface initialisée');
         });
     </script>
 </body>
 </html>
-
-
