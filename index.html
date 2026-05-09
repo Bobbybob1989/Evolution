@@ -3,326 +3,87 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#0a0a1a">
   <title>Solo Leveling - Système d'Évolution</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      background: #0a0a1a;
-      color: #e0e0ff;
-      font-family: 'Segoe UI', sans-serif;
-      min-height: 100vh;
-    }
-    .header {
-      background: linear-gradient(135deg, #1a1a3e, #0d0d2b);
-      border-bottom: 2px solid #4a4aff;
-      padding: 15px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
+    body { background: #0a0a1a; color: #e0e0ff; font-family: 'Segoe UI', sans-serif; min-height: 100vh; }
+    .header { background: linear-gradient(135deg, #1a1a3e, #0d0d2b); border-bottom: 2px solid #4a4aff; padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
     .header-left { display: flex; align-items: center; gap: 12px; }
-    .level-badge {
-      background: linear-gradient(135deg, #4a4aff, #8a2be2);
-      border-radius: 8px;
-      padding: 6px 12px;
-      font-weight: bold;
-      font-size: 14px;
-    }
+    .level-badge { background: linear-gradient(135deg, #4a4aff, #8a2be2); border-radius: 8px; padding: 6px 12px; font-weight: bold; font-size: 14px; }
     .xp-bar-container { width: 120px; }
     .xp-bar-label { font-size: 10px; color: #aaa; margin-bottom: 3px; }
-    .xp-bar {
-      height: 8px;
-      background: #1a1a3e;
-      border-radius: 4px;
-      overflow: hidden;
-      border: 1px solid #4a4aff;
-    }
-    .xp-bar-fill {
-      height: 100%;
-      background: linear-gradient(90deg, #4a4aff, #00ffff);
-      border-radius: 4px;
-      transition: width 0.5s ease;
-    }
+    .xp-bar { height: 8px; background: #1a1a3e; border-radius: 4px; overflow: hidden; border: 1px solid #4a4aff; }
+    .xp-bar-fill { height: 100%; background: linear-gradient(90deg, #4a4aff, #00ffff); border-radius: 4px; transition: width 0.5s ease; }
     .header-right { display: flex; align-items: center; gap: 10px; }
-    .streak-badge {
-      background: #2a1a0a;
-      border: 1px solid #ff6600;
-      border-radius: 20px;
-      padding: 4px 10px;
-      font-size: 12px;
-      color: #ff6600;
-    }
-    .settings-btn {
-      background: transparent;
-      border: 1px solid #4a4aff;
-      color: #4a4aff;
-      border-radius: 6px;
-      padding: 6px 10px;
-      cursor: pointer;
-      font-size: 16px;
-    }
+    .streak-badge { background: #2a1a0a; border: 1px solid #ff6600; border-radius: 20px; padding: 4px 10px; font-size: 12px; color: #ff6600; }
+    .settings-btn { background: transparent; border: 1px solid #4a4aff; color: #4a4aff; border-radius: 6px; padding: 6px 10px; cursor: pointer; font-size: 16px; }
     .settings-btn:hover { background: #4a4aff22; }
     .main-content { padding: 20px; max-width: 600px; margin: 0 auto; }
-    .advice-card {
-      background: linear-gradient(135deg, #1a1a3e, #0d0d2b);
-      border: 1px solid #4a4aff;
-      border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 20px;
-      position: relative;
-      overflow: hidden;
-    }
-    .advice-card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 3px;
-      background: linear-gradient(90deg, #4a4aff, #8a2be2, #00ffff);
-    }
-    .advice-title {
-      font-size: 12px;
-      color: #8a8aff;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      margin-bottom: 8px;
-    }
+    .advice-card { background: linear-gradient(135deg, #1a1a3e, #0d0d2b); border: 1px solid #4a4aff; border-radius: 12px; padding: 20px; margin-bottom: 20px; position: relative; overflow: hidden; }
+    .advice-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #4a4aff, #8a2be2, #00ffff); }
+    .advice-title { font-size: 12px; color: #8a8aff; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px; }
     .advice-text { font-size: 14px; line-height: 1.6; color: #c0c0ff; font-style: italic; }
-    .section-title {
-      font-size: 18px;
-      font-weight: bold;
-      color: #00ffff;
-      text-transform: uppercase;
-      letter-spacing: 3px;
-      margin-bottom: 5px;
-    }
+    .section-title { font-size: 18px; font-weight: bold; color: #00ffff; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 5px; }
     .section-subtitle { font-size: 12px; color: #8a8aff; margin-bottom: 15px; }
-    .quest-card {
-      background: #0f0f2a;
-      border: 1px solid #2a2a5a;
-      border-radius: 12px;
-      padding: 18px;
-      margin-bottom: 12px;
-      transition: all 0.3s ease;
-      cursor: pointer;
-    }
+    .quest-card { background: #0f0f2a; border: 1px solid #2a2a5a; border-radius: 12px; padding: 18px; margin-bottom: 12px; transition: all 0.3s ease; cursor: pointer; }
     .quest-card:hover { border-color: #4a4aff; background: #12122e; }
-    .quest-card.completed {
-      border-color: #00ff88;
-      background: #0a1f15;
-      opacity: 0.8;
-    }
+    .quest-card.completed { border-color: #00ff88; background: #0a1f15; opacity: 0.8; }
     .quest-header { display: flex; align-items: flex-start; gap: 12px; }
-    .quest-checkbox {
-      width: 22px; height: 22px;
-      border: 2px solid #4a4aff;
-      border-radius: 4px;
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
-      margin-top: 2px;
-      transition: all 0.3s;
-    }
-    .quest-card.completed .quest-checkbox {
-      background: #00ff88;
-      border-color: #00ff88;
-      color: #000;
-      font-weight: bold;
-    }
+    .quest-checkbox { width: 22px; height: 22px; border: 2px solid #4a4aff; border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; transition: all 0.3s; }
+    .quest-card.completed .quest-checkbox { background: #00ff88; border-color: #00ff88; color: #000; font-weight: bold; }
     .quest-info { flex: 1; }
-    .quest-name {
-      font-size: 15px;
-      font-weight: bold;
-      color: #e0e0ff;
-      margin-bottom: 6px;
-    }
-    .quest-card.completed .quest-name {
-      text-decoration: line-through;
-      color: #00ff88;
-    }
+    .quest-name { font-size: 15px; font-weight: bold; color: #e0e0ff; margin-bottom: 6px; }
+    .quest-card.completed .quest-name { text-decoration: line-through; color: #00ff88; }
     .quest-desc { font-size: 13px; color: #9090cc; line-height: 1.5; margin-bottom: 8px; }
     .quest-footer { display: flex; align-items: center; justify-content: space-between; }
-    .quest-xp {
-      font-size: 12px;
-      color: #ffd700;
-      font-weight: bold;
-    }
-    .quest-type-badge {
-      font-size: 10px;
-      padding: 2px 8px;
-      border-radius: 10px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-    .badge-muscle {
-      background: #1a0a2e;
-      border: 1px solid #8a2be2;
-      color: #8a2be2;
-    }
-    .badge-recovery {
-      background: #0a1a2e;
-      border: 1px solid #00aaff;
-      color: #00aaff;
-    }
-    .penalty-card {
-      background: #1a0a0a;
-      border: 2px solid #ff4444;
-      border-radius: 12px;
-      padding: 18px;
-      margin-bottom: 20px;
-    }
-    .penalty-title {
-      color: #ff4444;
-      font-weight: bold;
-      font-size: 14px;
-      margin-bottom: 8px;
-    }
+    .quest-xp { font-size: 12px; color: #ffd700; font-weight: bold; }
+    .quest-type-badge { font-size: 10px; padding: 2px 8px; border-radius: 10px; text-transform: uppercase; letter-spacing: 1px; }
+    .badge-muscle { background: #1a0a2e; border: 1px solid #8a2be2; color: #8a2be2; }
+    .badge-recovery { background: #0a1a2e; border: 1px solid #00aaff; color: #00aaff; }
+    .penalty-card { background: #1a0a0a; border: 2px solid #ff4444; border-radius: 12px; padding: 18px; margin-bottom: 20px; }
+    .penalty-title { color: #ff4444; font-weight: bold; font-size: 14px; margin-bottom: 8px; }
     .penalty-task { font-size: 13px; color: #ffaaaa; margin-bottom: 6px; }
     .penalty-timer { font-size: 12px; color: #ff6666; }
-    .generate-btn {
-      width: 100%;
-      background: linear-gradient(135deg, #4a4aff, #8a2be2);
-      border: none;
-      border-radius: 12px;
-      padding: 16px;
-      color: white;
-      font-size: 15px;
-      font-weight: bold;
-      cursor: pointer;
-      margin-bottom: 20px;
-      transition: all 0.3s;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-    }
+    .generate-btn { width: 100%; background: linear-gradient(135deg, #4a4aff, #8a2be2); border: none; border-radius: 12px; padding: 16px; color: white; font-size: 15px; font-weight: bold; cursor: pointer; margin-bottom: 20px; transition: all 0.3s; text-transform: uppercase; letter-spacing: 2px; }
     .generate-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px #4a4aff44; }
     .generate-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-    .modal-overlay {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: #000000aa;
-      z-index: 200;
-      align-items: center;
-      justify-content: center;
-    }
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #000000aa; z-index: 200; align-items: center; justify-content: center; }
     .modal-overlay.active { display: flex; }
-    .modal {
-      background: #1a1a3e;
-      border: 1px solid #4a4aff;
-      border-radius: 16px;
-      padding: 24px;
-      width: 90%;
-      max-width: 400px;
-    }
+    .modal { background: #1a1a3e; border: 1px solid #4a4aff; border-radius: 16px; padding: 24px; width: 90%; max-width: 400px; }
     .modal h3 { color: #00ffff; margin-bottom: 16px; }
-    .modal input {
-      width: 100%;
-      background: #0a0a1a;
-      border: 1px solid #4a4aff;
-      border-radius: 8px;
-      padding: 10px;
-      color: #e0e0ff;
-      font-size: 14px;
-      margin-bottom: 12px;
-    }
-    .modal-btn {
-      background: linear-gradient(135deg, #4a4aff, #8a2be2);
-      border: none;
-      border-radius: 8px;
-      padding: 10px 20px;
-      color: white;
-      cursor: pointer;
-      font-size: 14px;
-      margin-right: 8px;
-    }
-    .modal-btn-cancel {
-      background: transparent;
-      border: 1px solid #4a4aff;
-      border-radius: 8px;
-      padding: 10px 20px;
-      color: #4a4aff;
-      cursor: pointer;
-      font-size: 14px;
-    }
-    .loading-overlay {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: #000000cc;
-      z-index: 300;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      gap: 16px;
-    }
+    .modal input { width: 100%; background: #0a0a1a; border: 1px solid #4a4aff; border-radius: 8px; padding: 10px; color: #e0e0ff; font-size: 14px; margin-bottom: 12px; }
+    .modal-btn { background: linear-gradient(135deg, #4a4aff, #8a2be2); border: none; border-radius: 8px; padding: 10px 20px; color: white; cursor: pointer; font-size: 14px; margin-right: 8px; }
+    .modal-btn-cancel { background: transparent; border: 1px solid #4a4aff; border-radius: 8px; padding: 10px 20px; color: #4a4aff; cursor: pointer; font-size: 14px; }
+    .loading-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #000000cc; z-index: 300; align-items: center; justify-content: center; flex-direction: column; gap: 16px; }
     .loading-overlay.active { display: flex; }
-    .loading-spinner {
-      width: 50px; height: 50px;
-      border: 3px solid #1a1a3e;
-      border-top: 3px solid #4a4aff;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
+    .loading-spinner { width: 50px; height: 50px; border: 3px solid #1a1a3e; border-top: 3px solid #4a4aff; border-radius: 50%; animation: spin 1s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
     .loading-text { color: #8a8aff; font-size: 14px; }
-    .toast {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%) translateY(100px);
-      background: #1a1a3e;
-      border: 1px solid #4a4aff;
-      border-radius: 8px;
-      padding: 12px 20px;
-      color: #e0e0ff;
-      font-size: 14px;
-      z-index: 400;
-      transition: transform 0.3s ease;
-      text-align: center;
-    }
+    .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px); background: #1a1a3e; border: 1px solid #4a4aff; border-radius: 8px; padding: 12px 20px; color: #e0e0ff; font-size: 14px; z-index: 400; transition: transform 0.3s ease; text-align: center; }
     .toast.show { transform: translateX(-50%) translateY(0); }
     .toast.success { border-color: #00ff88; color: #00ff88; }
     .toast.error { border-color: #ff4444; color: #ff4444; }
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-    .stat-card {
-      background: #0f0f2a;
-      border: 1px solid #2a2a5a;
-      border-radius: 10px;
-      padding: 12px;
-      text-align: center;
-    }
+    .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+    .stat-card { background: #0f0f2a; border: 1px solid #2a2a5a; border-radius: 10px; padding: 12px; text-align: center; }
     .stat-value { font-size: 20px; font-weight: bold; color: #00ffff; }
     .stat-label { font-size: 10px; color: #8a8aff; text-transform: uppercase; margin-top: 4px; }
-    .hospital-btn {
-      width: 100%;
-      background: transparent;
-      border: 1px solid #ff4444;
-      border-radius: 8px;
-      padding: 10px;
-      color: #ff4444;
-      cursor: pointer;
-      font-size: 13px;
-      margin-bottom: 20px;
-      transition: all 0.3s;
-    }
+    .hospital-btn { width: 100%; background: transparent; border: 1px solid #ff4444; border-radius: 8px; padding: 10px; color: #ff4444; cursor: pointer; font-size: 13px; margin-bottom: 20px; transition: all 0.3s; }
     .hospital-btn:hover { background: #ff444422; }
-    .injury-banner {
-      background: #1a0a0a;
-      border: 1px solid #ff4444;
-      border-radius: 8px;
-      padding: 10px 14px;
-      margin-bottom: 15px;
-      font-size: 12px;
-      color: #ff8888;
-      display: none;
-    }
+    .injury-banner { background: #1a0a0a; border: 1px solid #ff4444; border-radius: 8px; padding: 10px 14px; margin-bottom: 15px; font-size: 12px; color: #ff8888; display: none; }
     .injury-banner.active { display: block; }
+    /* === ACTIVITE SPORTIVE === */
+    .activity-block { background: linear-gradient(135deg, #0d1f0d, #1a2e1a); border: 1px solid #2a5a2a; border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+    .activity-title { font-size: 14px; font-weight: 700; color: #4aff4a; margin-bottom: 4px; }
+    .activity-subtitle { font-size: 11px; color: #6a8a6a; margin-bottom: 12px; line-height: 1.4; }
+    .activity-buttons { display: flex; gap: 10px; }
+    .activity-btn { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #2a5a2a; background: #0a1a0a; color: #4aff4a; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+    .activity-btn:hover { background: #1a3a1a; border-color: #4aff4a; }
+    .activity-btn.active { background: #1a4a1a; border-color: #4aff4a; box-shadow: 0 0 10px rgba(74,255,74,0.3); }
+    .activity-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .activity-done { margin-top: 10px; font-size: 13px; color: #4aff4a; font-weight: 600; text-align: center; display: none; }
   </style>
 </head>
 <body>
@@ -411,6 +172,19 @@
       <div class="advice-text" id="adviceText"></div>
     </div>
 
+    <!-- BLOC ACTIVITE SPORTIVE (NOUVEAU) -->
+    <div class="activity-block" id="activityBlock">
+      <div class="activity-title">🏃 Activité du jour</div>
+      <div class="activity-subtitle">Tu as couru ou joué au badminton ? Valide ici — les quêtes de renforcement sont pour tes jours off.</div>
+      <div class="activity-buttons">
+        <button class="activity-btn" id="btnRun" onclick="validateActivity('course')">🏃 Course</button>
+        <button class="activity-btn" id="btnBadminton" onclick="validateActivity('badminton')">🏸 Badminton</button>
+      </div>
+      <div class="activity-done" id="activityDone">
+        ✅ <span id="activityDoneText"></span> — Journée complète validée !
+      </div>
+    </div>
+
     <!-- Generate Button -->
     <button class="generate-btn" id="generateBtn" onclick="generateProgram()">
       ⚡ Générer Programme Quotidien
@@ -439,13 +213,16 @@
     streak: 0,
     totalCompleted: 0,
     lastGeneratedDate: null,
+    lastStreakDate: null,
     todayQuests: [],
     questsCompleted: [],
     injury: null,
     penaltyActive: false,
     penaltyTask: null,
     penaltyDeadline: null,
-    penaltyDone: false
+    penaltyDone: false,
+    activityValidated: null,
+    activityDate: null
   };
 
   // ========== INIT ==========
@@ -463,6 +240,9 @@
     if (state.injury) {
       document.getElementById('injuryBanner').classList.add('active');
       document.getElementById('injuryText').textContent = state.injury;
+    }
+    if (state.activityDate === getTodayStr() && state.activityValidated) {
+      updateActivityUI(state.activityValidated);
     }
   }
 
@@ -550,10 +330,7 @@
     const deadline = new Date(state.penaltyDeadline);
     const now = new Date();
     const diff = deadline - now;
-    if (diff <= 0) {
-      document.getElementById('penaltyContainer').innerHTML = '';
-      return;
-    }
+    if (diff <= 0) { document.getElementById('penaltyContainer').innerHTML = ''; return; }
     const h = Math.floor(diff / 3600000);
     const m = Math.floor((diff % 3600000) / 60000);
     document.getElementById('penaltyContainer').innerHTML = `
@@ -597,7 +374,6 @@
     const xpGain = state.todayQuests[index]?.xp || 100;
     addXP(xpGain);
     showToast('+' + xpGain + ' XP gagné ! 💪', 'success');
-
     const allDone = state.todayQuests.every((_, i) => state.questsCompleted[i]);
     if (allDone) {
       state.streak += 1;
@@ -614,10 +390,8 @@
   function renderQuests() {
     const container = document.getElementById('questsContainer');
     if (!state.todayQuests || state.todayQuests.length === 0) return;
-
     let html = `<div class="section-title">Quêtes du Jour</div>
                 <div class="section-subtitle">Micro-sessions • Fais-les quand tu veux dans la journée</div>`;
-
     state.todayQuests.forEach((q, i) => {
       if (q.type === 'advice') return;
       const done = state.questsCompleted[i];
@@ -638,8 +412,43 @@
           </div>
         </div>`;
     });
-
     container.innerHTML = html;
+  }
+
+  // ========== ACTIVITE SPORTIVE ==========
+  function validateActivity(type) {
+    if (state.activityValidated && state.activityDate === getTodayStr()) return;
+    state.activityValidated = type;
+    state.activityDate = getTodayStr();
+    let xpTotal = 0;
+    if (state.todayQuests && state.todayQuests.length > 0) {
+      state.todayQuests.forEach((q, i) => {
+        if (!state.questsCompleted[i]) {
+          state.questsCompleted[i] = true;
+          state.totalCompleted += 1;
+          xpTotal += q.xp || 100;
+        }
+      });
+      renderQuests();
+    } else {
+      xpTotal = 400;
+    }
+    if (xpTotal > 0) addXP(xpTotal);
+    state.streak += 1;
+    saveState();
+    updateUI();
+    updateActivityUI(type);
+    showToast('🔥 ' + (type === 'course' ? 'Course' : 'Badminton') + ' validé ! +' + xpTotal + ' XP !', 'success');
+  }
+
+  function updateActivityUI(type) {
+    const label = type === 'course' ? 'Course validée' : 'Badminton validé';
+    document.getElementById('activityDoneText').textContent = label;
+    document.getElementById('activityDone').style.display = 'block';
+    document.getElementById('btnRun').classList.toggle('active', type === 'course');
+    document.getElementById('btnBadminton').classList.toggle('active', type === 'badminton');
+    document.getElementById('btnRun').disabled = true;
+    document.getElementById('btnBadminton').disabled = true;
   }
 </script>
 <script>
@@ -647,8 +456,6 @@
   function buildPrompt() {
     const level = state.level;
     const injury = state.injury ? `Blessure active : ${state.injury}. Adapte les exercices en conséquence.` : 'Aucune blessure.';
-
-    // Progression réaliste selon le niveau
     let volumeGuide = '';
     if (level <= 3) {
       volumeGuide = `Niveau débutant. Exemples de volume : pompes 3x10, squats 3x15, planche 3x30sec. Durée max 5 min par quête.`;
@@ -675,9 +482,8 @@ RÈGLES ABSOLUES :
 2. Chaque quête doit être réalisable en micro-session de 5 à 10 minutes maximum, n'importe quand dans la journée.
 3. Les exercices sont uniquement au poids du corps : pompes, squats, fentes, planche, dips, gainage, pompes diamant, pompes déclinées, mountain climbers, burpees (sans saut si blessure), etc.
 4. INTERDIT : course à pied, marche, vélo, natation, ou tout exercice cardio prolongé.
-5. La progression doit être RÉALISTE et PROGRESSIVE selon le niveau. Ne pas proposer des volumes impossibles.
+5. La progression doit être RÉALISTE et PROGRESSIVE selon le niveau.
 6. Les noms des quêtes doivent être courts, sobres et motivants (2-3 mots max). Style coach sportif ou militaire. Exemples : 'Protocole Force', 'Série Acier', 'Endurance Pure', 'Récupération Active'. Pas de noms fantasy ou RPG.
-
 7. Les descriptions doivent être claires, précises, avec les séries et répétitions exactes.
 
 Réponds UNIQUEMENT avec ce JSON valide, sans texte avant ni après :
@@ -685,25 +491,25 @@ Réponds UNIQUEMENT avec ce JSON valide, sans texte avant ni après :
 "advice": "Message épique et motivant de 2 phrases maximum pour ce chasseur de rang ${level}.",
 "quests": [
   {
-    "name": "Nom épique de la quête",
+    "name": "Nom de la quête",
     "description": "Description précise : X séries de Y répétitions de [exercice]. Conseil de forme en 1 phrase.",
     "xp": 100,
     "category": "muscle"
   },
   {
-    "name": "Nom épique de la quête",
+    "name": "Nom de la quête",
     "description": "Description précise : X séries de Y répétitions de [exercice]. Conseil de forme en 1 phrase.",
     "xp": 110,
     "category": "muscle"
   },
   {
-    "name": "Nom épique de la quête",
+    "name": "Nom de la quête",
     "description": "Description précise : X séries de Y répétitions de [exercice]. Conseil de forme en 1 phrase.",
     "xp": 105,
     "category": "muscle"
   },
   {
-    "name": "Nom épique de la quête",
+    "name": "Nom de la quête",
     "description": "Description précise : étirement OU exercice de respiration. Durée max 5 min.",
     "xp": 80,
     "category": "recovery"
@@ -719,7 +525,6 @@ Réponds UNIQUEMENT avec ce JSON valide, sans texte avant ni après :
       showToast('⚙️ Entre ta clé API d\'abord', 'error');
       return;
     }
-
     const btn = document.getElementById('generateBtn');
     btn.disabled = true;
     document.getElementById('loadingOverlay').classList.add('active');
@@ -747,8 +552,6 @@ Réponds UNIQUEMENT avec ce JSON valide, sans texte avant ni après :
 
       const data = await response.json();
       let raw = data.choices[0].message.content.trim();
-
-      // Nettoyage JSON
       raw = raw.replace(/```json/g, '').replace(/```/g, '').trim();
       const start = raw.indexOf('{');
       const end = raw.lastIndexOf('}');
@@ -758,13 +561,11 @@ Réponds UNIQUEMENT avec ce JSON valide, sans texte avant ni après :
       const parsed = JSON.parse(raw);
       if (!parsed.quests || parsed.quests.length !== 4) throw new Error('Format de quêtes invalide');
 
-      // Sauvegarde
       state.todayQuests = parsed.quests;
       state.todayQuests[0].advice = parsed.advice;
       state.questsCompleted = new Array(4).fill(false);
       state.lastGeneratedDate = getTodayStr();
 
-      // Vérif streak
       const yesterday = new Date();
       yesterday.setDate(yesterday.getDate() - 1);
       const yStr = yesterday.toISOString().split('T')[0];
