@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#0a0a1a">
+  <title>Solo Leveling - Système d'Évolution</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #0a0a1a; color: #e0e0ff; font-family: 'Segoe UI', sans-serif; min-height: 100vh; }
+
+    /* HEADER */
+    .header { background: linear-gradient(135deg, #1a1a3e, #0d0d2b); border-bottom: 2px solid #4a4aff; padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+    .header-left { display: flex; align-items: center; gap: 12px; }
+    .level-badge { background: linear-gradient(135deg, #4a4aff, #8a2be2); border-radius: 8px; padding: 6px 12px; font-weight: bold; font-size: 14px; }
+    .xp-bar-container { width: 120px; }
+    .xp-bar-label { font-size: 10px; color: #aaa; margin-bottom: 3px; }
+    .xp-bar { height: 8px; background: #1a1a3e; border-radius: 4px; overflow: hidden; border: 1px solid #4a4aff; }
+    .xp-bar-fill { height: 100%; background: linear-gradient(90deg, #4a4aff, #00ffff); border-radius: 4px; transition: width 0.5s ease; }
+    .header-right { display: flex; align-items: center; gap: 10px; }
+    .streak-badge { background: #2a1a0a; border: 1px solid #ff6600; border-radius: 20px; padding: 4px 10px; font-size: 12px; color: #ff6600; }
+    .settings-btn { background: transparent; border: 1px solid #4a4aff; color: #4a4aff; border-radius: 6px; padding: 6px 10px; cursor: pointer; font-size: 16px; }
+    .settings-btn:hover { background: #4a4aff22; }
+
+    /* LAYOUT */
+    .main-content { padding: 20px; max-width: 600px; margin: 0 auto; }
+
+    /* ADVICE */
+    .advice-card { background: linear-gradient(135deg, #1a1a3e, #0d0d2b); border: 1px solid #4a4aff; border-radius: 12px; padding: 20px; margin-bottom: 20px; position: relative; overflow: hidden; }
+    .advice-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #4a4aff, #8a2be2, #00ffff); }
+    .advice-title { font-size: 12px; color: #8a8aff; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px; }
+    .advice-text { font-size: 14px; line-height: 1.6; color: #c0c0ff; font-style: italic; }
+
+    /* SECTIONS */
+    .section-title { font-size: 18px; font-weight: bold; color: #00ffff; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 5px; }
+    .section-subtitle { font-size: 12px; color: #8a8aff; margin-bottom: 15px; }
+    .section-divider { border: none; border-top: 1px solid #1a1a3e; margin: 20px 0; }
+
+    /* QUESTS */
+    .quest-card { background: #0f0f2a; border: 1px solid #2a2a5a; border-radius: 12px; padding: 18px; margin-bottom: 12px; transition: all 0.3s ease; cursor: pointer; }
+    .quest-card:hover { border-color: #4a4aff; background: #12122e; }
+    .quest-card.completed { border-color: #00ff88; background: #0a1f15; opacity: 0.8; }
+    .quest-header { display: flex; align-items: flex-start; gap: 12px; }
+    .quest-checkbox { width: 22px; height: 22px; border: 2px solid #4a4aff; border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; transition: all 0.3s; }
+    .quest-card.completed .quest-checkbox { background: #00ff88; border-color: #00ff88; color: #000; font-weight: bold; }
+    .quest-info { flex: 1; }
+    .quest-name { font-size: 15px; font-weight: bold; color: #e0e0ff; margin-bottom: 6px; }
+    .quest-card.completed .quest-name { text-decoration: line-through; color: #00ff88; }
+    .quest-desc { font-size: 13px; color: #9090cc; line-height: 1.5; margin-bottom: 8px; }
+    .quest-footer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px; }
+    .quest-xp { font-size: 12px; color: #ffd700; font-weight: bold; }
+    .quest-type-badge { font-size: 10px; padding: 2px 8px; border-radius: 10px; text-transform: uppercase; letter-spacing: 1px; }
+    .badge-muscle { background: #1a0a2e; border: 1px solid #8a2be2; color: #8a2be2; }
+    .badge-recovery { background: #0a1a2e; border: 1px solid #00aaff; color: #00aaff; }
+
+    /* PENALTY */
+    .penalty-card { background: #1a0a0a; border: 2px solid #ff4444; border-radius: 12px; padding: 18px; margin-bottom: 20px; }
+    .penalty-title { color: #ff4444; font-weight: bold; font-size: 14px; margin-bottom: 8px; }
+    .penalty-task { font-size: 13px; color: #ffaaaa; margin-bottom: 6px; }
+    .penalty-timer { font-size: 12px; color: #ff6666; }
+
+    /* BUTTONS */
+    .generate-btn { width: 100%; background: linear-gradient(135deg, #4a4aff, #8a2be2); border: none; border-radius: 12px; padding: 16px; color: white; font-size: 15px; font-weight: bold; cursor: pointer; margin-bottom: 20px; transition: all 0.3s; text-transform: uppercase; letter-spacing: 2px; }
+    .generate-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px #4a4aff44; }
+    .generate-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .hospital-btn { width: 100%; background: transparent; border: 1px solid #ff4444; border-radius: 8px; padding: 10px; color: #ff4444; cursor: pointer; font-size: 13px; margin-bottom: 12px; transition: all 0.3s; }
+    .hospital-btn:hover { background: #ff444422; }
+    .objective-btn { width: 100%; background: transparent; border: 1px solid #8a2be2; border-radius: 8px; padding: 10px; color: #8a2be2; cursor: pointer; font-size: 13px; margin-bottom: 12px; transition: all 0.3s; }
+    .objective-btn:hover { background: #8a2be222; }
+
+    /* MODALS */
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #000000aa; z-index: 200; align-items: center; justify-content: center; }
+    .modal-overlay.active { display: flex; }
+    .modal { background: #1a1a3e; border: 1px solid #4a4aff; border-radius: 16px; padding: 24px; width: 90%; max-width: 420px; max-height: 90vh; overflow-y: auto; }
+    .modal h3 { color: #00ffff; margin-bottom: 16px; }
+    .modal input, .modal select, .modal textarea { width: 100%; background: #0a0a1a; border: 1px solid #4a4aff; border-radius: 8px; padding: 10px; color: #e0e0ff; font-size: 14px; margin-bottom: 12px; }
+    .modal textarea { resize: vertical; min-height: 60px; }
+    .modal label { font-size: 12px; color: #8a8aff; display: block; margin-bottom: 4px; }
+    .modal-btn { background: linear-gradient(135deg, #4a4aff, #8a2be2); border: none; border-radius: 8px; padding: 10px 20px; color: white; cursor: pointer; font-size: 14px; margin-right: 8px; }
+    .modal-btn-cancel { background: transparent; border: 1px solid #4a4aff; border-radius: 8px; padding: 10px 20px; color: #4a4aff; cursor: pointer; font-size: 14px; }
+    .modal-btn-danger { background: #ff4444; border: none; border-radius: 8px; padding: 10px 20px; color: white; cursor: pointer; font-size: 14px; margin-top: 8px; }
+
+    /* LOADING */
+    .loading-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #000000cc; z-index: 300; align-items: center; justify-content: center; flex-direction: column; gap: 16px; }
+    .loading-overlay.active { display: flex; }
+    .loading-spinner { width: 50px; height: 50px; border: 3px solid #1a1a3e; border-top: 3px solid #4a4aff; border-radius: 50%; animation: spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-text { color: #8a8aff; font-size: 14px; }
+
+    /* TOAST */
+    .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px); background: #1a1a3e; border: 1px solid #4a4aff; border-radius: 8px; padding: 12px 20px; color: #e0e0ff; font-size: 14px; z-index: 400; transition: transform 0.3s ease; text-align: center; max-width: 320px; }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+    .toast.success { border-color: #00ff88; color: #00ff88; }
+    .toast.error { border-color: #ff4444; color: #ff4444; }
+
+    /* STATS */
+    .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+    .stat-card { background: #0f0f2a; border: 1px solid #2a2a5a; border-radius: 10px; padding: 12px; text-align: center; }
+    .stat-value { font-size: 20px; font-weight: bold; color: #00ffff; }
+    .stat-label { font-size: 10px; color: #8a8aff; text-transform: uppercase; margin-top: 4px; }
+
+    /* BANNERS */
+    .injury-banner { background: #1a0a0a; border: 1px solid #ff4444; border-radius: 8px; padding: 10px 14px; margin-bottom: 15px; font-size: 12px; color: #ff8888; display: none; }
+    .injury-banner.active { display: block; }
+    .objective-banner { background: linear-gradient(135deg, #1a0d2e, #0d1a2e); border: 1px solid #8a2be2; border-radius: 10px; padding: 12px 16px; margin-bottom: 15px; display: none; }
+    .objective-banner.active { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .objective-info { flex: 1; }
+    .objective-label { font-size: 10px; color: #8a2be2; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 3px; }
+    .objective-name { font-size: 14px; font-weight: bold; color: #cc88ff; margin-bottom: 3px; }
+    .objective-days { font-size: 11px; color: #9090cc; }
+    .objective-progress { width: 60px; text-align: center; }
+    .objective-pct { font-size: 18px; font-weight: bold; color: #8a2be2; }
+    .objective-pct-label { font-size: 9px; color: #6a6a9a; }
+    .difficulty-banner { border-radius: 8px; padding: 8px 14px; margin-bottom: 15px; font-size: 12px; display: none; }
+    .difficulty-banner.active { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .difficulty-banner.easy { background: #0a1f15; border: 1px solid #00ff88; color: #00ff88; }
+    .difficulty-banner.hard { background: #1f0a0a; border: 1px solid #ff8844; color: #ff8844; }
+    .diff-reset-btn { font-size: 10px; background: transparent; border: 1px solid currentColor; border-radius: 4px; padding: 2px 6px; color: inherit; cursor: pointer; }
+
+    /* ACTIVITY */
+    .activity-block { background: linear-gradient(135deg, #0d1f0d, #1a2e1a); border: 1px solid #2a5a2a; border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+    .activity-title { font-size: 14px; font-weight: 700; color: #4aff4a; margin-bottom: 4px; }
+    .activity-subtitle { font-size: 11px; color: #6a8a6a; margin-bottom: 12px; line-height: 1.4; }
+    .activity-buttons { display: flex; gap: 10px; }
+    .activity-btn { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #2a5a2a; background: #0a1a0a; color: #4aff4a; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+    .activity-btn:hover { background: #1a3a1a; border-color: #4aff4a; }
+    .activity-btn.active { background: #1a4a1a; border-color: #4aff4a; box-shadow: 0 0 10px rgba(74,255,74,0.3); }
+    .activity-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .activity-done { margin-top: 10px; font-size: 13px; color: #4aff4a; font-weight: 600; text-align: center; display: none; }
+
+    /* OBJECTIVE TAGS */
+    .tag-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+    .tag-btn { padding: 6px 12px; border-radius: 20px; border: 1px solid #2a2a5a; background: #0a0a1a; color: #9090cc; font-size: 12px; cursor: pointer; transition: all 0.2s; }
+    .tag-btn.selected { border-color: #8a2be2; background: #1a0a2e; color: #cc88ff; }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-left">
+      <div class="level-badge">LVL <span id="levelDisplay">1</span></div>
+      <div class="xp-bar-container">
+        <div class="xp-bar-label">XP <span id="xpDisplay">0</span>/<span id="xpNextDisplay">500</span></div>
+        <div class="xp-bar"><div class="xp-bar-fill" id="xpBarFill" style="width:0%"></div></div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="streak-badge">🔥 <span id="streakDisplay">0</span></div>
+      <button class="settings-btn" onclick="openSettings()">⚙️</button>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-text" id="loadingText">Génération en cours...</div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <!-- Modal : Paramètres -->
+  <div class="modal-overlay" id="settingsModal">
+    <div class="modal">
+      <h3>⚙️ Paramètres</h3>
+      <label>Clé API OpenRouter</label>
+      <input type="password" id="apiKeyInput" placeholder="sk-or-..."/>
+      <label>Ton prénom</label>
+      <input type="text" id="usernameInput" placeholder="Bobby"/>
+      <div style="margin-top:8px;">
+        <button class="modal-btn" onclick="saveSettings()">Sauvegarder</button>
+        <button class="modal-btn-cancel" onclick="closeSettings()">Annuler</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal : Blessure -->
+  <div class="modal-overlay" id="hospitalModal">
+    <div class="modal">
+      <h3>🏥 Mode Blessure</h3>
+      <p style="font-size:13px;color:#9090cc;margin-bottom:12px;">Décris ta blessure pour adapter le programme.</p>
+      <input type="text" id="injuryInput" placeholder="Ex: douleur genou gauche"/>
+      <div style="margin-top:8px;">
+        <button class="modal-btn" onclick="saveInjury()">Confirmer</button>
+        <button class="modal-btn-cancel" onclick="closeHospital()">Annuler</button>
+        <button class="modal-btn-danger" onclick="clearInjury()">Supprimer blessure</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal : Objectif -->
+  <div class="modal-overlay" id="objectiveModal">
+    <div class="modal">
+      <h3>🎯 Définir un Objectif</h3>
+      <label>Zone musculaire ciblée</label>
+      <div class="tag-grid" id="objectiveTagGrid">
+        <button class="tag-btn" data-val="pectoraux" onclick="selectObjectiveTag(this)">💪 Pectoraux</button>
+        <button class="tag-btn" data-val="dos" onclick="selectObjectiveTag(this)">🔙 Dos</button>
+        <button class="tag-btn" data-val="jambes" onclick="selectObjectiveTag(this)">🦵 Jambes</button>
+        <button class="tag-btn" data-val="épaules" onclick="selectObjectiveTag(this)">🏋️ Épaules</button>
+        <button class="tag-btn" data-val="abdominaux" onclick="selectObjectiveTag(this)">🎯 Abdos</button>
+        <button class="tag-btn" data-val="bras" onclick="selectObjectiveTag(this)">💥 Bras</button>
+        <button class="tag-btn" data-val="gainage global" onclick="selectObjectiveTag(this)">🛡️ Gainage</button>
+        <button class="tag-btn" data-val="force générale" onclick="selectObjectiveTag(this)">⚡ Force globale</button>
+      </div>
+      <label>Durée de l'objectif</label>
+      <select id="objectiveDuration">
+        <option value="7">1 semaine</option>
+        <option value="14" selected>2 semaines</option>
+        <option value="21">3 semaines</option>
+        <option value="30">1 mois</option>
+      </select>
+      <label>Note personnelle (optionnel)</label>
+      <textarea id="objectiveNote" placeholder="Ex: Je veux améliorer ma posture, renforcer mes pecs pour le badminton..."></textarea>
+      <div style="margin-top:8px;">
+        <button class="modal-btn" onclick="saveObjective()">Activer l'objectif</button>
+        <button class="modal-btn-cancel" onclick="closeObjective()">Annuler</button>
+        <button class="modal-btn-danger" onclick="clearObjective()">Supprimer objectif</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal : Feedback Difficulté -->
+  <div class="modal-overlay" id="difficultyModal">
+    <div class="modal">
+      <h3>📊 Feedback Difficulté</h3>
+      <p style="font-size:13px;color:#9090cc;margin-bottom:16px;">
+        Comment tu as trouvé le programme d'aujourd'hui ? Le système adaptera le volume des prochaines sessions.
+      </p>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <button class="modal-btn" style="background:linear-gradient(135deg,#00aa44,#00ff88);text-align:left;padding:14px;" onclick="submitDifficulty('easy')">
+          😴 Trop facile — Augmenter le volume
+        </button>
+        <button class="modal-btn" style="background:linear-gradient(135deg,#4a4aff,#8a2be2);text-align:left;padding:14px;" onclick="submitDifficulty('ok')">
+          ✅ Parfait — Maintenir ce niveau
+        </button>
+        <button class="modal-btn" style="background:linear-gradient(135deg,#aa4400,#ff4444);text-align:left;padding:14px;" onclick="submitDifficulty('hard')">
+          🔥 Trop difficile — Réduire le volume
+        </button>
+      </div>
+      <button class="modal-btn-cancel" onclick="closeDifficulty()" style="margin-top:12px;width:100%;text-align:center;">Annuler</button>
+    </div>
+  </div>
+
+  <!-- Contenu principal -->
+  <div class="main-content">
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-value" id="statLevel">1</div>
+        <div class="stat-label">Niveau</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="statStreak">0</div>
+        <div class="stat-label">Série</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="statCompleted">0</div>
+        <div class="stat-label">Quêtes</div>
+      </div>
+    </div>
+
+    <!-- Banner Blessure -->
+    <div class="injury-banner" id="injuryBanner">
+      🏥 Mode blessure actif : <span id="injuryText"></span>
+    </div>
+
+    <!-- Banner Objectif -->
+    <div class="objective-banner" id="objectiveBanner">
+      <div class="objective-info">
+        <div class="objective-label">🎯 Objectif actif</div>
+        <div class="objective-name" id="objectiveName">—</div>
+        <div class="objective-days" id="objectiveDaysLeft">—</div>
+      </div>
+      <div class="objective-progress">
+        <div class="objective-pct" id="objectivePct">0%</div>
+        <div class="objective-pct-label">progression</div>
+      </div>
+    </div>
+
+    <!-- Banner Difficulté -->
+    <div class="difficulty-banner" id="difficultyBanner">
+      <span id="difficultyBannerText"></span>
+      <button class="diff-reset-btn" onclick="resetDifficulty()">Réinitialiser</button>
+    </div>
+
+    <!-- Pénalité -->
+    <div id="penaltyContainer"></div>
+
+    <!-- Message système -->
+    <div class="advice-card" id="adviceCard" style="display:none">
+      <div class="advice-title">⚔️ Message du Système</div>
+      <div class="advice-text" id="adviceText"></div>
+    </div>
+
+    <!-- Activité sportive -->
+    <div class="activity-block">
+      <div class="activity-title">🏃 Activité du jour</div>
+      <div class="activity-subtitle">Tu as couru ou joué au badminton ? Valide ici — les quêtes de renforcement sont pour tes jours off.</div>
+      <div class="activity-buttons">
+        <button class="activity-btn" id="btnRun" onclick="validateActivity('course')">🏃 Course</button>
+        <button class="activity-btn" id="btnBadminton" onclick="validateActivity('badminton')">🏸 Badminton</button>
+      </div>
+      <div class="activity-done" id="activityDone">
+        ✅ <span id="activityDoneText"></span> — Journée complète validée !
+      </div>
+    </div>
+
+    <!-- Bouton Générer -->
+    <button class="generate-btn" id="generateBtn" onclick="generateProgram()">
+      ⚡ Générer Programme Quotidien
+    </button>
+
+    <!-- Quêtes -->
+    <div id="questsContainer">
+      <div style="text-align:center;color:#4a4aff;padding:40px 0;font-size:14px;">
+        Lance la génération pour recevoir tes quêtes du jour ⚔️
+      </div>
+    </div>
+
+    <!-- Bouton Feedback difficulté -->
+    <button class="generate-btn" id="feedbackBtn" onclick="openDifficulty()"
+      style="display:none;background:linear-gradient(135deg,#1a1a3e,#2a2a5a);border:1px solid #4a4aff;font-size:13px;padding:12px;letter-spacing:1px;">
+      📊 Donner mon feedback sur la difficulté
+    </button>
+
+    <hr class="section-divider">
+
+    <!-- Bouton Objectif -->
+    <button class="objective-btn" onclick="openObjective()">🎯 Définir un objectif musculaire</button>
+
+    <!-- Bouton Blessure -->
+    <button class="hospital-btn" onclick="openHospital()">🏥 Signaler une blessure</button>
+
+  </div>
+
+</body>
+<script>
+  // ========== STATE ==========
+  let state = {
+    apiKey: '',
+    username: 'Chasseur',
+    level: 1,
+    xp: 0,
+    xpToNext: 500,
+    streak: 0,
+    totalCompleted: 0,
+    lastGeneratedDate: null,
+    lastStreakDate: null,
+    todayQuests: [],
+    questsCompleted: [],
+    injury: null,
+    penaltyActive: false,
+    penaltyTask: null,
+    penaltyDeadline: null,
+    penaltyDone: false,
+    activityValidated: null,
+    activityDate: null,
+    difficultyOffset: 0,
+    difficultyFeedback: null,
+    objective: null
+  };
+
+  // ========== INIT ==========
+  function init() {
+    const saved = localStorage.getItem('soloLevelingState');
+    if (saved) state = { ...state, ...JSON.parse(saved) };
+    updateUI();
+    checkPenalty();
+    if (state.lastGeneratedDate === getTodayStr() && state.todayQuests.length > 0) {
+      renderQuests();
+      if (state.todayQuests[0]?.advice) showAdvice(state.todayQuests[0].advice);
+      document.getElementById('generateBtn').disabled = true;
+      document.getElementById('generateBtn').textContent = '✅ Programme généré aujourd\'hui';
+      document.getElementById('feedbackBtn').style.display = 'block';
+    }
+    if (state.injury) {
+      document.getElementById('injuryBanner').classList.add('active');
+      document.getElementById('injuryText').textContent = state.injury;
+    }
+    if (state.activityDate === getTodayStr() && state.activityValidated) {
+      updateActivityUI(state.activityValidated);
+    }
+    updateObjectiveBanner();
+    updateDifficultyBanner();
+  }
+
+  function getTodayStr() {
+    return new Date().toISOString().split('T')[0];
+  }
+
+  function saveState() {
+    localStorage.setItem('soloLevelingState', JSON.stringify(state));
+  }
+
+  // ========== UI ==========
+  function updateUI() {
+    document.getElementById('levelDisplay').textContent = state.level;
+    document.getElementById('statLevel').textContent = state.level;
+    document.getElementById('statStreak').textContent = state.streak;
+    document.getElementById('statCompleted').textContent = state.totalCompleted;
+    document.getElementById('streakDisplay').textContent = state.streak;
+    document.getElementById('xpDisplay').textContent = state.xp;
+    document.getElementById('xpNextDisplay').textContent = state.xpToNext;
+    const pct = Math.min(100, (state.xp / state.xpToNext) * 100);
+    document.getElementById('xpBarFill').style.width = pct + '%';
+  }
+
+  function showToast(msg, type = '') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast ' + type;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3500);
+  }
+
+  function showAdvice(text) {
+    document.getElementById('adviceText').textContent = text;
+    document.getElementById('adviceCard').style.display = 'block';
+  }
+
+  // ========== SETTINGS ==========
+  function openSettings() {
+    document.getElementById('apiKeyInput').value = state.apiKey || '';
+    document.getElementById('usernameInput').value = state.username || '';
+    document.getElementById('settingsModal').classList.add('active');
+  }
+  function closeSettings() {
+    document.getElementById('settingsModal').classList.remove('active');
+  }
+  function saveSettings() {
+    state.apiKey = document.getElementById('apiKeyInput').value.trim();
+    state.username = document.getElementById('usernameInput').value.trim() || 'Chasseur';
+    saveState();
+    closeSettings();
+    showToast('✅ Paramètres sauvegardés', 'success');
+  }
+
+  // ========== HOSPITAL ==========
+  function openHospital() {
+    document.getElementById('injuryInput').value = state.injury || '';
+    document.getElementById('hospitalModal').classList.add('active');
+  }
+  function closeHospital() {
+    document.getElementById('hospitalModal').classList.remove('active');
+  }
+  function saveInjury() {
+    const injury = document.getElementById('injuryInput').value.trim();
+    if (injury) {
+      state.injury = injury;
+      document.getElementById('injuryBanner').classList.add('active');
+      document.getElementById('injuryText').textContent = injury;
+      saveState();
+      showToast('🏥 Blessure enregistrée', 'success');
+    }
+    closeHospital();
+  }
+  function clearInjury() {
+    state.injury = null;
+    document.getElementById('injuryBanner').classList.remove('active');
+    saveState();
+    closeHospital();
+    showToast('✅ Blessure supprimée', 'success');
+  }
+
+  // ========== OBJECTIVE ==========
+  let selectedObjectiveTag = null;
+
+  function openObjective() {
+    selectedObjectiveTag = state.objective?.target || null;
+    document.querySelectorAll('.tag-btn').forEach(b => {
+      b.classList.toggle('selected', b.dataset.val === selectedObjectiveTag);
+    });
+    document.getElementById('objectiveDuration').value = state.objective?.durationDays || 14;
+    document.getElementById('objectiveNote').value = state.objective?.note || '';
+    document.getElementById('objectiveModal').classList.add('active');
+  }
+  function closeObjective() {
+    document.getElementById('objectiveModal').classList.remove('active');
+  }
+  function selectObjectiveTag(btn) {
+    document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    selectedObjectiveTag = btn.dataset.val;
+  }
+  function saveObjective() {
+    if (!selectedObjectiveTag) {
+      showToast('⚠️ Sélectionne une zone musculaire', 'error');
+      return;
+    }
+    const days = parseInt(document.getElementById('objectiveDuration').value);
+    const note = document.getElementById('objectiveNote').value.trim();
+    const endDate = new Date();
+    endDate.setDate(endDate.getDate() + days);
+    state.objective = {
+      target: selectedObjectiveTag,
+      startDate: getTodayStr(),
+      endDate: endDate.toISOString().split('T')[0],
+      durationDays: days,
+      note: note
+    };
+    saveState();
+    updateObjectiveBanner();
+    closeObjective();
+    showToast('🎯 Objectif activé : ' + selectedObjectiveTag, 'success');
+  }
+  function clearObjective() {
+    state.objective = null;
+    saveState();
+    updateObjectiveBanner();
+    closeObjective();
+    showToast('Objectif supprimé', '');
+  }
+  function updateObjectiveBanner() {
+    const banner = document.getElementById('objectiveBanner');
+    if (!state.objective) { banner.classList.remove('active'); return; }
+    const today = new Date(getTodayStr());
+    const end = new Date(state.objective.endDate);
+    const start = new Date(state.objective.startDate);
+    const totalDays = state.objective.durationDays;
+    const elapsed = Math.max(0, Math.round((today - start) / 86400000));
+    const remaining = Math.max(0, Math.round((end - today) / 86400000));
+    const pct = Math.min(100, Math.round((elapsed / totalDays) * 100));
+    if (remaining <= 0) {
+      state.objective = null;
+      saveState();
+      banner.classList.remove('active');
+      showToast('🏆 Objectif terminé ! Bien joué.', 'success');
+      return;
+    }
+    document.getElementById('objectiveName').textContent =
+      '🎯 ' + state.objective.target.charAt(0).toUpperCase() + state.objective.target.slice(1);
+    document.getElementById('objectiveDaysLeft').textContent = remaining + ' jour(s) restant(s)';
+    document.getElementById('objectivePct').textContent = pct + '%';
+    banner.classList.add('active');
+  }
+
+  // ========== DIFFICULTY ==========
+  function openDifficulty() {
+    document.getElementById('difficultyModal').classList.add('active');
+  }
+  function closeDifficulty() {
+    document.getElementById('difficultyModal').classList.remove('active');
+  }
+  function submitDifficulty(level) {
+    state.difficultyFeedback = level;
+    if (level === 'easy') {
+      state.difficultyOffset = Math.min(2, state.difficultyOffset + 1);
+      showToast('💪 Noté ! Le prochain programme sera plus intense.', 'success');
+    } else if (level === 'hard') {
+      state.difficultyOffset = Math.max(-2, state.difficultyOffset - 1);
+      showToast('👍 Noté ! Le prochain programme sera allégé.', 'success');
+    } else {
+      showToast('✅ Parfait ! On maintient ce niveau.', 'success');
+    }
+    saveState();
+    updateDifficultyBanner();
+    closeDifficulty();
+  }
+  function resetDifficulty() {
+    state.difficultyOffset = 0;
+    state.difficultyFeedback = null;
+    saveState();
+    updateDifficultyBanner();
+    showToast('Difficulté réinitialisée', '');
+  }
+  function updateDifficultyBanner() {
+    const banner = document.getElementById('difficultyBanner');
+    const txt = document.getElementById('difficultyBannerText');
+    if (state.difficultyOffset === 0) { banner.classList.remove('active'); return; }
+    if (state.difficultyOffset < 0) {
+      banner.className = 'difficulty-banner active hard';
+      txt.textContent = '🔥 Volume réduit (difficulté -' + Math.abs(state.difficultyOffset) + ')';
+    } else {
+      banner.className = 'difficulty-banner active easy';
+      txt.textContent = '😴 Volume augmenté (difficulté +' + state.difficultyOffset + ')';
+    }
+  }
+
+  // ========== PENALTY ==========
+  function checkPenalty() {
+    if (!state.penaltyActive || state.penaltyDone) {
+      document.getElementById('penaltyContainer').innerHTML = '';
+      return;
+    }
+    renderPenalty();
+  }
+  function renderPenalty() {
+    if (!state.penaltyActive || state.penaltyDone) return;
+    const deadline = new Date(state.penaltyDeadline);
+    const now = new Date();
+    const diff = deadline - now;
+    if (diff <= 0) { document.getElementById('penaltyContainer').innerHTML = ''; return; }
+    const h = Math.floor(diff / 3600000);
+    const m = Math.floor((diff % 3600000) / 60000);
+    document.getElementById('penaltyContainer').innerHTML = `
+      <div class="penalty-card">
+        <div class="penalty-title">⚠️ PÉNALITÉ ACTIVE</div>
+        <div class="penalty-task">${state.penaltyTask}</div>
+        <div class="penalty-timer">⏱ ${h}h ${m}m restantes</div>
+        <button onclick="completePenalty()"
+          style="margin-top:10px;background:#ff4444;border:none;border-radius:6px;padding:8px 16px;color:white;cursor:pointer;font-size:12px;">
+          ✅ Pénalité accomplie
+        </button>
+      </div>`;
+    setTimeout(renderPenalty, 60000);
+  }
+  function completePenalty() {
+    state.penaltyDone = true;
+    state.penaltyActive = false;
+    saveState();
+    document.getElementById('penaltyContainer').innerHTML = '';
+    showToast('💪 Pénalité accomplie !', 'success');
+  }
+
+  // ========== XP & LEVEL ==========
+  function addXP(amount) {
+    state.xp += amount;
+    while (state.xp >= state.xpToNext) {
+      state.xp -= state.xpToNext;
+      state.level += 1;
+      state.xpToNext = Math.floor(state.xpToNext * 1.2);
+      showToast('🎉 NIVEAU ' + state.level + ' ATTEINT !', 'success');
+    }
+    updateUI();
+    saveState();
+  }
+
+  // ========== QUEST COMPLETION ==========
+  function toggleQuest(index) {
+    if (state.questsCompleted[index]) return;
+    state.questsCompleted[index] = true;
+    state.totalCompleted += 1;
+    const xpGain = state.todayQuests[index]?.xp || 100;
+    addXP(xpGain);
+    showToast('+' + xpGain + ' XP gagné ! 💪', 'success');
+    const allDone = state.todayQuests.every((_, i) => state.questsCompleted[i]);
+    if (allDone) {
+      state.streak += 1;
+      saveState();
+      updateUI();
+      showToast('🔥 Toutes les quêtes accomplies ! Série : ' + state.streak, 'success');
+    } else {
+      saveState();
+    }
+    renderQuests();
+  }
+
+  // ========== RENDER QUESTS ==========
+  function renderQuests() {
+    const container = document.getElementById('questsContainer');
+    if (!state.todayQuests || state.todayQuests.length === 0) return;
+    let html = `<div class="section-title">Quêtes du Jour</div>
+                <div class="section-subtitle">Micro-sessions • Fais-les quand tu veux dans la journée</div>`;
+    state.todayQuests.forEach((q, i) => {
+      if (q.type === 'advice') return;
+      const done = state.questsCompleted[i];
+      const badgeClass = q.category === 'recovery' ? 'badge-recovery' : 'badge-muscle';
+      const badgeLabel = q.category === 'recovery' ? '🌿 Récupération' : '💪 Renforcement';
+      html += `
+        <div class="quest-card ${done ? 'completed' : ''}" onclick="toggleQuest(${i})">
+          <div class="quest-header">
+            <div class="quest-checkbox">${done ? '✓' : ''}</div>
+            <div class="quest-info">
+              <div class="quest-name">${q.name}</div>
+              <div class="quest-desc">${q.description}</div>
+              <div class="quest-footer">
+                <div class="quest-xp">+${q.xp} XP</div>
+                <div class="quest-type-badge ${badgeClass}">${badgeLabel}</div>
+              </div>
+            </div>
+          </div>
+        </div>`;
+    });
+    container.innerHTML = html;
+  }
+
+  // ========== ACTIVITY ==========
+  function validateActivity(type) {
+    if (state.activityValidated && state.activityDate === getTodayStr()) return;
+    state.activityValidated = type;
+    state.activityDate = getTodayStr();
+    let xpTotal = 0;
+    if (state.todayQuests && state.todayQuests.length > 0) {
+      state.todayQuests.forEach((q, i) => {
+        if (!state.questsCompleted[i]) {
+          state.questsCompleted[i] = true;
+          state.totalCompleted += 1;
+          xpTotal += q.xp || 100;
+        }
+      });
+      renderQuests();
+    } else {
+      xpTotal = 400;
+    }
+    if (xpTotal > 0) addXP(xpTotal);
+    state.streak += 1;
+    saveState();
+    updateUI();
+    updateActivityUI(type);
+    showToast('🔥 ' + (type === 'course' ? 'Course' : 'Badminton') + ' validé ! +' + xpTotal + ' XP !', 'success');
+  }
+
+  function updateActivityUI(type) {
+    const label = type === 'course' ? 'Course validée' : 'Badminton validé';
+    document.getElementById('activityDoneText').textContent = label;
+    document.getElementById('activityDone').style.display = 'block';
+    document.getElementById('btnRun').classList.toggle('active', type === 'course');
+    document.getElementById('btnBadminton').classList.toggle('active', type === 'badminton');
+    document.getElementById('btnRun').disabled = true;
+    document.getElementById('btnBadminton').disabled = true;
+  }
+</script>
+<script>
+  // ========== VOLUME GUIDE avec offset difficulté ==========
+  function getVolumeGuide() {
+    const level = state.level;
+    const offset = state.difficultyOffset || 0;
+    const effective = Math.max(1, level + offset);
+
+    if (effective <= 2) {
+      return `Niveau débutant strict. Volume : pompes 2x8, squats 2x12, planche 2x20sec. Max 4 min par quête.`;
+    } else if (effective <= 4) {
+      return `Niveau débutant. Volume : pompes 3x10, squats 3x15, planche 3x30sec. Max 5 min par quête.`;
+    } else if (effective <= 6) {
+      return `Niveau débutant confirmé. Volume : pompes 3x12, squats 3x18, planche 3x40sec, dips 3x8. Max 6 min par quête.`;
+    } else if (effective <= 8) {
+      return `Niveau intermédiaire bas. Volume : pompes 3x15, squats 3x20, planche 3x45sec, dips 3x10. Max 7 min par quête.`;
+    } else if (effective <= 10) {
+      return `Niveau intermédiaire. Volume : pompes 4x15, squats 4x20, planche 3x60sec, fentes 3x12. Max 8 min par quête.`;
+    } else if (effective <= 13) {
+      return `Niveau intermédiaire confirmé. Volume : pompes 4x18, squats 4x22, planche 4x60sec, dips 4x12. Max 9 min par quête.`;
+    } else if (effective <= 16) {
+      return `Niveau avancé bas. Volume : pompes 4x20, squats 4x25, planche 4x75sec, dips 4x15. Max 10 min par quête.`;
+    } else {
+      return `Niveau avancé. Volume : pompes 5x20, squats 5x25, planche 4x90sec, dips 4x20. Max 10 min par quête.`;
+    }
+  }
+
+  // ========== PROMPT ==========
+  function buildPrompt() {
+    const level = state.level;
+    const injury = state.injury
+      ? `Blessure active : ${state.injury}. Adapte les exercices en conséquence, évite toute sollicitation de la zone blessée.`
+      : 'Aucune blessure.';
+    const volumeGuide = getVolumeGuide();
+
+    let objectiveInstruction = '';
+    if (state.objective) {
+      const daysLeft = Math.max(0, Math.round(
+        (new Date(state.objective.endDate) - new Date(getTodayStr())) / 86400000
+      ));
+      objectiveInstruction = `
+OBJECTIF MUSCULAIRE ACTIF (priorité haute) :
+- Zone cible : ${state.objective.target}
+- Jours restants : ${daysLeft} / ${state.objective.durationDays}
+- Note du chasseur : ${state.objective.note || 'aucune'}
+- CONSIGNE : Au moins 2 des 3 quêtes de renforcement DOIVENT cibler "${state.objective.target}". Varie les exercices pour cette zone.`;
+    }
+
+    let difficultyNote = '';
+    if (state.difficultyOffset > 0) {
+      difficultyNote = `NOTE DIFFICULTÉ : Le chasseur a trouvé les sessions précédentes trop faciles. Applique le volume indiqué sans le réduire.`;
+    } else if (state.difficultyOffset < 0) {
+      difficultyNote = `NOTE DIFFICULTÉ : Le chasseur a trouvé les sessions précédentes trop difficiles. Reste dans la fourchette basse du volume indiqué.`;
+    }
+
+    return `Tu es le système d'un jeu RPG de progression physique. Tu génères le programme quotidien d'un chasseur de rang ${level}.
+
+PROFIL DU CHASSEUR :
+- Niveau actuel : ${level}
+- Série en cours : ${state.streak} jours
+- ${injury}
+- ${volumeGuide}
+${difficultyNote}
+${objectiveInstruction}
+
+RÈGLES ABSOLUES :
+1. Génère exactement 4 quêtes : 3 de renforcement musculaire + 1 de récupération (étirement OU respiration).
+2. Chaque quête doit être réalisable en micro-session de 5 à 10 minutes maximum, n'importe quand dans la journée.
+3. Les exercices sont uniquement au poids du corps : pompes, squats, fentes, planche, dips, gainage, pompes diamant, pompes déclinées, mountain climbers, burpees (sans saut si blessure), etc.
+4. INTERDIT : course à pied, marche, vélo, natation, ou tout exercice cardio prolongé.
+5. La progression doit être réaliste et progressive selon le niveau et le volume guide fourni.
+6. Les noms des quêtes doivent être courts, sobres et motivants (2-3 mots max). Style coach sportif ou militaire. Exemples : 'Protocole Force', 'Série Acier', 'Endurance Pure', 'Récupération Active'. Pas de noms fantasy ou RPG.
+7. Les descriptions doivent être claires et précises, avec les séries et répétitions exactes.
+8. Les valeurs XP doivent être proportionnelles au volume : entre 80 et 150 XP par quête selon l'effort.
+
+Réponds UNIQUEMENT avec ce JSON valide, sans texte avant ni après :
+{
+  "advice": "Message motivant et direct de 2 phrases maximum pour ce chasseur de rang ${level}.",
+  "quests": [
+    {
+      "name": "Nom court",
+      "description": "X séries de Y répétitions de [exercice]. Conseil de forme en 1 phrase.",
+      "xp": 100,
+      "category": "muscle"
+    },
+    {
+      "name": "Nom court",
+      "description": "X séries de Y répétitions de [exercice]. Conseil de forme en 1 phrase.",
+      "xp": 110,
+      "category": "muscle"
+    },
+    {
+      "name": "Nom court",
+      "description": "X séries de Y répétitions de [exercice]. Conseil de forme en 1 phrase.",
+      "xp": 105,
+      "category": "muscle"
+    },
+    {
+      "name": "Récupération Active",
+      "description": "Étirement ou exercice de respiration. Durée max 5 min.",
+      "xp": 80,
+      "category": "recovery"
+    }
+  ]
+}`;
+  }
+
+  // ========== GENERATE ==========
+  async function generateProgram() {
+    if (!state.apiKey) {
+      openSettings();
+      showToast('⚙️ Entre ta clé API d\'abord', 'error');
+      return;
+    }
+    const btn = document.getElementById('generateBtn');
+    btn.disabled = true;
+    document.getElementById('loadingOverlay').classList.add('active');
+    document.getElementById('loadingText').textContent = 'Le système génère tes quêtes...';
+
+    try {
+      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${state.apiKey}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          model: 'openai/gpt-oss-120b:free',
+          messages: [{ role: 'user', content: buildPrompt() }],
+          temperature: 0.7,
+          max_tokens: 900
+        })
+      });
+
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error?.message || 'Erreur API ' + response.status);
+      }
+
+      const data = await response.json();
+      let raw = data.choices[0].message.content.trim();
+      raw = raw.replace(/```json/g, '').replace(/```/g, '').trim();
+      const start = raw.indexOf('{');
+      const end = raw.lastIndexOf('}');
+      if (start === -1 || end === -1) throw new Error('JSON introuvable dans la réponse');
+      raw = raw.substring(start, end + 1);
+
+      const parsed = JSON.parse(raw);
+      if (!parsed.quests || parsed.quests.length !== 4) throw new Error('Format de quêtes invalide');
+
+      state.todayQuests = parsed.quests;
+      state.todayQuests[0].advice = parsed.advice;
+      state.questsCompleted = new Array(4).fill(false);
+      state.lastGeneratedDate = getTodayStr();
+
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      const yStr = yesterday.toISOString().split('T')[0];
+      if (state.lastStreakDate && state.lastStreakDate !== yStr && state.lastStreakDate !== getTodayStr()) {
+        state.streak = 0;
+      }
+
+      saveState();
+      showAdvice(parsed.advice);
+      renderQuests();
+      btn.textContent = '✅ Programme généré aujourd\'hui';
+      document.getElementById('feedbackBtn').style.display = 'block';
+      showToast('⚡ Quêtes générées ! Au combat !', 'success');
+
+    } catch (e) {
+      btn.disabled = false;
+      btn.textContent = '⚡ Générer Programme Quotidien';
+      showToast('❌ Erreur : ' + e.message, 'error');
+    } finally {
+      document.getElementById('loadingOverlay').classList.remove('active');
+    }
+  }
+
+  // ========== START ==========
+  init();
+</script>
+</html>
