@@ -1,1862 +1,2220 @@
-  <!DOCTYPE html>
-  <html lang="fr">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hunter System</title>
-    <style>
-      * { margin:0; padding:0; box-sizing:border-box; }
-      :root {
-        --bg: #0f1923; --bg2: #1a2535; --bg3: #1e2d42;
-        --accent: #00d4ff; --accent2: #0099cc;
-        --green: #2ed573; --orange: #ffa502; --red: #ff4757;
-        --purple: #a29bfe; --gold: #ffd700; --text: #e0e0e0; --muted: #7f8c9a;
-        --nav-h: 65px;
-      }
-      body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding-bottom: var(--nav-h); }
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hunter System</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    :root {
+      --bg: #0f1923; --bg2: #1a2535; --bg3: #1e2d42;
+      --accent: #00d4ff; --accent2: #0099cc;
+      --green: #2ed573; --orange: #ffa502; --red: #ff4757;
+      --purple: #a29bfe; --gold: #ffd700; --text: #e0e0e0; --muted: #7f8c9a;
+      --nav-h: 65px;
+    }
+    body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding-bottom: var(--nav-h); }
 
-      /* ===== HEADER ===== */
-      .header {
-        background: var(--bg2); padding: 14px 16px 10px;
-        border-bottom: 1px solid rgba(0,212,255,0.15);
-        position: sticky; top: 0; z-index: 100;
-      }
-      .header-row1 { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-      .lvl-badge {
-        background: linear-gradient(135deg, var(--accent), var(--accent2));
-        color: #fff; font-weight: 800; font-size: 0.95em;
-        padding: 6px 14px; border-radius: 20px; letter-spacing: 1px;
-      }
-      .header-right { display: flex; align-items: center; gap: 10px; }
-      .streak-badge {
-        background: rgba(255,165,2,0.15); border: 1px solid var(--orange);
-        color: var(--orange); padding: 5px 12px; border-radius: 20px;
-        font-weight: 700; font-size: 0.9em;
-      }
-      .cycle-badge {
-        background: rgba(162,155,254,0.15); border: 1px solid var(--purple);
-        color: var(--purple); padding: 5px 10px; border-radius: 20px;
-        font-weight: 700; font-size: 0.82em; white-space: nowrap;
-      }
-      .settings-ico {
-        background: rgba(255,255,255,0.08); border: none; color: var(--text);
-        width: 36px; height: 36px; border-radius: 10px; cursor: pointer;
-        font-size: 1.1em; transition: background 0.2s;
-      }
-      .settings-ico:hover { background: rgba(255,255,255,0.15); }
-      .xp-row { display: flex; align-items: center; gap: 10px; }
-      .xp-label { font-size: 0.78em; color: var(--muted); white-space: nowrap; }
-      .xp-bar-wrap { flex: 1; height: 8px; background: rgba(0,0,0,0.4); border-radius: 4px; overflow: hidden; }
-      .xp-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 4px; transition: width 0.5s; }
+    /* ===== HEADER ===== */
+    .header {
+      background: var(--bg2); padding: 14px 16px 10px;
+      border-bottom: 1px solid rgba(0,212,255,0.15);
+      position: sticky; top: 0; z-index: 100;
+    }
+    .header-row1 { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+    .lvl-badge {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff; font-weight: 800; font-size: 0.95em;
+      padding: 6px 14px; border-radius: 20px; letter-spacing: 1px;
+    }
+    .header-right { display: flex; align-items: center; gap: 10px; }
+    .streak-badge {
+      background: rgba(255,165,2,0.15); border: 1px solid var(--orange);
+      color: var(--orange); padding: 5px 12px; border-radius: 20px;
+      font-weight: 700; font-size: 0.9em;
+    }
+    .cycle-badge {
+      background: rgba(162,155,254,0.15); border: 1px solid var(--purple);
+      color: var(--purple); padding: 5px 10px; border-radius: 20px;
+      font-weight: 700; font-size: 0.82em; white-space: nowrap;
+    }
+    .settings-ico {
+      background: rgba(255,255,255,0.08); border: none; color: var(--text);
+      width: 36px; height: 36px; border-radius: 10px; cursor: pointer;
+      font-size: 1.1em; transition: background 0.2s;
+    }
+    .settings-ico:hover { background: rgba(255,255,255,0.15); }
+    .xp-row { display: flex; align-items: center; gap: 10px; }
+    .xp-label { font-size: 0.78em; color: var(--muted); white-space: nowrap; }
+    .xp-bar-wrap { flex: 1; height: 8px; background: rgba(0,0,0,0.4); border-radius: 4px; overflow: hidden; }
+    .xp-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 4px; transition: width 0.5s; }
 
-      /* ===== PAGES ===== */
-      .page { display: none; padding: 16px; animation: fadeIn 0.25s ease; }
-      .page.active { display: block; }
-      @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+    /* ===== PAGES ===== */
+    .page { display: none; padding: 16px; animation: fadeIn 0.25s ease; }
+    .page.active { display: block; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
 
-      /* ===== DECHARGE BANNER ===== */
-      .decharge-banner {
-        background: linear-gradient(135deg, rgba(162,155,254,0.15), rgba(124,58,237,0.1));
-        border: 1px solid rgba(162,155,254,0.4); border-radius: 12px;
-        padding: 12px 14px; margin-bottom: 14px;
-        display: flex; align-items: center; gap: 12px;
-      }
-      .decharge-banner-icon { font-size: 1.6em; }
-      .decharge-banner-title { font-size: 0.85em; font-weight: 700; color: var(--purple); margin-bottom: 2px; }
-      .decharge-banner-desc { font-size: 0.78em; color: var(--muted); }
+    /* ===== DECHARGE BANNER ===== */
+    .decharge-banner {
+      background: linear-gradient(135deg, rgba(162,155,254,0.15), rgba(124,58,237,0.1));
+      border: 1px solid rgba(162,155,254,0.4); border-radius: 12px;
+      padding: 12px 14px; margin-bottom: 14px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .decharge-banner-icon { font-size: 1.6em; }
+    .decharge-banner-title { font-size: 0.85em; font-weight: 700; color: var(--purple); margin-bottom: 2px; }
+    .decharge-banner-desc { font-size: 0.78em; color: var(--muted); }
 
-      /* ===== TEST MENSUEL BANNER ===== */
-      .test-banner {
-        background: linear-gradient(135deg, rgba(255,215,0,0.12), rgba(255,165,2,0.08));
-        border: 1px solid rgba(255,215,0,0.4); border-radius: 12px;
-        padding: 12px 14px; margin-bottom: 14px;
-        display: flex; align-items: center; justify-content: space-between; gap: 10px;
-      }
-      .test-banner-left { display: flex; align-items: center; gap: 10px; }
-      .test-banner-icon { font-size: 1.5em; }
-      .test-banner-title { font-size: 0.85em; font-weight: 700; color: var(--gold); margin-bottom: 2px; }
-      .test-banner-desc { font-size: 0.76em; color: var(--muted); }
-      .test-banner-btn {
-        background: rgba(255,215,0,0.15); border: 1px solid var(--gold);
-        color: var(--gold); padding: 7px 14px; border-radius: 20px;
-        font-weight: 700; font-size: 0.8em; cursor: pointer; white-space: nowrap;
-        transition: all 0.2s;
-      }
-      .test-banner-btn:hover { background: rgba(255,215,0,0.25); }
+    /* ===== TEST MENSUEL BANNER ===== */
+    .test-banner {
+      background: linear-gradient(135deg, rgba(255,215,0,0.12), rgba(255,165,2,0.08));
+      border: 1px solid rgba(255,215,0,0.4); border-radius: 12px;
+      padding: 12px 14px; margin-bottom: 14px;
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    }
+    .test-banner-left { display: flex; align-items: center; gap: 10px; }
+    .test-banner-icon { font-size: 1.5em; }
+    .test-banner-title { font-size: 0.85em; font-weight: 700; color: var(--gold); margin-bottom: 2px; }
+    .test-banner-desc { font-size: 0.76em; color: var(--muted); }
+    .test-banner-btn {
+      background: rgba(255,215,0,0.15); border: 1px solid var(--gold);
+      color: var(--gold); padding: 7px 14px; border-radius: 20px;
+      font-weight: 700; font-size: 0.8em; cursor: pointer; white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .test-banner-btn:hover { background: rgba(255,215,0,0.25); }
 
-      /* ===== HOME ===== */
-      .focus-banner {
-        background: linear-gradient(135deg, rgba(124,58,237,0.15), rgba(79,70,229,0.1));
-        border: 1px solid rgba(124,58,237,0.3); border-radius: 12px;
-        padding: 12px 14px; margin-bottom: 14px; display: flex;
-        align-items: center; justify-content: space-between;
-      }
-      .focus-banner-label { font-size: 0.75em; color: var(--muted); margin-bottom: 3px; }
-      .focus-banner-val { font-size: 1em; font-weight: 700; color: #c4b5fd; }
-      .focus-banner-day { font-size: 0.8em; color: var(--muted); text-transform: capitalize; }
+    /* ===== HOME ===== */
+    .focus-banner {
+      background: linear-gradient(135deg, rgba(124,58,237,0.15), rgba(79,70,229,0.1));
+      border: 1px solid rgba(124,58,237,0.3); border-radius: 12px;
+      padding: 12px 14px; margin-bottom: 14px; display: flex;
+      align-items: center; justify-content: space-between;
+    }
+    .focus-banner-label { font-size: 0.75em; color: var(--muted); margin-bottom: 3px; }
+    .focus-banner-val { font-size: 1em; font-weight: 700; color: #c4b5fd; }
+    .focus-banner-day { font-size: 0.8em; color: var(--muted); text-transform: capitalize; }
 
-      .diff-badge {
-        display: flex; align-items: center; justify-content: space-between;
-        background: rgba(46,213,115,0.1); border: 1px solid var(--green);
-        border-radius: 10px; padding: 10px 14px; margin-bottom: 14px; font-size: 0.9em;
-      }
-      .diff-badge.hard { background: rgba(255,71,87,0.1); border-color: var(--red); }
-      .diff-badge.easy { background: rgba(46,213,115,0.1); border-color: var(--green); }
-      .diff-reset { background: rgba(255,255,255,0.1); border: none; color: var(--text); padding: 4px 10px; border-radius: 6px; cursor: pointer; font-size: 0.8em; }
+    .diff-badge {
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(46,213,115,0.1); border: 1px solid var(--green);
+      border-radius: 10px; padding: 10px 14px; margin-bottom: 14px; font-size: 0.9em;
+    }
+    .diff-badge.hard { background: rgba(255,71,87,0.1); border-color: var(--red); }
+    .diff-badge.easy { background: rgba(46,213,115,0.1); border-color: var(--green); }
+    .diff-reset { background: rgba(255,255,255,0.1); border: none; color: var(--text); padding: 4px 10px; border-radius: 6px; cursor: pointer; font-size: 0.8em; }
 
-      .card { background: var(--bg2); border-radius: 14px; padding: 16px; margin-bottom: 14px; border: 1px solid rgba(255,255,255,0.07); }
-      .card-title { font-size: 0.85em; color: var(--accent); font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+    .card { background: var(--bg2); border-radius: 14px; padding: 16px; margin-bottom: 14px; border: 1px solid rgba(255,255,255,0.07); }
+    .card-title { font-size: 0.85em; color: var(--accent); font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
 
-      .activity-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-      .act-btn {
-        background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1);
-        color: var(--text); padding: 12px; border-radius: 10px; cursor: pointer;
-        font-size: 0.95em; font-weight: 600; transition: all 0.2s; text-align: center;
-      }
-      .act-btn:hover { border-color: var(--orange); background: rgba(255,165,2,0.1); }
-      .act-btn small { display: block; color: var(--orange); font-size: 0.8em; margin-top: 3px; }
-      .act-btn.done { opacity: 0.55; border-color: var(--green); background: rgba(46,213,115,0.1); }
+    .activity-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .act-btn {
+      background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1);
+      color: var(--text); padding: 12px; border-radius: 10px; cursor: pointer;
+      font-size: 0.95em; font-weight: 600; transition: all 0.2s; text-align: center;
+    }
+    .act-btn:hover { border-color: var(--orange); background: rgba(255,165,2,0.1); }
+    .act-btn small { display: block; color: var(--orange); font-size: 0.8em; margin-top: 3px; }
+    .act-btn.done { opacity: 0.55; border-color: var(--green); background: rgba(46,213,115,0.1); }
 
-      .gen-btn {
-        width: 100%; padding: 18px; border-radius: 14px; border: none;
-        background: linear-gradient(135deg, #7c3aed, #4f46e5);
-        color: #fff; font-size: 1.15em; font-weight: 800; cursor: pointer;
-        letter-spacing: 0.5px; transition: all 0.3s; margin-bottom: 14px;
-        box-shadow: 0 4px 20px rgba(124,58,237,0.4);
-      }
-      .gen-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 28px rgba(124,58,237,0.6); }
-      .gen-btn:disabled { background: #2a3444; color: var(--muted); cursor: not-allowed; transform: none; box-shadow: none; }
-      .gen-btn.recovery { background: linear-gradient(135deg, #0891b2, #0e7490); box-shadow: 0 4px 20px rgba(8,145,178,0.4); }
-      .gen-btn.decharge { background: linear-gradient(135deg, #6d28d9, #5b21b6); box-shadow: 0 4px 20px rgba(109,40,217,0.4); }
+    .gen-btn {
+      width: 100%; padding: 18px; border-radius: 14px; border: none;
+      background: linear-gradient(135deg, #7c3aed, #4f46e5);
+      color: #fff; font-size: 1.15em; font-weight: 800; cursor: pointer;
+      letter-spacing: 0.5px; transition: all 0.3s; margin-bottom: 14px;
+      box-shadow: 0 4px 20px rgba(124,58,237,0.4);
+    }
+    .gen-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 28px rgba(124,58,237,0.6); }
+    .gen-btn:disabled { background: #2a3444; color: var(--muted); cursor: not-allowed; transform: none; box-shadow: none; }
+    .gen-btn.recovery { background: linear-gradient(135deg, #0891b2, #0e7490); box-shadow: 0 4px 20px rgba(8,145,178,0.4); }
+    .gen-btn.decharge { background: linear-gradient(135deg, #6d28d9, #5b21b6); box-shadow: 0 4px 20px rgba(109,40,217,0.4); }
 
-      .hint { text-align: center; color: var(--muted); font-size: 0.88em; padding: 10px; }
+    .hint { text-align: center; color: var(--muted); font-size: 0.88em; padding: 10px; }
 
-      .advice-card {
-        background: linear-gradient(135deg, rgba(0,212,255,0.08), rgba(0,153,204,0.05));
-        border: 1px solid rgba(0,212,255,0.25); border-radius: 12px;
-        padding: 14px; margin-bottom: 14px; display: none;
-      }
-      .advice-card.show { display: block; }
-      .advice-card p { font-size: 0.9em; line-height: 1.6; color: #cde; }
+    .advice-card {
+      background: linear-gradient(135deg, rgba(0,212,255,0.08), rgba(0,153,204,0.05));
+      border: 1px solid rgba(0,212,255,0.25); border-radius: 12px;
+      padding: 14px; margin-bottom: 14px; display: none;
+    }
+    .advice-card.show { display: block; }
+    .advice-card p { font-size: 0.9em; line-height: 1.6; color: #cde; }
 
-      .quest-card {
-        background: var(--bg2); border: 1px solid rgba(255,255,255,0.08);
-        border-radius: 14px; padding: 16px; margin-bottom: 12px; transition: all 0.2s;
-      }
-      .quest-card.done { opacity: 0.55; border-color: var(--green); }
-      .quest-card.test-quest { border-color: rgba(255,215,0,0.3); background: linear-gradient(135deg, rgba(255,215,0,0.05), var(--bg2)); }
-      .quest-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
-      .quest-name { font-weight: 700; font-size: 1.05em; }
-      .quest-xp { background: rgba(0,212,255,0.15); color: var(--accent); padding: 3px 10px; border-radius: 12px; font-size: 0.82em; font-weight: 700; white-space: nowrap; margin-left: 8px; }
-      .quest-xp.gold { background: rgba(255,215,0,0.15); color: var(--gold); }
-      .quest-timing {
-        display: inline-block; background: rgba(162,155,254,0.15); color: var(--purple);
-        padding: 2px 8px; border-radius: 8px; font-size: 0.72em; font-weight: 600;
-        margin-bottom: 8px; letter-spacing: 0.3px;
-      }
-      .quest-palier {
-        display: inline-block; background: rgba(255,215,0,0.12); color: var(--gold);
-        padding: 2px 8px; border-radius: 8px; font-size: 0.72em; font-weight: 600;
-        margin-bottom: 8px; margin-left: 6px; letter-spacing: 0.3px;
-      }
-      .quest-desc { color: #aab; font-size: 0.88em; line-height: 1.55; margin-bottom: 12px; }
-      .quest-btn {
-        width: 100%; padding: 11px; border-radius: 9px; border: none;
-        background: linear-gradient(135deg, var(--accent), var(--accent2));
-        color: #fff; font-weight: 700; cursor: pointer; font-size: 0.95em; transition: all 0.2s;
-      }
-      .quest-btn:hover { opacity: 0.85; }
-      .quest-btn:disabled { background: #2a3444; color: var(--muted); cursor: not-allowed; }
-      .quest-btn.gold-btn { background: linear-gradient(135deg, #b8860b, #daa520); }
+    .quest-card {
+      background: var(--bg2); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px; padding: 16px; margin-bottom: 12px; transition: all 0.2s;
+    }
+    .quest-card.done { opacity: 0.55; border-color: var(--green); }
+    .quest-card.test-quest { border-color: rgba(255,215,0,0.3); background: linear-gradient(135deg, rgba(255,215,0,0.05), var(--bg2)); }
+    .quest-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+    .quest-name { font-weight: 700; font-size: 1.05em; }
+    .quest-xp { background: rgba(0,212,255,0.15); color: var(--accent); padding: 3px 10px; border-radius: 12px; font-size: 0.82em; font-weight: 700; white-space: nowrap; margin-left: 8px; }
+    .quest-xp.gold { background: rgba(255,215,0,0.15); color: var(--gold); }
+    .quest-timing {
+      display: inline-block; background: rgba(162,155,254,0.15); color: var(--purple);
+      padding: 2px 8px; border-radius: 8px; font-size: 0.72em; font-weight: 600;
+      margin-bottom: 8px; letter-spacing: 0.3px;
+    }
+    .quest-palier {
+      display: inline-block; background: rgba(255,215,0,0.12); color: var(--gold);
+      padding: 2px 8px; border-radius: 8px; font-size: 0.72em; font-weight: 600;
+      margin-bottom: 8px; margin-left: 6px; letter-spacing: 0.3px;
+    }
+    .quest-desc { color: #aab; font-size: 0.88em; line-height: 1.55; margin-bottom: 12px; }
+    .quest-btn {
+      width: 100%; padding: 11px; border-radius: 9px; border: none;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff; font-weight: 700; cursor: pointer; font-size: 0.95em; transition: all 0.2s;
+    }
+    .quest-btn:hover { opacity: 0.85; }
+    .quest-btn:disabled { background: #2a3444; color: var(--muted); cursor: not-allowed; }
+    .quest-btn.gold-btn { background: linear-gradient(135deg, #b8860b, #daa520); }
 
-      /* ===== TEST RESULT MODAL CONTENT ===== */
-      .test-result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
-      .test-result-item { background: rgba(0,0,0,0.25); border-radius: 10px; padding: 12px; text-align: center; }
-      .test-result-label { font-size: 0.75em; color: var(--muted); margin-bottom: 6px; }
-      .test-result-input {
-        width: 100%; padding: 8px; background: rgba(0,0,0,0.3);
-        border: 1px solid rgba(255,255,255,0.15); border-radius: 8px;
-        color: var(--text); font-size: 1.1em; font-weight: 700; text-align: center;
-      }
-      .test-result-input:focus { outline: none; border-color: var(--gold); }
-      .test-prev { font-size: 0.72em; color: var(--muted); margin-top: 4px; }
+    /* ===== TEST RESULT MODAL ===== */
+    .test-result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+    .test-result-item { background: rgba(0,0,0,0.25); border-radius: 10px; padding: 12px; text-align: center; }
+    .test-result-label { font-size: 0.75em; color: var(--muted); margin-bottom: 6px; }
+    .test-result-input {
+      width: 100%; padding: 8px; background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.15); border-radius: 8px;
+      color: var(--text); font-size: 1.1em; font-weight: 700; text-align: center;
+    }
+    .test-result-input:focus { outline: none; border-color: var(--gold); }
+    .test-prev { font-size: 0.72em; color: var(--muted); margin-top: 4px; }
 
-      /* ===== PROGRESSION PAGE ===== */
-      .palier-card {
-        background: var(--bg2); border-radius: 12px; padding: 14px 16px;
-        margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.07);
-      }
-      .palier-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-      .palier-name { font-weight: 700; font-size: 0.95em; }
-      .palier-level { font-size: 0.78em; color: var(--muted); }
-      .palier-current {
-        display: inline-block; background: rgba(0,212,255,0.12); color: var(--accent);
-        padding: 3px 10px; border-radius: 8px; font-size: 0.8em; font-weight: 700; margin-bottom: 8px;
-      }
-      .palier-current.unlocked { background: rgba(46,213,115,0.12); color: var(--green); }
-      .palier-steps { display: flex; gap: 4px; flex-wrap: wrap; }
-      .palier-step {
-        padding: 4px 10px; border-radius: 6px; font-size: 0.75em; font-weight: 600;
-        background: rgba(0,0,0,0.3); color: var(--muted); border: 1px solid rgba(255,255,255,0.08);
-      }
-      .palier-step.done { background: rgba(46,213,115,0.12); color: var(--green); border-color: var(--green); }
-      .palier-step.current { background: rgba(0,212,255,0.15); color: var(--accent); border-color: var(--accent); }
+    /* ===== PROGRESSION PAGE ===== */
+    .palier-card {
+      background: var(--bg2); border-radius: 12px; padding: 14px 16px;
+      margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.07);
+    }
+    .palier-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .palier-name { font-weight: 700; font-size: 0.95em; }
+    .palier-level { font-size: 0.78em; color: var(--muted); }
+    .palier-current {
+      display: inline-block; background: rgba(0,212,255,0.12); color: var(--accent);
+      padding: 3px 10px; border-radius: 8px; font-size: 0.8em; font-weight: 700; margin-bottom: 8px;
+    }
+    .palier-current.unlocked { background: rgba(46,213,115,0.12); color: var(--green); }
+    .palier-steps { display: flex; gap: 4px; flex-wrap: wrap; }
+    .palier-step {
+      padding: 4px 10px; border-radius: 6px; font-size: 0.75em; font-weight: 600;
+      background: rgba(0,0,0,0.3); color: var(--muted); border: 1px solid rgba(255,255,255,0.08);
+    }
+    .palier-step.done { background: rgba(46,213,115,0.12); color: var(--green); border-color: var(--green); }
+    .palier-step.current { background: rgba(0,212,255,0.15); color: var(--accent); border-color: var(--accent); }
 
-      /* ===== CYCLE TRACKER ===== */
-      .cycle-tracker {
-        background: var(--bg2); border-radius: 14px; padding: 16px; margin-bottom: 14px;
-        border: 1px solid rgba(162,155,254,0.2);
-      }
-      .cycle-weeks { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin-top: 12px; }
-      .cycle-week {
-        background: rgba(0,0,0,0.25); border-radius: 10px; padding: 10px 6px;
-        text-align: center; border: 1px solid rgba(255,255,255,0.07);
-      }
-      .cycle-week.active { border-color: var(--accent); background: rgba(0,212,255,0.08); }
-      .cycle-week.decharge { border-color: var(--purple); background: rgba(162,155,254,0.08); }
-      .cycle-week.done { border-color: var(--green); background: rgba(46,213,115,0.06); }
-      .cycle-week-num { font-size: 0.72em; color: var(--muted); margin-bottom: 4px; }
-      .cycle-week-label { font-size: 0.8em; font-weight: 700; }
+    /* ===== CYCLE TRACKER ===== */
+    .cycle-tracker {
+      background: var(--bg2); border-radius: 14px; padding: 16px; margin-bottom: 14px;
+      border: 1px solid rgba(162,155,254,0.2);
+    }
+    .cycle-weeks { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin-top: 12px; }
+    .cycle-week {
+      background: rgba(0,0,0,0.25); border-radius: 10px; padding: 10px 6px;
+      text-align: center; border: 1px solid rgba(255,255,255,0.07);
+    }
+    .cycle-week.active { border-color: var(--accent); background: rgba(0,212,255,0.08); }
+    .cycle-week.decharge { border-color: var(--purple); background: rgba(162,155,254,0.08); }
+    .cycle-week.done { border-color: var(--green); background: rgba(46,213,115,0.06); }
+    .cycle-week-num { font-size: 0.72em; color: var(--muted); margin-bottom: 4px; }
+    .cycle-week-label { font-size: 0.8em; font-weight: 700; }
 
-      /* ===== TEST HISTORY ===== */
-      .test-history-item {
-        background: rgba(0,0,0,0.2); border-radius: 10px; padding: 12px 14px;
-        margin-bottom: 8px; border-left: 3px solid var(--gold);
-      }
-      .test-history-date { font-size: 0.75em; color: var(--muted); margin-bottom: 6px; }
-      .test-history-scores { display: flex; gap: 10px; flex-wrap: wrap; }
-      .test-history-score { font-size: 0.82em; color: var(--gold); font-weight: 700; }
+    /* ===== GRAPHIQUE SVG ===== */
+    .chart-card {
+      background: var(--bg2); border-radius: 14px; padding: 16px; margin-bottom: 14px;
+      border: 1px solid rgba(255,215,0,0.15);
+    }
+    .chart-title { font-size: 0.85em; color: var(--gold); font-weight: 700; margin-bottom: 14px; }
+    .chart-tabs { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+    .chart-tab {
+      padding: 5px 12px; border-radius: 20px; font-size: 0.78em; font-weight: 700;
+      border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2);
+      color: var(--muted); cursor: pointer; transition: all 0.2s;
+    }
+    .chart-tab.active { border-color: var(--gold); background: rgba(255,215,0,0.12); color: var(--gold); }
+    .chart-wrap { width: 100%; overflow-x: auto; }
+    .chart-empty { text-align: center; color: var(--muted); padding: 30px; font-size: 0.85em; }
 
-      /* ===== NIVEAU PAGE ===== */
-      .stats-list { display: flex; flex-direction: column; gap: 12px; }
-      .stat-row {
-        background: var(--bg2); border-radius: 12px; padding: 14px 16px;
-        border-left: 4px solid; display: flex; align-items: center; gap: 14px;
-      }
-      .stat-row.force { border-color: var(--red); }
-      .stat-row.endurance { border-color: var(--orange); }
-      .stat-row.agility { border-color: var(--accent); }
-      .stat-row.perception { border-color: var(--green); }
-      .stat-row.intelligence { border-color: var(--purple); }
-      .stat-icon { font-size: 1.4em; }
-      .stat-info { flex: 1; }
-      .stat-name { font-size: 0.78em; color: var(--muted); font-weight: 600; letter-spacing: 0.5px; margin-bottom: 4px; }
-      .stat-val { font-size: 1.5em; font-weight: 800; line-height: 1; margin-bottom: 6px; }
-      .stat-bar2 { height: 5px; background: rgba(0,0,0,0.4); border-radius: 3px; overflow: hidden; }
-      .stat-bar2-fill { height: 100%; border-radius: 3px; transition: width 0.5s; }
-      .stat-row.force .stat-bar2-fill { background: var(--red); }
-      .stat-row.endurance .stat-bar2-fill { background: var(--orange); }
-      .stat-row.agility .stat-bar2-fill { background: var(--accent); }
-      .stat-row.perception .stat-bar2-fill { background: var(--green); }
-      .stat-row.intelligence .stat-bar2-fill { background: var(--purple); }
-      .stat-xp-label { font-size: 0.75em; color: var(--muted); text-align: right; white-space: nowrap; }
+    /* ===== TEST HISTORY ===== */
+    .test-history-item {
+      background: rgba(0,0,0,0.2); border-radius: 10px; padding: 12px 14px;
+      margin-bottom: 8px; border-left: 3px solid var(--gold);
+    }
+    .test-history-date { font-size: 0.75em; color: var(--muted); margin-bottom: 6px; }
+    .test-history-scores { display: flex; gap: 10px; flex-wrap: wrap; }
+    .test-history-score { font-size: 0.82em; color: var(--gold); font-weight: 700; }
+    .test-history-delta { font-size: 0.75em; margin-left: 4px; }
+    .test-history-delta.up { color: var(--green); }
+    .test-history-delta.down { color: var(--red); }
 
-      .section-title { font-size: 1.1em; font-weight: 700; color: var(--accent); margin-bottom: 14px; margin-top: 6px; }
-      .section-subtitle { font-size: 0.82em; color: var(--muted); margin-bottom: 14px; margin-top: -8px; }
+    /* ===== NIVEAU PAGE ===== */
+    .stats-list { display: flex; flex-direction: column; gap: 12px; }
+    .stat-row {
+      background: var(--bg2); border-radius: 12px; padding: 14px 16px;
+      border-left: 4px solid; display: flex; align-items: center; gap: 14px;
+    }
+    .stat-row.force { border-color: var(--red); }
+    .stat-row.endurance { border-color: var(--orange); }
+    .stat-row.agility { border-color: var(--accent); }
+    .stat-row.perception { border-color: var(--green); }
+    .stat-row.intelligence { border-color: var(--purple); }
+    .stat-icon { font-size: 1.4em; }
+    .stat-info { flex: 1; }
+    .stat-name { font-size: 0.78em; color: var(--muted); font-weight: 600; letter-spacing: 0.5px; margin-bottom: 4px; }
+    .stat-val { font-size: 1.5em; font-weight: 800; line-height: 1; margin-bottom: 6px; }
+    .stat-bar2 { height: 5px; background: rgba(0,0,0,0.4); border-radius: 3px; overflow: hidden; }
+    .stat-bar2-fill { height: 100%; border-radius: 3px; transition: width 0.5s; }
+    .stat-row.force .stat-bar2-fill { background: var(--red); }
+    .stat-row.endurance .stat-bar2-fill { background: var(--orange); }
+    .stat-row.agility .stat-bar2-fill { background: var(--accent); }
+    .stat-row.perception .stat-bar2-fill { background: var(--green); }
+    .stat-row.intelligence .stat-bar2-fill { background: var(--purple); }
+    .stat-xp-label { font-size: 0.75em; color: var(--muted); text-align: right; white-space: nowrap; }
 
-      /* ===== POLAR PAGE ===== */
-      .polar-card {
-        background: var(--bg2); border-radius: 14px; padding: 18px; margin-bottom: 14px;
-        border: 1px solid rgba(255,255,255,0.07);
-      }
-      .polar-status-big { font-size: 1.3em; font-weight: 800; margin-bottom: 6px; }
-      .polar-ratio { color: var(--muted); font-size: 0.9em; margin-bottom: 14px; }
-      .polar-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-      .polar-item { background: rgba(0,0,0,0.25); border-radius: 10px; padding: 12px; text-align: center; }
-      .polar-item-label { font-size: 0.75em; color: var(--muted); margin-bottom: 4px; }
-      .polar-item-val { font-size: 1.6em; font-weight: 800; }
-      .polar-item-val.fatigue { color: var(--red); }
-      .polar-item-val.tolerance { color: var(--green); }
-      .polar-item-val.sleep { color: var(--accent); }
-      .polar-item-val.sna { color: var(--purple); }
-      .polar-item-val.runna { color: var(--orange); }
+    .section-title { font-size: 1.1em; font-weight: 700; color: var(--accent); margin-bottom: 14px; margin-top: 6px; }
+    .section-subtitle { font-size: 0.82em; color: var(--muted); margin-bottom: 14px; margin-top: -8px; }
 
-      .form-group { margin-bottom: 16px; }
-      .form-label { font-size: 0.82em; color: var(--muted); margin-bottom: 6px; display: block; }
-      .form-input {
-        width: 100%; padding: 11px 14px; background: rgba(0,0,0,0.3);
-        border: 1px solid rgba(255,255,255,0.15); border-radius: 10px;
-        color: var(--text); font-size: 0.95em;
-      }
-      .form-input:focus { outline: none; border-color: var(--accent); }
-      .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    /* ===== POLAR PAGE ===== */
+    .polar-card {
+      background: var(--bg2); border-radius: 14px; padding: 18px; margin-bottom: 14px;
+      border: 1px solid rgba(255,255,255,0.07);
+    }
+    .polar-status-big { font-size: 1.3em; font-weight: 800; margin-bottom: 6px; }
+    .polar-ratio { color: var(--muted); font-size: 0.9em; margin-bottom: 14px; }
+    .polar-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .polar-item { background: rgba(0,0,0,0.25); border-radius: 10px; padding: 12px; text-align: center; }
+    .polar-item-label { font-size: 0.75em; color: var(--muted); margin-bottom: 4px; }
+    .polar-item-val { font-size: 1.6em; font-weight: 800; }
+    .polar-item-val.fatigue { color: var(--red); }
+    .polar-item-val.tolerance { color: var(--green); }
+    .polar-item-val.sleep { color: var(--accent); }
+    .polar-item-val.sna { color: var(--purple); }
+    .polar-item-val.runna { color: var(--orange); }
 
-      /* ===== HISTORIQUE ===== */
-      .history-empty { text-align: center; color: var(--muted); padding: 40px 20px; font-size: 0.9em; }
-      .history-day { margin-bottom: 18px; }
-      .history-date { font-size: 0.8em; color: var(--muted); font-weight: 600; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
-      .history-item {
-        background: var(--bg2); border-radius: 10px; padding: 12px 14px;
-        margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;
-        border: 1px solid rgba(255,255,255,0.06);
-      }
-      .history-name { font-size: 0.9em; }
-      .history-xp { color: var(--accent); font-size: 0.82em; font-weight: 700; }
+    .form-group { margin-bottom: 16px; }
+    .form-label { font-size: 0.82em; color: var(--muted); margin-bottom: 6px; display: block; }
+    .form-input {
+      width: 100%; padding: 11px 14px; background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.15); border-radius: 10px;
+      color: var(--text); font-size: 0.95em;
+    }
+    .form-input:focus { outline: none; border-color: var(--accent); }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
-      /* ===== BOTTOM NAV ===== */
-      .bottom-nav {
-        position: fixed; bottom: 0; left: 0; right: 0; height: var(--nav-h);
-        background: var(--bg2); border-top: 1px solid rgba(255,255,255,0.08);
-        display: flex; z-index: 200;
-      }
-      .nav-item {
-        flex: 1; display: flex; flex-direction: column; align-items: center;
-        justify-content: center; gap: 4px; cursor: pointer; border: none;
-        background: transparent; color: var(--muted); font-size: 0.72em;
-        font-weight: 600; transition: color 0.2s; padding: 8px 0;
-      }
-      .nav-item .nav-icon { font-size: 1.5em; }
-      .nav-item.active { color: var(--accent); }
-      .nav-item.active .nav-icon { filter: drop-shadow(0 0 6px rgba(0,212,255,0.6)); }
+    /* ===== HISTORIQUE ===== */
+    .history-empty { text-align: center; color: var(--muted); padding: 40px 20px; font-size: 0.9em; }
+    .history-day { margin-bottom: 18px; }
+    .history-date { font-size: 0.8em; color: var(--muted); font-weight: 600; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .history-item {
+      background: var(--bg2); border-radius: 10px; padding: 12px 14px;
+      margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .history-name { font-size: 0.9em; }
+    .history-xp { color: var(--accent); font-size: 0.82em; font-weight: 700; }
 
-      /* ===== MODAL ===== */
-      .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 500; padding: 20px; align-items: flex-end; }
-      .modal.active { display: flex; }
-      .modal-sheet {
-        background: var(--bg3); border-radius: 20px 20px 0 0; width: 100%;
-        max-height: 90vh; overflow-y: auto; padding: 24px 20px 30px;
-        animation: slideUp 0.3s ease;
-      }
-      @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-      .modal-handle { width: 40px; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; margin: 0 auto 20px; }
-      .modal-title { font-size: 1.2em; font-weight: 700; margin-bottom: 20px; color: var(--accent); }
-      .modal-title.gold { color: var(--gold); }
+    /* ===== EXPORT/IMPORT ===== */
+    .export-card {
+      background: var(--bg2); border-radius: 14px; padding: 16px; margin-bottom: 14px;
+      border: 1px solid rgba(0,212,255,0.15);
+    }
+    .export-card-title { font-size: 0.85em; color: var(--accent); font-weight: 700; margin-bottom: 10px; }
+    .export-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .export-btn {
+      padding: 11px; border-radius: 10px; border: none; font-weight: 700;
+      font-size: 0.88em; cursor: pointer; transition: all 0.2s;
+    }
+    .export-btn.dl { background: rgba(0,212,255,0.15); border: 1px solid var(--accent); color: var(--accent); }
+    .export-btn.dl:hover { background: rgba(0,212,255,0.25); }
+    .export-btn.up { background: rgba(46,213,115,0.15); border: 1px solid var(--green); color: var(--green); }
+    .export-btn.up:hover { background: rgba(46,213,115,0.25); }
+    #importFileInput { display: none; }
 
-      .btn-primary {
-        width: 100%; padding: 13px; border-radius: 11px; border: none;
-        background: linear-gradient(135deg, var(--accent), var(--accent2));
-        color: #fff; font-weight: 700; font-size: 1em; cursor: pointer; margin-top: 8px; transition: opacity 0.2s;
-      }
-      .btn-primary:hover { opacity: 0.85; }
-      .btn-gold {
-        width: 100%; padding: 13px; border-radius: 11px; border: none;
-        background: linear-gradient(135deg, #b8860b, #daa520);
-        color: #fff; font-weight: 700; font-size: 1em; cursor: pointer; margin-top: 8px; transition: opacity 0.2s;
-      }
-      .btn-gold:hover { opacity: 0.85; }
-      .btn-danger {
-        width: 100%; padding: 13px; border-radius: 11px; border: none;
-        background: rgba(255,71,87,0.15); border: 1px solid var(--red);
-        color: var(--red); font-weight: 700; font-size: 1em; cursor: pointer; margin-top: 10px;
-      }
+    /* ===== BOTTOM NAV ===== */
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 0; right: 0; height: var(--nav-h);
+      background: var(--bg2); border-top: 1px solid rgba(255,255,255,0.08);
+      display: flex; z-index: 200;
+    }
+    .nav-item {
+      flex: 1; display: flex; flex-direction: column; align-items: center;
+      justify-content: center; gap: 4px; cursor: pointer; border: none;
+      background: transparent; color: var(--muted); font-size: 0.72em;
+      font-weight: 600; transition: color 0.2s; padding: 8px 0;
+    }
+    .nav-item .nav-icon { font-size: 1.5em; }
+    .nav-item.active { color: var(--accent); }
+    .nav-item.active .nav-icon { filter: drop-shadow(0 0 6px rgba(0,212,255,0.6)); }
 
-      .checkbox-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
-      .check-item {
-        background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.1);
-        border-radius: 9px; padding: 10px 12px; display: flex; align-items: center; gap: 8px;
-        cursor: pointer; font-size: 0.88em; transition: all 0.2s;
-      }
-      .check-item input { cursor: pointer; accent-color: var(--accent); }
-      .check-item:has(input:checked) { border-color: var(--accent); background: rgba(0,212,255,0.08); }
+    /* ===== MODAL ===== */
+    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 500; padding: 20px; align-items: flex-end; }
+    .modal.active { display: flex; }
+    .modal-sheet {
+      background: var(--bg3); border-radius: 20px 20px 0 0; width: 100%;
+      max-height: 90vh; overflow-y: auto; padding: 24px 20px 30px;
+      animation: slideUp 0.3s ease;
+    }
+    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    .modal-handle { width: 40px; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; margin: 0 auto 20px; }
+    .modal-title { font-size: 1.2em; font-weight: 700; margin-bottom: 20px; color: var(--accent); }
+    .modal-title.gold { color: var(--gold); }
 
-      /* ===== FEEDBACK ===== */
-      .feedback-row { display: flex; gap: 8px; margin-bottom: 14px; }
-      .fb-btn {
-        flex: 1; padding: 10px 6px; border-radius: 9px; border: 1px solid rgba(255,255,255,0.1);
-        background: rgba(255,255,255,0.05); color: var(--text); cursor: pointer;
-        font-size: 0.82em; text-align: center; transition: all 0.2s;
-      }
-      .fb-btn:hover { background: rgba(255,255,255,0.12); }
-      .fb-btn.active-hard { border-color: var(--red); background: rgba(255,71,87,0.15); color: var(--red); }
-      .fb-btn.active-ok { border-color: var(--green); background: rgba(46,213,115,0.15); color: var(--green); }
-      .fb-btn.active-easy { border-color: var(--accent); background: rgba(0,212,255,0.15); color: var(--accent); }
+    .btn-primary {
+      width: 100%; padding: 13px; border-radius: 11px; border: none;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff; font-weight: 700; font-size: 1em; cursor: pointer; margin-top: 8px; transition: opacity 0.2s;
+    }
+    .btn-primary:hover { opacity: 0.85; }
+    .btn-gold {
+      width: 100%; padding: 13px; border-radius: 11px; border: none;
+      background: linear-gradient(135deg, #b8860b, #daa520);
+      color: #fff; font-weight: 700; font-size: 1em; cursor: pointer; margin-top: 8px; transition: opacity 0.2s;
+    }
+    .btn-gold:hover { opacity: 0.85; }
+    .btn-danger {
+      width: 100%; padding: 13px; border-radius: 11px; border: none;
+      background: rgba(255,71,87,0.15); border: 1px solid var(--red);
+      color: var(--red); font-weight: 700; font-size: 1em; cursor: pointer; margin-top: 10px;
+    }
 
-      /* ===== DEBUG ===== */
-      .debug-panel { background: #0d1520; border: 1px dashed #2a3a4a; border-radius: 12px; padding: 16px; margin-top: 20px; }
-      .debug-title { font-size: 0.75em; color: #3a5a6a; font-weight: 700; margin-bottom: 12px; letter-spacing: 1px; }
-      .debug-row { display: flex; gap: 8px; margin-bottom: 10px; }
-      .debug-input {
-        flex: 1; padding: 9px; background: rgba(0,0,0,0.4); border: 1px solid #2a3a4a;
-        border-radius: 8px; color: var(--text); font-size: 0.9em; text-align: center;
-      }
-      .debug-btn { padding: 9px 16px; background: #1e3a5f; border: none; color: #7ab; border-radius: 8px; cursor: pointer; font-size: 0.85em; font-weight: 600; }
-      .debug-presets { display: flex; gap: 6px; flex-wrap: wrap; }
-      .debug-preset { padding: 7px 12px; background: #1a2535; border: 1px solid #2a3a4a; color: #5a7a8a; border-radius: 7px; cursor: pointer; font-size: 0.8em; }
+    .checkbox-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+    .check-item {
+      background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 9px; padding: 10px 12px; display: flex; align-items: center; gap: 8px;
+      cursor: pointer; font-size: 0.88em; transition: all 0.2s;
+    }
+    .check-item input { cursor: pointer; accent-color: var(--accent); }
+    .check-item:has(input:checked) { border-color: var(--accent); background: rgba(0,212,255,0.08); }
 
-      /* ===== LOADING ===== */
-      #loadingOverlay {
-        display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.88);
-        z-index: 999; flex-direction: column; align-items: center; justify-content: center;
-      }
-      #loadingOverlay.active { display: flex; }
-      .spinner { width: 48px; height: 48px; border: 4px solid rgba(0,212,255,0.15); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.9s linear infinite; }
-      @keyframes spin { to { transform: rotate(360deg); } }
-      .loading-txt { color: var(--accent); margin-top: 16px; font-size: 1em; }
+    /* ===== FEEDBACK ===== */
+    .feedback-row { display: flex; gap: 8px; margin-bottom: 14px; }
+    .fb-btn {
+      flex: 1; padding: 10px 6px; border-radius: 9px; border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.05); color: var(--text); cursor: pointer;
+      font-size: 0.82em; text-align: center; transition: all 0.2s;
+    }
+    .fb-btn:hover { background: rgba(255,255,255,0.12); }
+    .fb-btn.active-hard { border-color: var(--red); background: rgba(255,71,87,0.15); color: var(--red); }
+    .fb-btn.active-ok { border-color: var(--green); background: rgba(46,213,115,0.15); color: var(--green); }
+    .fb-btn.active-easy { border-color: var(--accent); background: rgba(0,212,255,0.15); color: var(--accent); }
 
-      /* ===== TOAST ===== */
-      .toast {
-        position: fixed; bottom: calc(var(--nav-h) + 12px); left: 50%; transform: translateX(-50%) translateY(20px);
-        background: #1e3a2e; border: 1px solid var(--green); color: var(--green);
-        padding: 11px 22px; border-radius: 30px; font-size: 0.9em; font-weight: 600;
-        z-index: 999; opacity: 0; transition: all 0.3s; white-space: nowrap;
-      }
-      .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-      .toast.error { background: #3a1e1e; border-color: var(--red); color: var(--red); }
-      .toast.gold { background: #2a1e00; border-color: var(--gold); color: var(--gold); }
-    </style>
-  </head>
-    <body>
+    /* ===== DEBUG ===== */
+    .debug-panel { background: #0d1520; border: 1px dashed #2a3a4a; border-radius: 12px; padding: 16px; margin-top: 20px; }
+    .debug-title { font-size: 0.75em; color: #3a5a6a; font-weight: 700; margin-bottom: 12px; letter-spacing: 1px; }
+    .debug-row { display: flex; gap: 8px; margin-bottom: 10px; }
+    .debug-input {
+      flex: 1; padding: 9px; background: rgba(0,0,0,0.4); border: 1px solid #2a3a4a;
+      border-radius: 8px; color: var(--text); font-size: 0.9em; text-align: center;
+    }
+    .debug-btn { padding: 9px 16px; background: #1e3a5f; border: none; color: #7ab; border-radius: 8px; cursor: pointer; font-size: 0.85em; font-weight: 600; }
+    .debug-presets { display: flex; gap: 6px; flex-wrap: wrap; }
+    .debug-preset { padding: 7px 12px; background: #1a2535; border: 1px solid #2a3a4a; color: #5a7a8a; border-radius: 7px; cursor: pointer; font-size: 0.8em; }
 
-    <!-- HEADER -->
-    <div class="header">
-      <div class="header-row1">
-        <div class="lvl-badge" id="lvlBadge">LVL 1</div>
-        <div class="header-right">
-          <div class="cycle-badge" id="cycleBadge">S1/4</div>
-          <div class="streak-badge" id="streakBadge">🔥 0</div>
-          <button class="settings-ico" onclick="openSettings()">⚙️</button>
-        </div>
+    /* ===== LOADING ===== */
+    #loadingOverlay {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.88);
+      z-index: 999; flex-direction: column; align-items: center; justify-content: center;
+    }
+    #loadingOverlay.active { display: flex; }
+    .spinner { width: 48px; height: 48px; border: 4px solid rgba(0,212,255,0.15); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.9s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-txt { color: var(--accent); margin-top: 16px; font-size: 1em; }
+
+    /* ===== TOAST ===== */
+    .toast {
+      position: fixed; bottom: calc(var(--nav-h) + 12px); left: 50%; transform: translateX(-50%) translateY(20px);
+      background: #1e3a2e; border: 1px solid var(--green); color: var(--green);
+      padding: 11px 22px; border-radius: 30px; font-size: 0.9em; font-weight: 600;
+      z-index: 999; opacity: 0; transition: all 0.3s; white-space: nowrap;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .toast.error { background: #3a1e1e; border-color: var(--red); color: var(--red); }
+    .toast.gold { background: #2a1e00; border-color: var(--gold); color: var(--gold); }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-row1">
+      <div class="lvl-badge" id="lvlBadge">LVL 1</div>
+      <div class="header-right">
+        <div class="cycle-badge" id="cycleBadge">S1/4</div>
+        <div class="streak-badge" id="streakBadge">🔥 0</div>
+        <button class="settings-ico" onclick="openSettings()">⚙️</button>
       </div>
-      <div class="xp-row">
-        <span class="xp-label" id="xpLabel">XP 0/500</span>
-        <div class="xp-bar-wrap"><div class="xp-bar-fill" id="xpFill" style="width:0%"></div></div>
+    </div>
+    <div class="xp-row">
+      <span class="xp-label" id="xpLabel">XP 0/500</span>
+      <div class="xp-bar-wrap"><div class="xp-bar-fill" id="xpFill" style="width:0%"></div></div>
+    </div>
+  </div>
+
+  <!-- ===== PAGE : HOME ===== -->
+  <div class="page active" id="pageHome">
+
+    <div class="decharge-banner" id="dischargeBanner" style="display:none;">
+      <div class="decharge-banner-icon">🌙</div>
+      <div>
+        <div class="decharge-banner-title">SEMAINE DE DÉCHARGE</div>
+        <div class="decharge-banner-desc">Volume réduit à 55% — laisse ton corps super-compenser. Tu repartiras plus fort la semaine prochaine.</div>
       </div>
     </div>
 
-    <!-- ===== PAGE : HOME ===== -->
-    <div class="page active" id="pageHome">
-
-      <!-- Bannière décharge (cachée par défaut) -->
-      <div class="decharge-banner" id="dischargeBanner" style="display:none;">
-        <div class="decharge-banner-icon">🌙</div>
+    <div class="test-banner" id="testBanner" style="display:none;">
+      <div class="test-banner-left">
+        <div class="test-banner-icon">🏆</div>
         <div>
-          <div class="decharge-banner-title">SEMAINE DE DÉCHARGE</div>
-          <div class="decharge-banner-desc">Volume réduit à 55% — laisse ton corps super-compenser. Tu repartiras plus fort la semaine prochaine.</div>
+          <div class="test-banner-title">TEST MENSUEL DISPONIBLE</div>
+          <div class="test-banner-desc">Mesure ta progression réelle ce mois-ci</div>
         </div>
       </div>
-
-      <!-- Bannière test mensuel (cachée par défaut) -->
-      <div class="test-banner" id="testBanner" style="display:none;">
-        <div class="test-banner-left">
-          <div class="test-banner-icon">🏆</div>
-          <div>
-            <div class="test-banner-title">TEST MENSUEL DISPONIBLE</div>
-            <div class="test-banner-desc">Mesure ta progression réelle ce mois-ci</div>
-          </div>
-        </div>
-        <button class="test-banner-btn" onclick="openTestModal()">Lancer →</button>
-      </div>
-
-      <!-- Bannière focus du jour -->
-      <div class="focus-banner" id="focusBanner">
-        <div>
-          <div class="focus-banner-label">FOCUS DU JOUR</div>
-          <div class="focus-banner-val" id="focusBannerVal">Push</div>
-        </div>
-        <div class="focus-banner-day" id="focusBannerDay">lundi</div>
-      </div>
-
-      <!-- Badge difficulté -->
-      <div id="diffBadge" style="display:none;" class="diff-badge">
-        <span id="diffText"></span>
-        <button class="diff-reset" onclick="resetDiff()">Réinitialiser</button>
-      </div>
-
-      <!-- Cardio -->
-      <div class="card">
-        <div class="card-title">🏃 Activité cardio du jour</div>
-        <p style="color:var(--muted); font-size:0.82em; margin-bottom:12px;">Si tu as couru ou joué au badminton, clique ici. Le programme bascule en mode mobilité/récupération.</p>
-        <div class="activity-btns">
-          <button class="act-btn" id="actCourse" onclick="completeEndurance('course')">🏃 Course<small>+120 XP</small></button>
-          <button class="act-btn" id="actBadminton" onclick="completeEndurance('badminton')">🏸 Badminton<small>+100 XP</small></button>
-        </div>
-      </div>
-
-      <!-- Bouton génération -->
-      <button class="gen-btn" id="genBtn" onclick="generateProgram()">⚡ GÉNÉRER PROGRAMME QUOTIDIEN</button>
-
-      <!-- Conseil IA -->
-      <div class="advice-card" id="adviceCard">
-        <p id="adviceText"></p>
-      </div>
-
-      <!-- Quêtes -->
-      <div id="questsWrap"></div>
-      <div id="hintWrap" class="hint">Lance la génération pour recevoir tes quêtes du jour ✦</div>
-
-      <!-- Feedback -->
-      <div id="feedbackWrap" style="display:none;">
-        <div style="font-size:0.8em; color:var(--muted); margin-bottom:8px; text-align:center;">Comment était le programme ?</div>
-        <div class="feedback-row">
-          <button class="fb-btn" id="fbHard" onclick="setDiff(-1)">😰 Difficile</button>
-          <button class="fb-btn" id="fbOk"   onclick="setDiff(0)">👌 Parfait</button>
-          <button class="fb-btn" id="fbEasy" onclick="setDiff(1)">😎 Facile</button>
-        </div>
-      </div>
-
+      <button class="test-banner-btn" onclick="openTestModal()">Lancer →</button>
     </div>
 
-    <!-- ===== PAGE : NIVEAU ===== -->
-    <div class="page" id="pageNiveau">
-      <div class="section-title">📊 Progression des Stats</div>
-      <div class="stats-list">
-        <div class="stat-row force">
-          <div class="stat-icon">💪</div>
-          <div class="stat-info">
-            <div class="stat-name">FORCE</div>
-            <div class="stat-val" id="sForce">1</div>
-            <div class="stat-bar2"><div class="stat-bar2-fill" id="bForce" style="width:0%"></div></div>
-          </div>
-          <div class="stat-xp-label" id="xForce">0/500</div>
-        </div>
-        <div class="stat-row endurance">
-          <div class="stat-icon">🏃</div>
-          <div class="stat-info">
-            <div class="stat-name">ENDURANCE</div>
-            <div class="stat-val" id="sEndurance">1</div>
-            <div class="stat-bar2"><div class="stat-bar2-fill" id="bEndurance" style="width:0%"></div></div>
-          </div>
-          <div class="stat-xp-label" id="xEndurance">0/500</div>
-        </div>
-        <div class="stat-row agility">
-          <div class="stat-icon">⚡</div>
-          <div class="stat-info">
-            <div class="stat-name">AGILITÉ</div>
-            <div class="stat-val" id="sAgility">1</div>
-            <div class="stat-bar2"><div class="stat-bar2-fill" id="bAgility" style="width:0%"></div></div>
-          </div>
-          <div class="stat-xp-label" id="xAgility">0/500</div>
-        </div>
-        <div class="stat-row perception">
-          <div class="stat-icon">👁️</div>
-          <div class="stat-info">
-            <div class="stat-name">PERCEPTION</div>
-            <div class="stat-val" id="sPerception">1</div>
-            <div class="stat-bar2"><div class="stat-bar2-fill" id="bPerception" style="width:0%"></div></div>
-          </div>
-          <div class="stat-xp-label" id="xPerception">0/500</div>
-        </div>
-        <div class="stat-row intelligence">
-          <div class="stat-icon">🧠</div>
-          <div class="stat-info">
-            <div class="stat-name">INTELLIGENCE</div>
-            <div class="stat-val" id="sIntelligence">1</div>
-            <div class="stat-bar2"><div class="stat-bar2-fill" id="bIntelligence" style="width:0%"></div></div>
-          </div>
-          <div class="stat-xp-label" id="xIntelligence">0/500</div>
-        </div>
+    <div class="focus-banner" id="focusBanner">
+      <div>
+        <div class="focus-banner-label">FOCUS DU JOUR</div>
+        <div class="focus-banner-val" id="focusBannerVal">Push</div>
       </div>
+      <div class="focus-banner-day" id="focusBannerDay">lundi</div>
+    </div>
 
-      <!-- Paliers de progression -->
-      <div class="section-title" style="margin-top:24px;">🎯 Paliers de Progression</div>
-      <div class="section-subtitle">Chaque niveau XP débloque le palier suivant automatiquement</div>
-      <div id="paliersWrap"></div>
+    <div id="diffBadge" style="display:none;" class="diff-badge">
+      <span id="diffText"></span>
+      <button class="diff-reset" onclick="resetDiff()">Réinitialiser</button>
+    </div>
 
-      <!-- Cycle tracker -->
-      <div class="section-title" style="margin-top:24px;">🔄 Cycle d'Entraînement</div>
-      <div class="cycle-tracker">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-          <span style="font-weight:700; font-size:0.95em;" id="cycleTitle">Cycle 1</span>
-          <span style="font-size:0.8em; color:var(--muted);" id="cycleStartDate">Démarré le --</span>
-        </div>
-        <div style="font-size:0.8em; color:var(--muted); margin-bottom:10px;" id="cycleDesc">Semaine 1 sur 4 — Charge normale</div>
-        <div class="cycle-weeks" id="cycleWeeks"></div>
-      </div>
-
-      <!-- Historique tests -->
-      <div class="section-title" style="margin-top:24px;">🏆 Historique des Tests</div>
-      <div id="testHistoryWrap"><div class="history-empty" style="padding:20px;">Aucun test effectué pour l'instant.</div></div>
-
-      <!-- Debug -->
-      <div style="text-align:center; margin-top:28px;">
-        <button onclick="toggleDebug()" style="background:none; border:none; color:#2a3a4a; font-size:0.75em; cursor:pointer; letter-spacing:1px;">⚙ MODE TEST</button>
-      </div>
-      <div class="debug-panel" id="debugPanel" style="display:none;">
-        <div class="debug-title">🎮 SIMULER UN NIVEAU — TEST UNIQUEMENT</div>
-        <div class="debug-row">
-          <input type="number" class="debug-input" id="debugInput" placeholder="Niveau (1-100)" min="1" max="100">
-          <button class="debug-btn" onclick="applyDebug()">Appliquer</button>
-        </div>
-        <div class="debug-presets">
-          <button class="debug-preset" onclick="applyDebugVal(3)">Niv. 3</button>
-          <button class="debug-preset" onclick="applyDebugVal(8)">Niv. 8</button>
-          <button class="debug-preset" onclick="applyDebugVal(15)">Niv. 15</button>
-          <button class="debug-preset" onclick="applyDebugVal(25)">Niv. 25</button>
-          <button class="debug-preset" onclick="resetAll()" style="color:#ff6b6b; border-color:#3a2020;">Reset tout</button>
-        </div>
-        <p style="color:#2a4a5a; font-size:0.75em; margin-top:10px;">Les niveaux simulés adaptent les exercices. Ta vraie progression reste basée sur l'XP.</p>
+    <div class="card">
+      <div class="card-title">🏃 Activité cardio du jour</div>
+      <p style="color:var(--muted); font-size:0.82em; margin-bottom:12px;">Si tu as couru ou joué au badminton, clique ici. Le programme bascule en mode mobilité/récupération.</p>
+      <div class="activity-btns">
+        <button class="act-btn" id="actCourse" onclick="completeEndurance('course')">🏃 Course<small>+120 XP</small></button>
+        <button class="act-btn" id="actBadminton" onclick="completeEndurance('badminton')">🏸 Badminton<small>+100 XP</small></button>
       </div>
     </div>
 
-    <!-- ===== PAGE : POLAR ===== -->
-    <div class="page" id="pagePolar">
-      <div class="section-title">📡 Données Polar Flow</div>
+    <button class="gen-btn" id="genBtn" onclick="generateProgram()">⚡ GÉNÉRER PROGRAMME QUOTIDIEN</button>
 
-      <!-- Training Load -->
-      <div class="polar-card" id="polarCard">
-        <div class="polar-status-big" id="polarBig">Non configuré</div>
-        <div class="polar-ratio" id="polarRatioTxt">Configure tes données ci-dessous</div>
-        <div class="polar-grid">
-          <div class="polar-item">
-            <div class="polar-item-label">Fatigue (7j)</div>
-            <div class="polar-item-val fatigue" id="polarFatVal">--</div>
-          </div>
-          <div class="polar-item">
-            <div class="polar-item-label">Tolérance (28j)</div>
-            <div class="polar-item-val tolerance" id="polarTolVal">--</div>
-          </div>
-        </div>
-      </div>
+    <div class="advice-card" id="adviceCard">
+      <p id="adviceText"></p>
+    </div>
 
-      <!-- Nightly Recharge -->
-      <div class="polar-card">
-        <div class="polar-status-big" id="nightlyBig">Nightly : Non configuré</div>
-        <div class="polar-ratio" id="nightlyRatioTxt">Renseigne ton statut du matin</div>
-        <div class="polar-grid">
-          <div class="polar-item">
-            <div class="polar-item-label">Sommeil (/100)</div>
-            <div class="polar-item-val sleep" id="polarSleepVal">--</div>
-          </div>
-          <div class="polar-item">
-            <div class="polar-item-label">SNA (-10 à +10)</div>
-            <div class="polar-item-val sna" id="polarSnaVal">--</div>
-          </div>
-        </div>
-      </div>
+    <div id="questsWrap"></div>
+    <div id="hintWrap" class="hint">Lance la génération pour recevoir tes quêtes du jour ✦</div>
 
-      <!-- Runna -->
-      <div class="polar-card">
-        <div class="polar-status-big" id="runnaBig">Runna : Non configuré</div>
-        <div class="polar-ratio" id="runnaRatioTxt">Charge course de la semaine</div>
-        <div class="polar-grid">
-          <div class="polar-item">
-            <div class="polar-item-label">Km cette semaine</div>
-            <div class="polar-item-val runna" id="runnaKmVal">--</div>
-          </div>
-          <div class="polar-item">
-            <div class="polar-item-label">Sortie longue prévue</div>
-            <div class="polar-item-val runna" id="runnaLongVal">--</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Formulaire Training Load -->
-      <div class="card">
-        <div class="card-title">✏️ Training Load (Fatigue / Tolérance)</div>
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">Fatigue (7j)</label>
-            <input type="number" class="form-input" id="inFatigue" placeholder="ex: 29" min="0" max="100">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Tolérance (28j)</label>
-            <input type="number" class="form-input" id="inTolerance" placeholder="ex: 23" min="0" max="100">
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Statut Training Load</label>
-          <select class="form-input" id="inPolarStatus">
-            <option value="">Non configuré</option>
-            <option value="productif">🟢 Productif</option>
-            <option value="maintien">🔵 Maintien</option>
-            <option value="excessif">🟠 Excessif</option>
-            <option value="desentrainement">🔴 Désentraînement</option>
-            <option value="recuperation">🟣 Récupération</option>
-          </select>
-        </div>
-        <button class="btn-primary" onclick="savePolar()">💾 Enregistrer Training Load</button>
-      </div>
-
-      <!-- Formulaire Nightly Recharge -->
-      <div class="card">
-        <div class="card-title">🌙 Nightly Recharge</div>
-        <p style="color:var(--muted); font-size:0.8em; margin-bottom:12px;">À renseigner le matin depuis l'app Polar Flow.</p>
-        <div class="form-group">
-          <label class="form-label">Statut global Nightly</label>
-          <select class="form-input" id="inNightlyStatus">
-            <option value="">Non configuré</option>
-            <option value="tres_bon">🟢 Très bon</option>
-            <option value="bon">🟢 Bon</option>
-            <option value="assez_bon">🟢 Assez bon</option>
-            <option value="moyen">🟡 Moyen</option>
-            <option value="faible">🟠 Faible</option>
-            <option value="tres_faible">🔴 Très faible</option>
-          </select>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">Score sommeil (/100)</label>
-            <input type="number" class="form-input" id="inSleepScore" placeholder="ex: 65" min="0" max="100">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Score SNA (-10 à +10)</label>
-            <input type="number" class="form-input" id="inSnaScore" placeholder="ex: 3.8" min="-10" max="10" step="0.1">
-          </div>
-        </div>
-        <button class="btn-primary" onclick="saveNightly()">💾 Enregistrer Nightly Recharge</button>
-      </div>
-
-      <!-- Formulaire Runna -->
-      <div class="card">
-        <div class="card-title">🏃 Charge Runna (semaine en cours)</div>
-        <p style="color:var(--muted); font-size:0.8em; margin-bottom:12px;">Renseigne ta charge course hebdomadaire pour que le programme évite de sur-solliciter les jambes les jours clés.</p>
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">Km courus cette semaine</label>
-            <input type="number" class="form-input" id="inRunnaKm" placeholder="ex: 18" min="0" max="200" step="0.5">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Sortie longue prévue (km)</label>
-            <input type="number" class="form-input" id="inRunnaLong" placeholder="ex: 12" min="0" max="100" step="0.5">
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Jour de la sortie longue</label>
-          <select class="form-input" id="inRunnaLongDay">
-            <option value="">Non planifiée</option>
-            <option value="0">Dimanche</option>
-            <option value="1">Lundi</option>
-            <option value="2">Mardi</option>
-            <option value="3">Mercredi</option>
-            <option value="4">Jeudi</option>
-            <option value="5">Vendredi</option>
-            <option value="6">Samedi</option>
-          </select>
-        </div>
-        <button class="btn-primary" onclick="saveRunna()">💾 Enregistrer charge Runna</button>
+    <div id="feedbackWrap" style="display:none;">
+      <div style="font-size:0.8em; color:var(--muted); margin-bottom:8px; text-align:center;">Comment était le programme ?</div>
+      <div class="feedback-row">
+        <button class="fb-btn" id="fbHard" onclick="setDiff(-1)">😰 Difficile</button>
+        <button class="fb-btn" id="fbOk"   onclick="setDiff(0)">👌 Parfait</button>
+        <button class="fb-btn" id="fbEasy" onclick="setDiff(1)">😎 Facile</button>
       </div>
     </div>
 
-    <!-- ===== PAGE : HISTORIQUE ===== -->
-    <div class="page" id="pageHistorique">
-      <div class="section-title">📜 Historique des Activités</div>
-      <div id="historyContent">
-        <div class="history-empty">Aucune activité enregistrée.<br>Complète tes premières quêtes !</div>
+  </div>
+
+  <!-- ===== PAGE : NIVEAU ===== -->
+  <div class="page" id="pageNiveau">
+    <div class="section-title">📊 Progression des Stats</div>
+    <div class="stats-list">
+      <div class="stat-row force">
+        <div class="stat-icon">💪</div>
+        <div class="stat-info">
+          <div class="stat-name">FORCE</div>
+          <div class="stat-val" id="sForce">1</div>
+          <div class="stat-bar2"><div class="stat-bar2-fill" id="bForce" style="width:0%"></div></div>
+        </div>
+        <div class="stat-xp-label" id="xForce">0/500</div>
+      </div>
+      <div class="stat-row endurance">
+        <div class="stat-icon">🏃</div>
+        <div class="stat-info">
+          <div class="stat-name">ENDURANCE</div>
+          <div class="stat-val" id="sEndurance">1</div>
+          <div class="stat-bar2"><div class="stat-bar2-fill" id="bEndurance" style="width:0%"></div></div>
+        </div>
+        <div class="stat-xp-label" id="xEndurance">0/500</div>
+      </div>
+      <div class="stat-row agility">
+        <div class="stat-icon">⚡</div>
+        <div class="stat-info">
+          <div class="stat-name">AGILITÉ</div>
+          <div class="stat-val" id="sAgility">1</div>
+          <div class="stat-bar2"><div class="stat-bar2-fill" id="bAgility" style="width:0%"></div></div>
+        </div>
+        <div class="stat-xp-label" id="xAgility">0/500</div>
+      </div>
+      <div class="stat-row perception">
+        <div class="stat-icon">👁️</div>
+        <div class="stat-info">
+          <div class="stat-name">PERCEPTION</div>
+          <div class="stat-val" id="sPerception">1</div>
+          <div class="stat-bar2"><div class="stat-bar2-fill" id="bPerception" style="width:0%"></div></div>
+        </div>
+        <div class="stat-xp-label" id="xPerception">0/500</div>
+      </div>
+      <div class="stat-row intelligence">
+        <div class="stat-icon">🧠</div>
+        <div class="stat-info">
+          <div class="stat-name">INTELLIGENCE</div>
+          <div class="stat-val" id="sIntelligence">1</div>
+          <div class="stat-bar2"><div class="stat-bar2-fill" id="bIntelligence" style="width:0%"></div></div>
+        </div>
+        <div class="stat-xp-label" id="xIntelligence">0/500</div>
       </div>
     </div>
 
-    <!-- ===== BOTTOM NAV ===== -->
-    <nav class="bottom-nav">
-      <button class="nav-item active" id="navHome" onclick="goPage('Home')">
-        <span class="nav-icon">🏠</span>Accueil
-      </button>
-      <button class="nav-item" id="navNiveau" onclick="goPage('Niveau')">
-        <span class="nav-icon">📊</span>Niveau
-      </button>
-      <button class="nav-item" id="navPolar" onclick="goPage('Polar')">
-        <span class="nav-icon">📡</span>Polar
-      </button>
-      <button class="nav-item" id="navHistorique" onclick="goPage('Historique')">
-        <span class="nav-icon">📜</span>Historique
-      </button>
-    </nav>
-
-    <!-- ===== MODAL SETTINGS ===== -->
-    <div class="modal" id="settingsModal">
-      <div class="modal-sheet">
-        <div class="modal-handle"></div>
-        <div class="modal-title">⚙️ Paramètres</div>
-        <div class="form-group">
-          <label class="form-label">🔑 Clé API OpenRouter</label>
-          <input type="password" class="form-input" id="apiKeyInput" placeholder="sk-or-v1-...">
-          <small style="color:var(--muted); display:block; margin-top:5px; font-size:0.78em;">
-            Obtiens ta clé sur <a href="https://openrouter.ai/keys" target="_blank" style="color:var(--accent);">openrouter.ai/keys</a>
-          </small>
-        </div>
-        <div class="form-group">
-          <label class="form-label">🩹 Blessure actuelle (optionnel)</label>
-          <input type="text" class="form-input" id="injuryInput" placeholder="Ex: Épaule droite">
-        </div>
-        <div class="form-group">
-          <label class="form-label">🎯 Niveau de départ</label>
-          <input type="number" class="form-input" id="startLevelInput" placeholder="1 = débutant, 5 = sportif régulier" min="1" max="20">
-          <small style="color:var(--muted); display:block; margin-top:5px; font-size:0.78em;">Appliqué uniquement au 1er démarrage.</small>
-        </div>
-        <div class="form-group">
-          <label class="form-label">🏋️ Équipement disponible</label>
-          <div class="checkbox-grid">
-            <label class="check-item"><input type="checkbox" id="eqNone" value="none"> Poids du corps</label>
-            <label class="check-item"><input type="checkbox" id="eqPullup" value="pullup"> Barre traction</label>
-            <label class="check-item"><input type="checkbox" id="eqDips" value="dips"> Barre de dips</label>
-            <label class="check-item"><input type="checkbox" id="eqRings" value="rings"> Anneaux</label>
-            <label class="check-item"><input type="checkbox" id="eqDumbbells" value="dumbbells"> Haltères</label>
-            <label class="check-item"><input type="checkbox" id="eqBands" value="bands"> Élastiques</label>
-            <label class="check-item"><input type="checkbox" id="eqChair" value="chair"> Chaise/Table</label>
-          </div>
-        </div>
-        <button class="btn-primary" onclick="saveSettings()">💾 Enregistrer</button>
-        <button class="btn-danger" onclick="resetAll()">🔄 Réinitialiser toute la progression</button>
-        <button onclick="closeSettings()" style="width:100%; padding:12px; background:none; border:none; color:var(--muted); cursor:pointer; margin-top:10px;">Annuler</button>
+    <div class="section-title" style="margin-top:24px;">📈 Graphique de Progression</div>
+    <div class="chart-card">
+      <div class="chart-title">🏆 Évolution des tests mensuels</div>
+      <div class="chart-tabs">
+        <button class="chart-tab active" onclick="setChartMetric('pompes',this)">💪 Pompes</button>
+        <button class="chart-tab" onclick="setChartMetric('tractions',this)">🏋️ Tractions</button>
+        <button class="chart-tab" onclick="setChartMetric('planche',this)">🧱 Planche</button>
+        <button class="chart-tab" onclick="setChartMetric('squats',this)">🦵 Squats</button>
+      </div>
+      <div class="chart-wrap" id="chartWrap">
+        <div class="chart-empty">Aucun test enregistré.<br>Lance ton premier test mensuel !</div>
       </div>
     </div>
 
-    <!-- ===== MODAL TEST MENSUEL ===== -->
-    <div class="modal" id="testModal">
-      <div class="modal-sheet">
-        <div class="modal-handle"></div>
-        <div class="modal-title gold">🏆 Test Mensuel de Référence</div>
-        <p style="color:var(--muted); font-size:0.85em; margin-bottom:16px; line-height:1.6;">
-          Effectue chaque exercice au maximum de tes capacités. Ces résultats calibreront ton volume guide pour le mois suivant.
-        </p>
-        <div class="test-result-grid">
-          <div class="test-result-item">
-            <div class="test-result-label">💪 Pompes max (2 min)</div>
-            <input type="number" class="test-result-input" id="testPompes" placeholder="0" min="0" max="200">
-            <div class="test-prev" id="prevPompes">Précédent : --</div>
-          </div>
-          <div class="test-result-item">
-            <div class="test-result-label">🏋️ Tractions max</div>
-            <input type="number" class="test-result-input" id="testTrections" placeholder="0" min="0" max="50">
-            <div class="test-prev" id="prevTrections">Précédent : --</div>
-          </div>
-          <div class="test-result-item">
-            <div class="test-result-label">🧱 Planche (sec)</div>
-            <input type="number" class="test-result-input" id="testPlanche" placeholder="0" min="0" max="600">
-            <div class="test-prev" id="prevPlanche">Précédent : --</div>
-          </div>
-          <div class="test-result-item">
-            <div class="test-result-label">🦵 Squats max (2 min)</div>
-            <input type="number" class="test-result-input" id="testSquats" placeholder="0" min="0" max="200">
-            <div class="test-prev" id="prevSquats">Précédent : --</div>
-          </div>
+    <div class="section-title" style="margin-top:8px;">🎯 Paliers de Progression</div>
+    <div class="section-subtitle">Chaque niveau XP débloque le palier suivant automatiquement</div>
+    <div id="paliersWrap"></div>
+
+    <div class="section-title" style="margin-top:24px;">🔄 Cycle d'Entraînement</div>
+    <div class="cycle-tracker">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+        <span style="font-weight:700; font-size:0.95em;" id="cycleTitle">Cycle 1</span>
+        <span style="font-size:0.8em; color:var(--muted);" id="cycleStartDate">Démarré le --</span>
+      </div>
+      <div style="font-size:0.8em; color:var(--muted); margin-bottom:10px;" id="cycleDesc">Semaine 1 sur 4 — Charge normale</div>
+      <div class="cycle-weeks" id="cycleWeeks"></div>
+    </div>
+
+    <div class="section-title" style="margin-top:24px;">🏆 Historique des Tests</div>
+    <div id="testHistoryWrap"><div class="history-empty" style="padding:20px;">Aucun test effectué pour l'instant.</div></div>
+
+    <div style="text-align:center; margin-top:28px;">
+      <button onclick="toggleDebug()" style="background:none; border:none; color:#2a3a4a; font-size:0.75em; cursor:pointer; letter-spacing:1px;">⚙ MODE TEST</button>
+    </div>
+    <div class="debug-panel" id="debugPanel" style="display:none;">
+      <div class="debug-title">🎮 SIMULER UN NIVEAU — TEST UNIQUEMENT</div>
+      <div class="debug-row">
+        <input type="number" class="debug-input" id="debugInput" placeholder="Niveau (1-100)" min="1" max="100">
+        <button class="debug-btn" onclick="applyDebug()">Appliquer</button>
+      </div>
+      <div class="debug-presets">
+        <button class="debug-preset" onclick="applyDebugVal(3)">Niv. 3</button>
+        <button class="debug-preset" onclick="applyDebugVal(8)">Niv. 8</button>
+        <button class="debug-preset" onclick="applyDebugVal(15)">Niv. 15</button>
+        <button class="debug-preset" onclick="applyDebugVal(25)">Niv. 25</button>
+        <button class="debug-preset" onclick="resetAll()" style="color:#ff6b6b; border-color:#3a2020;">Reset tout</button>
+      </div>
+      <p style="color:#2a4a5a; font-size:0.75em; margin-top:10px;">Les niveaux simulés adaptent les exercices. Ta vraie progression reste basée sur l'XP.</p>
+    </div>
+  </div>
+
+  <!-- ===== PAGE : POLAR ===== -->
+  <div class="page" id="pagePolar">
+    <div class="section-title">📡 Données Polar Flow</div>
+
+    <div class="polar-card" id="polarCard">
+      <div class="polar-status-big" id="polarBig">Non configuré</div>
+      <div class="polar-ratio" id="polarRatioTxt">Configure tes données ci-dessous</div>
+      <div class="polar-grid">
+        <div class="polar-item">
+          <div class="polar-item-label">Fatigue (7j)</div>
+          <div class="polar-item-val fatigue" id="polarFatVal">--</div>
         </div>
-        <button class="btn-gold" onclick="saveTestResults()">✅ Enregistrer les résultats</button>
-        <button onclick="closeTestModal()" style="width:100%; padding:12px; background:none; border:none; color:var(--muted); cursor:pointer; margin-top:10px;">Annuler</button>
+        <div class="polar-item">
+          <div class="polar-item-label">Tolérance (28j)</div>
+          <div class="polar-item-val tolerance" id="polarTolVal">--</div>
+        </div>
       </div>
     </div>
 
-    <!-- LOADING -->
-    <div id="loadingOverlay">
-      <div class="spinner"></div>
-      <div class="loading-txt">Génération des quêtes...</div>
+    <div class="polar-card">
+      <div class="polar-status-big" id="nightlyBig">Nightly : Non configuré</div>
+      <div class="polar-ratio" id="nightlyRatioTxt">Renseigne ton statut du matin</div>
+      <div class="polar-grid">
+        <div class="polar-item">
+          <div class="polar-item-label">Sommeil (/100)</div>
+          <div class="polar-item-val sleep" id="polarSleepVal">--</div>
+        </div>
+        <div class="polar-item">
+          <div class="polar-item-label">SNA (-10 à +10)</div>
+          <div class="polar-item-val sna" id="polarSnaVal">--</div>
+        </div>
+      </div>
     </div>
 
-    <!-- TOAST -->
-    <div class="toast" id="toast"></div>
-      <script>
-  // =============================================
-  // ===== PART 3 : STATE + SAVE/LOAD + UI =====
-  // =============================================
+    <div class="polar-card">
+      <div class="polar-status-big" id="runnaBig">Runna : Non configuré</div>
+      <div class="polar-ratio" id="runnaRatioTxt">Charge course de la semaine</div>
+      <div class="polar-grid">
+        <div class="polar-item">
+          <div class="polar-item-label">Km cette semaine</div>
+          <div class="polar-item-val runna" id="runnaKmVal">--</div>
+        </div>
+        <div class="polar-item">
+          <div class="polar-item-label">Sortie longue prévue</div>
+          <div class="polar-item-val runna" id="runnaLongVal">--</div>
+        </div>
+      </div>
+    </div>
 
-  // ===== STATE =====
-  let S = {
-    apiKey:'', injury:'', equipment:['none','pullup','dips'],
-    stats:{ force:1, endurance:1, agility:1, perception:1, intelligence:1 },
-    statsXP:{ force:0, endurance:0, agility:0, perception:0, intelligence:0 },
-    streak:0, lastStreakDate:null,
+    <div class="card">
+      <div class="card-title">✏️ Training Load (Fatigue / Tolérance)</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Fatigue (7j)</label>
+          <input type="number" class="form-input" id="inFatigue" placeholder="ex: 29" min="0" max="100">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tolérance (28j)</label>
+          <input type="number" class="form-input" id="inTolerance" placeholder="ex: 23" min="0" max="100">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Statut Training Load</label>
+        <select class="form-input" id="inPolarStatus">
+          <option value="">Non configuré</option>
+          <option value="productif">🟢 Productif</option>
+          <option value="maintien">🔵 Maintien</option>
+          <option value="excessif">🟠 Excessif</option>
+          <option value="desentrainement">🔴 Désentraînement</option>
+          <option value="recuperation">🟣 Récupération</option>
+        </select>
+      </div>
+      <button class="btn-primary" onclick="savePolar()">💾 Enregistrer Training Load</button>
+    </div>
 
-    // Training Load Polar
-    polarFatigue:null, polarTolerance:null, polarStatus:'',
-    // Nightly Recharge
-    nightlyStatus:'', sleepScore:null, snaScore:null,
-    // Runna
-    runnaKm:null, runnaLongKm:null, runnaLongDay:null,
+    <div class="card">
+      <div class="card-title">🌙 Nightly Recharge</div>
+      <p style="color:var(--muted); font-size:0.8em; margin-bottom:12px;">À renseigner le matin depuis l'app Polar Flow.</p>
+      <div class="form-group">
+        <label class="form-label">Statut global Nightly</label>
+        <select class="form-input" id="inNightlyStatus">
+          <option value="">Non configuré</option>
+          <option value="tres_bon">🟢 Très bon</option>
+          <option value="bon">🟢 Bon</option>
+          <option value="assez_bon">🟢 Assez bon</option>
+          <option value="moyen">🟡 Moyen</option>
+          <option value="faible">🟠 Faible</option>
+          <option value="tres_faible">🔴 Très faible</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Score sommeil (/100)</label>
+          <input type="number" class="form-input" id="inSleepScore" placeholder="ex: 65" min="0" max="100">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Score SNA (-10 à +10)</label>
+          <input type="number" class="form-input" id="inSnaScore" placeholder="ex: 3.8" min="-10" max="10" step="0.1">
+        </div>
+      </div>
+      <button class="btn-primary" onclick="saveNightly()">💾 Enregistrer Nightly Recharge</button>
+    </div>
 
-    // Quêtes
-    todayQuests:[], questsDone:[], lastGenDate:null, todayMode:'normal',
-    cardioToday:null,
-    totalDone:0, diffOffset:0,
-    activityLog:[],
+    <div class="card">
+      <div class="card-title">🏃 Charge Runna (semaine en cours)</div>
+      <p style="color:var(--muted); font-size:0.8em; margin-bottom:12px;">Renseigne ta charge course hebdomadaire pour que le programme évite de sur-solliciter les jambes les jours clés.</p>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Km courus cette semaine</label>
+          <input type="number" class="form-input" id="inRunnaKm" placeholder="ex: 18" min="0" max="200" step="0.5">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Sortie longue prévue (km)</label>
+          <input type="number" class="form-input" id="inRunnaLong" placeholder="ex: 12" min="0" max="100" step="0.5">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Jour de la sortie longue</label>
+        <select class="form-input" id="inRunnaLongDay">
+          <option value="">Non planifiée</option>
+          <option value="0">Dimanche</option>
+          <option value="1">Lundi</option>
+          <option value="2">Mardi</option>
+          <option value="3">Mercredi</option>
+          <option value="4">Jeudi</option>
+          <option value="5">Vendredi</option>
+          <option value="6">Samedi</option>
+        </select>
+      </div>
+      <button class="btn-primary" onclick="saveRunna()">💾 Enregistrer charge Runna</button>
+    </div>
+  </div>
 
-    // Cycle 4 semaines
-    cycleStartDate:null,   // date ISO du début du cycle actuel
-    cycleNumber:1,         // numéro du cycle global
+  <!-- ===== PAGE : HISTORIQUE ===== -->
+  <div class="page" id="pageHistorique">
+    <div class="section-title">📜 Historique des Activités</div>
 
-    // Test mensuel
-    lastTestDate:null,     // date ISO du dernier test
-    testHistory:[],        // [{date, pompes, tractions, planche, squats}]
+    <!-- Export / Import -->
+    <div class="export-card">
+      <div class="export-card-title">💾 Sauvegarde des données</div>
+      <p style="color:var(--muted); font-size:0.78em; margin-bottom:12px;">Exporte ta progression en JSON pour la sauvegarder ou la transférer sur un autre appareil.</p>
+      <div class="export-btns">
+        <button class="export-btn dl" onclick="exportData()">⬇️ Exporter JSON</button>
+        <button class="export-btn up" onclick="document.getElementById('importFileInput').click()">⬆️ Importer JSON</button>
+      </div>
+      <input type="file" id="importFileInput" accept=".json" onchange="importData(event)">
+    </div>
 
-    // Paliers de progression (index courant par pattern)
-    palierIndex:{ push:0, pull:0, legs:0, core:0, mobility:0 }
+    <div id="historyContent">
+      <div class="history-empty">Aucune activité enregistrée.<br>Complète tes premières quêtes !</div>
+    </div>
+  </div>
+
+  <!-- ===== BOTTOM NAV ===== -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" id="navHome" onclick="goPage('Home')">
+      <span class="nav-icon">🏠</span>Accueil
+    </button>
+    <button class="nav-item" id="navNiveau" onclick="goPage('Niveau')">
+      <span class="nav-icon">📊</span>Niveau
+    </button>
+    <button class="nav-item" id="navPolar" onclick="goPage('Polar')">
+      <span class="nav-icon">📡</span>Polar
+    </button>
+    <button class="nav-item" id="navHistorique" onclick="goPage('Historique')">
+      <span class="nav-icon">📜</span>Historique
+    </button>
+  </nav>
+
+  <!-- ===== MODAL SETTINGS ===== -->
+  <div class="modal" id="settingsModal">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-title">⚙️ Paramètres</div>
+      <div class="form-group">
+        <label class="form-label">🔑 Clé API OpenRouter</label>
+        <input type="password" class="form-input" id="apiKeyInput" placeholder="sk-or-v1-...">
+        <small style="color:var(--muted); display:block; margin-top:5px; font-size:0.78em;">
+          Obtiens ta clé sur <a href="https://openrouter.ai/keys" target="_blank" style="color:var(--accent);">openrouter.ai/keys</a>
+        </small>
+      </div>
+      <div class="form-group">
+        <label class="form-label">🩹 Blessure actuelle (optionnel)</label>
+        <input type="text" class="form-input" id="injuryInput" placeholder="Ex: Épaule droite">
+      </div>
+      <div class="form-group">
+        <label class="form-label">🎯 Niveau de départ</label>
+        <input type="number" class="form-input" id="startLevelInput" placeholder="1 = débutant, 5 = sportif régulier" min="1" max="20">
+        <small style="color:var(--muted); display:block; margin-top:5px; font-size:0.78em;">Appliqué uniquement au 1er démarrage.</small>
+      </div>
+      <div class="form-group">
+        <label class="form-label">🏋️ Équipement disponible</label>
+        <div class="checkbox-grid">
+          <label class="check-item"><input type="checkbox" id="eqNone" value="none"> Poids du corps</label>
+          <label class="check-item"><input type="checkbox" id="eqPullup" value="pullup"> Barre traction</label>
+          <label class="check-item"><input type="checkbox" id="eqDips" value="dips"> Barre de dips</label>
+          <label class="check-item"><input type="checkbox" id="eqRings" value="rings"> Anneaux</label>
+          <label class="check-item"><input type="checkbox" id="eqDumbbells" value="dumbbells"> Haltères</label>
+          <label class="check-item"><input type="checkbox" id="eqBands" value="bands"> Élastiques</label>
+          <label class="check-item"><input type="checkbox" id="eqChair" value="chair"> Chaise/Table</label>
+        </div>
+      </div>
+      <button class="btn-primary" onclick="saveSettings()">💾 Enregistrer</button>
+      <button class="btn-danger" onclick="resetAll()">🔄 Réinitialiser toute la progression</button>
+      <button onclick="closeSettings()" style="width:100%; padding:12px; background:none; border:none; color:var(--muted); cursor:pointer; margin-top:10px;">Annuler</button>
+    </div>
+  </div>
+
+  <!-- ===== MODAL TEST MENSUEL ===== -->
+  <div class="modal" id="testModal">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-title gold">🏆 Test Mensuel de Référence</div>
+      <p style="color:var(--muted); font-size:0.85em; margin-bottom:16px; line-height:1.6;">
+        Effectue chaque exercice au maximum de tes capacités. Ces résultats calibreront ton volume guide pour le mois suivant.
+      </p>
+      <div class="test-result-grid">
+        <div class="test-result-item">
+          <div class="test-result-label">💪 Pompes max (2 min)</div>
+          <input type="number" class="test-result-input" id="testPompes" placeholder="0" min="0" max="200">
+          <div class="test-prev" id="prevPompes">Précédent : --</div>
+        </div>
+        <div class="test-result-item">
+          <div class="test-result-label">🏋️ Tractions max</div>
+          <input type="number" class="test-result-input" id="testTractions" placeholder="0" min="0" max="50">
+          <div class="test-prev" id="prevTractions">Précédent : --</div>
+        </div>
+        <div class="test-result-item">
+          <div class="test-result-label">🧱 Planche (sec)</div>
+          <input type="number" class="test-result-input" id="testPlanche" placeholder="0" min="0" max="600">
+          <div class="test-prev" id="prevPlanche">Précédent : --</div>
+        </div>
+        <div class="test-result-item">
+          <div class="test-result-label">🦵 Squats max (2 min)</div>
+          <input type="number" class="test-result-input" id="testSquats" placeholder="0" min="0" max="200">
+          <div class="test-prev" id="prevSquats">Précédent : --</div>
+        </div>
+      </div>
+      <button class="btn-gold" onclick="saveTestResults()">✅ Enregistrer les résultats</button>
+      <button onclick="closeTestModal()" style="width:100%; padding:12px; background:none; border:none; color:var(--muted); cursor:pointer; margin-top:10px;">Annuler</button>
+    </div>
+  </div>
+
+  <!-- LOADING -->
+  <div id="loadingOverlay">
+    <div class="spinner"></div>
+    <div class="loading-txt">Génération des quêtes...</div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+<script>
+// =============================================
+// ===== PART 2 : STATE + SAVE/LOAD + UI =====
+// =============================================
+
+// ===== STATE =====
+let S = {
+  apiKey:'', injury:'', equipment:['none','pullup','dips'],
+  stats:{ force:1, endurance:1, agility:1, perception:1, intelligence:1 },
+  statsXP:{ force:0, endurance:0, agility:0, perception:0, intelligence:0 },
+  streak:0, lastStreakDate:null,
+
+  // Training Load Polar
+  polarFatigue:null, polarTolerance:null, polarStatus:'',
+  // Nightly Recharge
+  nightlyStatus:'', sleepScore:null, snaScore:null,
+  // Runna
+  runnaKm:null, runnaLongKm:null, runnaLongDay:null,
+
+  // Quêtes
+  todayQuests:[], questsDone:[], lastGenDate:null, todayMode:'normal',
+  cardioToday:null,
+  totalDone:0, diffOffset:0,
+  activityLog:[],
+
+  // Cycle 4 semaines
+  cycleStartDate:null,
+  cycleNumber:1,
+
+  // Test mensuel
+  lastTestDate:null,
+  testHistory:[],
+
+  // Paliers
+  palierIndex:{ push:0, pull:0, legs:0, core:0, mobility:0 },
+
+  // Graphique — métrique active
+  chartMetric:'pompes'
+};
+
+const XPL = 500;
+
+// ===== PALIERS DE PROGRESSION =====
+const PALIERS = {
+  push: {
+    name:'Push (Poussée)', icon:'💪',
+    steps:[
+      'Pompes genoux','Pompes classiques','Pompes déclinées','Pompes diamant',
+      'Pompes archer','Pompes pike','Pseudo-planche pompes','Pompes explosives',
+      'Pompes à un bras (assistées)'
+    ],
+    xpThresholds:[0,2,4,6,9,12,16,20,25]
+  },
+  pull: {
+    name:'Pull (Tirage)', icon:'🔙',
+    steps:[
+      'Superman sol','Rowing sur table','Tractions australiennes','Tractions négatives lentes',
+      'Tractions pronation (partiel)','Tractions pronation (complet)','Tractions supination',
+      'Tractions lestées','Muscle-up progression'
+    ],
+    xpThresholds:[0,2,4,6,9,12,16,20,25]
+  },
+  legs: {
+    name:'Jambes & Fessiers', icon:'🦵',
+    steps:[
+      'Squats classiques','Squats sumo','Wall sit','Fentes avant','Squats bulgares',
+      'Squats jump','Pistol squat (assisté)','Pistol squat','Shrimp squat'
+    ],
+    xpThresholds:[0,2,4,6,9,12,16,20,25]
+  },
+  core: {
+    name:'Gainage & Core', icon:'🧱',
+    steps:[
+      'Planche 20sec','Planche 45sec','Hollow body hold','Dead bug','Planche latérale',
+      'Leg raises','Dragon flag (négatif)','L-sit progression','Dragon flag'
+    ],
+    xpThresholds:[0,2,4,6,9,12,16,20,25]
+  },
+  mobility: {
+    name:'Mobilité & Récup', icon:'🌿',
+    steps:[
+      'Étirements basiques 5min','Cat-cow + rotations','World greatest stretch',
+      'Ouverture hanches 90/90','Mobilité thoracique','Routine complète 10min',
+      'Yoga flow débutant','Yoga flow intermédiaire','Routine mobilité avancée'
+    ],
+    xpThresholds:[0,2,4,6,9,12,16,20,25]
+  }
+};
+
+// ===== UTILITAIRES =====
+function today(){ return new Date().toISOString().split('T')[0]; }
+function save(){ localStorage.setItem('hs4', JSON.stringify(S)); }
+function load(){
+  const d = localStorage.getItem('hs4');
+  if(d){
+    try { S = {...S, ...JSON.parse(d)}; } catch(e){ console.warn('Erreur load:', e); }
+  }
+}
+function toast(msg, type='ok'){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (type==='err' ? ' error' : type==='gold' ? ' gold' : '');
+  setTimeout(() => t.classList.remove('show'), 3200);
+}
+
+// ===== JOUR & FOCUS =====
+const DAY_NAMES = ['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'];
+const DAY_FOCUS = {
+  1:{ focus:'Push', desc:'Pectoraux, épaules, triceps', groups:['push','core'] },
+  2:{ focus:'Pull', desc:'Dos, biceps, avant-bras', groups:['pull','core'] },
+  3:{ focus:'Legs + Core', desc:'Jambes, fessiers, abdos', groups:['legs','core'] },
+  4:{ focus:'Push variation', desc:'Pompes inclinées, archer, dips', groups:['push','core'] },
+  5:{ focus:'Pull variation', desc:'Tractions supination, australiennes', groups:['pull','mobility'] },
+  6:{ focus:'Legs + Core renforcé', desc:'Squats, fentes, gainage long', groups:['legs','core'] },
+  0:{ focus:'Full body léger', desc:'Récup active, mobilité', groups:['mobility','core'] }
+};
+function getTodayFocus(){
+  const day = new Date().getDay();
+  return { ...DAY_FOCUS[day], dayName: DAY_NAMES[day] };
+}
+
+// ===== CYCLE 4 SEMAINES =====
+function getCycleInfo(){
+  if(!S.cycleStartDate){
+    S.cycleStartDate = today();
+    S.cycleNumber = 1;
+    save();
+  }
+  const start = new Date(S.cycleStartDate);
+  const now = new Date();
+  const diffDays = Math.floor((now - start) / (1000*60*60*24));
+  const weekInCycle = Math.min(4, Math.floor(diffDays / 7) + 1);
+
+  if(diffDays >= 28){
+    S.cycleStartDate = today();
+    S.cycleNumber++;
+    save();
+    return getCycleInfo();
+  }
+  return {
+    weekInCycle,
+    isDecharge: weekInCycle === 4,
+    cycleNumber: S.cycleNumber,
+    startDate: S.cycleStartDate,
+    diffDays
   };
+}
 
-  const XPL = 500;
+// ===== TEST MENSUEL =====
+function shouldShowTest(){
+  if(!S.lastTestDate) return true;
+  const last = new Date(S.lastTestDate);
+  const now = new Date();
+  const diffDays = Math.floor((now - last) / (1000*60*60*24));
+  return diffDays >= 28;
+}
+function getLastTest(){
+  if(!S.testHistory || !S.testHistory.length) return null;
+  return S.testHistory[S.testHistory.length - 1];
+}
 
-  // ===== PALIERS DE PROGRESSION =====
-  const PALIERS = {
-    push: {
-      name:'Push (Poussée)',
-      icon:'💪',
-      steps:[
-        'Pompes genoux',
-        'Pompes classiques',
-        'Pompes déclinées',
-        'Pompes diamant',
-        'Pompes archer',
-        'Pompes pike',
-        'Pseudo-planche pompes',
-        'Pompes explosives',
-        'Pompes à un bras (assistées)'
-      ],
-      xpThresholds:[0,2,4,6,9,12,16,20,25]
-    },
-    pull: {
-      name:'Pull (Tirage)',
-      icon:'🔙',
-      steps:[
-        'Superman sol',
-        'Rowing sur table',
-        'Tractions australiennes',
-        'Tractions négatives lentes',
-        'Tractions pronation (partiel)',
-        'Tractions pronation (complet)',
-        'Tractions supination',
-        'Tractions lestées',
-        'Muscle-up progression'
-      ],
-      xpThresholds:[0,2,4,6,9,12,16,20,25]
-    },
-    legs: {
-      name:'Jambes & Fessiers',
-      icon:'🦵',
-      steps:[
-        'Squats classiques',
-        'Squats sumo',
-        'Wall sit',
-        'Fentes avant',
-        'Squats bulgares',
-        'Squats jump',
-        'Pistol squat (assisté)',
-        'Pistol squat',
-        'Shrimp squat'
-      ],
-      xpThresholds:[0,2,4,6,9,12,16,20,25]
-    },
-    core: {
-      name:'Gainage & Core',
-      icon:'🧱',
-      steps:[
-        'Planche 20sec',
-        'Planche 45sec',
-        'Hollow body hold',
-        'Dead bug',
-        'Planche latérale',
-        'Leg raises',
-        'Dragon flag (négatif)',
-        'L-sit progression',
-        'Dragon flag'
-      ],
-      xpThresholds:[0,2,4,6,9,12,16,20,25]
-    },
-    mobility: {
-      name:'Mobilité & Récup',
-      icon:'🌿',
-      steps:[
-        'Étirements basiques 5min',
-        'Cat-cow + rotations',
-        'World greatest stretch',
-        'Ouverture hanches 90/90',
-        'Mobilité thoracique',
-        'Routine complète 10min',
-        'Yoga flow débutant',
-        'Yoga flow intermédiaire',
-        'Routine mobilité avancée'
-      ],
-      xpThresholds:[0,2,4,6,9,12,16,20,25]
-    }
+// ===== PALIERS =====
+function getCurrentPalierIndex(pattern){
+  const statMap = { push:'force', pull:'force', legs:'agility', core:'perception', mobility:'intelligence' };
+  const statLvl = S.stats[statMap[pattern]] || 1;
+  const thresholds = PALIERS[pattern].xpThresholds;
+  let idx = 0;
+  for(let i = thresholds.length - 1; i >= 0; i--){
+    if(statLvl >= thresholds[i]){ idx = i; break; }
+  }
+  return Math.min(idx, PALIERS[pattern].steps.length - 1);
+}
+function getCurrentPalierExercise(pattern){
+  return PALIERS[pattern].steps[getCurrentPalierIndex(pattern)];
+}
+
+// ===== NAVIGATION =====
+function goPage(name){
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page'+name).classList.add('active');
+  document.getElementById('nav'+name).classList.add('active');
+  if(name === 'Historique') renderHistory();
+  if(name === 'Niveau') renderNiveauExtras();
+}
+
+// ===== XP & STATS =====
+function avgLevel(){
+  const s = S.stats;
+  return Math.floor((s.force+s.endurance+s.agility+s.perception+s.intelligence)/5);
+}
+function addStatXP(stat, xp){
+  S.statsXP[stat] += xp;
+  while(S.statsXP[stat] >= XPL){
+    S.statsXP[stat] -= XPL;
+    S.stats[stat]++;
+    toast('⬆️ '+stat.toUpperCase()+' niveau '+S.stats[stat]+' !');
+  }
+}
+
+// ===== UI UPDATE PRINCIPAL =====
+function updateUI(){
+  const lvl = avgLevel();
+  const cycle = getCycleInfo();
+
+  document.getElementById('lvlBadge').textContent = 'LVL '+lvl;
+  document.getElementById('streakBadge').textContent = '🔥 '+S.streak;
+  document.getElementById('cycleBadge').textContent = 'S'+cycle.weekInCycle+'/4';
+
+  const avgXP = Object.values(S.statsXP).reduce((a,b)=>a+b,0)/5;
+  document.getElementById('xpFill').style.width = (avgXP/XPL*100)+'%';
+  document.getElementById('xpLabel').textContent = 'XP '+Math.floor(avgXP)+'/'+XPL;
+
+  ['force','endurance','agility','perception','intelligence'].forEach(s => {
+    const cap = s[0].toUpperCase()+s.slice(1);
+    document.getElementById('s'+cap).textContent = S.stats[s];
+    document.getElementById('b'+cap).style.width = (S.statsXP[s]/XPL*100)+'%';
+    document.getElementById('x'+cap).textContent = S.statsXP[s]+'/'+XPL;
+  });
+
+  updatePolarUI();
+  updateDiffBadge();
+  updateFocusBanner();
+  updateCardioButtons();
+  updateCycleBanners();
+  updateGenBtn();
+}
+
+function updateGenBtn(){
+  const btn = document.getElementById('genBtn');
+  const cycle = getCycleInfo();
+
+  if(S.lastGenDate === today()){
+    btn.textContent = '✅ Programme généré aujourd\'hui';
+    btn.disabled = true;
+    btn.className = 'gen-btn';
+    document.getElementById('feedbackWrap').style.display = 'block';
+  } else if(S.cardioToday){
+    btn.textContent = '🌿 GÉNÉRER ROUTINE RÉCUP';
+    btn.disabled = false;
+    btn.className = 'gen-btn recovery';
+    document.getElementById('feedbackWrap').style.display = 'none';
+  } else if(cycle.isDecharge){
+    btn.textContent = '🌙 GÉNÉRER PROGRAMME DÉCHARGE';
+    btn.disabled = false;
+    btn.className = 'gen-btn decharge';
+    document.getElementById('feedbackWrap').style.display = 'none';
+  } else {
+    btn.textContent = '⚡ GÉNÉRER PROGRAMME QUOTIDIEN';
+    btn.disabled = false;
+    btn.className = 'gen-btn';
+    document.getElementById('feedbackWrap').style.display = 'none';
+  }
+}
+
+function updateCycleBanners(){
+  const cycle = getCycleInfo();
+  document.getElementById('dischargeBanner').style.display = cycle.isDecharge ? 'flex' : 'none';
+  document.getElementById('testBanner').style.display = shouldShowTest() ? 'flex' : 'none';
+}
+
+function updateFocusBanner(){
+  const f = getTodayFocus();
+  const cycle = getCycleInfo();
+  const val = document.getElementById('focusBannerVal');
+  const day = document.getElementById('focusBannerDay');
+  if(S.cardioToday){
+    val.textContent = '🌿 Récupération active';
+    day.textContent = S.cardioToday==='course' ? 'après course' : 'après badminton';
+  } else if(cycle.isDecharge){
+    val.textContent = '🌙 Décharge — '+f.focus+' (volume -45%)';
+    day.textContent = f.dayName;
+  } else {
+    val.textContent = f.focus+' — '+f.desc;
+    day.textContent = f.dayName;
+  }
+}
+
+function updateCardioButtons(){
+  document.getElementById('actCourse').classList.toggle('done', S.cardioToday==='course');
+  document.getElementById('actBadminton').classList.toggle('done', S.cardioToday==='badminton');
+}
+
+function updateDiffBadge(){
+  const b = document.getElementById('diffBadge');
+  const t = document.getElementById('diffText');
+  if(S.diffOffset===0){ b.style.display='none'; return; }
+  b.style.display='flex';
+  if(S.diffOffset>0){ b.className='diff-badge easy'; t.textContent='😎 Volume augmenté (difficulté +'+S.diffOffset+')'; }
+  else { b.className='diff-badge hard'; t.textContent='😰 Volume réduit (difficulté '+S.diffOffset+')'; }
+}
+
+function updatePolarUI(){
+  const labels = {
+    productif:'🟢 Productif', maintien:'🔵 Maintien', excessif:'🟠 Excessif',
+    desentrainement:'🔴 Désentraînement', recuperation:'🟣 Récupération'
   };
+  document.getElementById('polarBig').textContent = S.polarStatus ? (labels[S.polarStatus]||S.polarStatus) : 'Non configuré';
+  document.getElementById('polarRatioTxt').textContent = S.polarFatigue!=null
+    ? 'Fatigue '+S.polarFatigue+' / Tolérance '+S.polarTolerance
+    : 'Configure tes données ci-dessous';
+  document.getElementById('polarFatVal').textContent = S.polarFatigue!=null ? S.polarFatigue : '--';
+  document.getElementById('polarTolVal').textContent = S.polarTolerance!=null ? S.polarTolerance : '--';
+  document.getElementById('inFatigue').value = S.polarFatigue||'';
+  document.getElementById('inTolerance').value = S.polarTolerance||'';
+  document.getElementById('inPolarStatus').value = S.polarStatus||'';
 
-  // ===== UTILITAIRES =====
-  function today(){ return new Date().toISOString().split('T')[0]; }
-  function save(){ localStorage.setItem('hs4', JSON.stringify(S)); }
-  function load(){
-    const d = localStorage.getItem('hs4');
-    if(d){
-      try { S = {...S, ...JSON.parse(d)}; } catch(e){ console.warn('Erreur load:', e); }
-    }
-  }
-  function toast(msg, type='ok'){
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.className = 'toast show' + (type==='err' ? ' error' : type==='gold' ? ' gold' : '');
-    setTimeout(() => t.classList.remove('show'), 3200);
-  }
-
-  // ===== JOUR & FOCUS =====
-  const DAY_NAMES = ['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'];
-  const DAY_FOCUS = {
-    1:{ focus:'Push', desc:'Pectoraux, épaules, triceps', groups:['push','core'] },
-    2:{ focus:'Pull', desc:'Dos, biceps, avant-bras', groups:['pull','core'] },
-    3:{ focus:'Legs + Core', desc:'Jambes, fessiers, abdos', groups:['legs','core'] },
-    4:{ focus:'Push variation', desc:'Pompes inclinées, archer, dips', groups:['push','core'] },
-    5:{ focus:'Pull variation', desc:'Tractions supination, australiennes', groups:['pull','mobility'] },
-    6:{ focus:'Legs + Core renforcé', desc:'Squats, fentes, gainage long', groups:['legs','core'] },
-    0:{ focus:'Full body léger', desc:'Récup active, mobilité', groups:['mobility','core'] }
+  const nLabels = {
+    tres_bon:'🟢 Très bon', bon:'🟢 Bon', assez_bon:'🟢 Assez bon',
+    moyen:'🟡 Moyen', faible:'🟠 Faible', tres_faible:'🔴 Très faible'
   };
-  function getTodayFocus(){
-    const day = new Date().getDay();
-    return { ...DAY_FOCUS[day], dayName: DAY_NAMES[day] };
-  }
+  document.getElementById('nightlyBig').textContent = 'Nightly : '+(S.nightlyStatus ? nLabels[S.nightlyStatus] : 'Non configuré');
+  document.getElementById('nightlyRatioTxt').textContent = (S.sleepScore!=null||S.snaScore!=null)
+    ? 'Sommeil '+(S.sleepScore??'--')+' / SNA '+(S.snaScore??'--')
+    : 'Renseigne ton statut du matin';
+  document.getElementById('polarSleepVal').textContent = S.sleepScore!=null ? S.sleepScore : '--';
+  document.getElementById('polarSnaVal').textContent = S.snaScore!=null ? (S.snaScore>0?'+':'')+S.snaScore : '--';
+  document.getElementById('inSleepScore').value = S.sleepScore!=null ? S.sleepScore : '';
+  document.getElementById('inSnaScore').value = S.snaScore!=null ? S.snaScore : '';
+  document.getElementById('inNightlyStatus').value = S.nightlyStatus||'';
 
-  // ===== CYCLE 4 SEMAINES =====
-  function getCycleInfo(){
-    if(!S.cycleStartDate){
-      S.cycleStartDate = today();
-      S.cycleNumber = 1;
-      save();
-    }
-    const start = new Date(S.cycleStartDate);
-    const now = new Date();
-    const diffDays = Math.floor((now - start) / (1000*60*60*24));
-    const weekInCycle = Math.min(4, Math.floor(diffDays / 7) + 1); // 1-4
+  document.getElementById('runnaBig').textContent = S.runnaKm!=null ? '🏃 '+S.runnaKm+' km cette semaine' : 'Runna : Non configuré';
+  document.getElementById('runnaRatioTxt').textContent = S.runnaLongKm ? 'Sortie longue : '+S.runnaLongKm+' km' : 'Charge course de la semaine';
+  document.getElementById('runnaKmVal').textContent = S.runnaKm!=null ? S.runnaKm : '--';
+  document.getElementById('runnaLongVal').textContent = S.runnaLongKm!=null ? S.runnaLongKm+' km' : '--';
+  document.getElementById('inRunnaKm').value = S.runnaKm!=null ? S.runnaKm : '';
+  document.getElementById('inRunnaLong').value = S.runnaLongKm!=null ? S.runnaLongKm : '';
+  document.getElementById('inRunnaLongDay').value = S.runnaLongDay!=null ? S.runnaLongDay : '';
+}
 
-    // Si on dépasse 4 semaines, démarrer un nouveau cycle
-    if(diffDays >= 28){
-      S.cycleStartDate = today();
-      S.cycleNumber++;
-      save();
-      return getCycleInfo();
-    }
-    return {
-      weekInCycle,           // 1, 2, 3 ou 4
-      isDecharge: weekInCycle === 4,
-      cycleNumber: S.cycleNumber,
-      startDate: S.cycleStartDate,
-      diffDays
-    };
-  }
+// ===== RENDER NIVEAU EXTRAS =====
+function renderNiveauExtras(){
+  renderPaliers();
+  renderCycleTracker();
+  renderTestHistory();
+  renderChart(S.chartMetric || 'pompes');
+}
 
-  // ===== TEST MENSUEL =====
-  function shouldShowTest(){
-    if(!S.lastTestDate) return true; // jamais fait
-    const last = new Date(S.lastTestDate);
-    const now = new Date();
-    const diffDays = Math.floor((now - last) / (1000*60*60*24));
-    return diffDays >= 28;
-  }
-  function getLastTest(){
-    if(!S.testHistory || !S.testHistory.length) return null;
-    return S.testHistory[S.testHistory.length - 1];
-  }
-
-  // ===== PALIERS =====
-  function getCurrentPalierIndex(pattern){
-    const lvl = S.stats.force; // référence force pour push/pull, agility pour legs, etc.
+function renderPaliers(){
+  const wrap = document.getElementById('paliersWrap');
+  wrap.innerHTML = '';
+  Object.keys(PALIERS).forEach(pattern => {
+    const p = PALIERS[pattern];
+    const currentIdx = getCurrentPalierIndex(pattern);
     const statMap = { push:'force', pull:'force', legs:'agility', core:'perception', mobility:'intelligence' };
     const statLvl = S.stats[statMap[pattern]] || 1;
-    const thresholds = PALIERS[pattern].xpThresholds;
-    let idx = 0;
-    for(let i = thresholds.length-1; i >= 0; i--){
-      if(statLvl >= thresholds[i]){ idx = i; break; }
+    const div = document.createElement('div');
+    div.className = 'palier-card';
+    let stepsHtml = p.steps.map((step, i) => {
+      let cls = 'palier-step';
+      if(i < currentIdx) cls += ' done';
+      else if(i === currentIdx) cls += ' current';
+      return '<span class="'+cls+'">'+step+'</span>';
+    }).join('');
+    div.innerHTML =
+      '<div class="palier-header">'+
+        '<div class="palier-name">'+p.icon+' '+p.name+'</div>'+
+        '<div class="palier-level">Stat niv. '+statLvl+'</div>'+
+      '</div>'+
+      '<div class="palier-current '+(currentIdx > 0 ? 'unlocked' : '')+'">'+
+        'Actuel : '+p.steps[currentIdx]+
+      '</div>'+
+      '<div class="palier-steps">'+stepsHtml+'</div>';
+    wrap.appendChild(div);
+  });
+}
+
+function renderCycleTracker(){
+  const cycle = getCycleInfo();
+  document.getElementById('cycleTitle').textContent = 'Cycle '+cycle.cycleNumber;
+  const startFmt = new Date(cycle.startDate).toLocaleDateString('fr-FR',{day:'numeric',month:'long'});
+  document.getElementById('cycleStartDate').textContent = 'Démarré le '+startFmt;
+  document.getElementById('cycleDesc').textContent =
+    'Semaine '+cycle.weekInCycle+' sur 4 — '+(cycle.isDecharge ? '🌙 Décharge (volume -45%)' : 'Charge normale');
+  const weeksEl = document.getElementById('cycleWeeks');
+  weeksEl.innerHTML = '';
+  for(let w=1; w<=4; w++){
+    const div = document.createElement('div');
+    let cls = 'cycle-week';
+    const label = w < 4 ? 'Charge' : '🌙 Décharge';
+    if(w === cycle.weekInCycle) cls += w===4 ? ' decharge' : ' active';
+    else if(w < cycle.weekInCycle) cls += ' done';
+    div.className = cls;
+    div.innerHTML = '<div class="cycle-week-num">S'+w+'</div><div class="cycle-week-label">'+label+'</div>';
+    weeksEl.appendChild(div);
+  }
+}
+
+function renderTestHistory(){
+  const wrap = document.getElementById('testHistoryWrap');
+  if(!S.testHistory || !S.testHistory.length){
+    wrap.innerHTML = '<div class="history-empty" style="padding:20px;">Aucun test effectué pour l\'instant.</div>';
+    return;
+  }
+  wrap.innerHTML = '';
+  [...S.testHistory].reverse().forEach((t, idx, arr) => {
+    const prev = arr[idx + 1]; // élément précédent dans l'ordre inversé = test antérieur
+    const div = document.createElement('div');
+    div.className = 'test-history-item';
+    const d = new Date(t.date).toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'});
+
+    function delta(cur, p, key){
+      if(!p) return '';
+      const diff = cur[key] - p[key];
+      if(diff === 0) return '';
+      const cls = diff > 0 ? 'up' : 'down';
+      const sign = diff > 0 ? '+' : '';
+      return '<span class="test-history-delta '+cls+'">'+sign+diff+'</span>';
     }
-    return Math.min(idx, PALIERS[pattern].steps.length - 1);
+
+    div.innerHTML =
+      '<div class="test-history-date">'+d+'</div>'+
+      '<div class="test-history-scores">'+
+        '<span class="test-history-score">💪 '+t.pompes+' pompes'+delta(t,prev,'pompes')+'</span>'+
+        '<span class="test-history-score">🏋️ '+t.tractions+' tractions'+delta(t,prev,'tractions')+'</span>'+
+        '<span class="test-history-score">🧱 '+t.planche+'s planche'+delta(t,prev,'planche')+'</span>'+
+        '<span class="test-history-score">🦵 '+t.squats+' squats'+delta(t,prev,'squats')+'</span>'+
+      '</div>';
+    wrap.appendChild(div);
+  });
+}
+
+// ===== HISTORY =====
+function renderHistory(){
+  const c = document.getElementById('historyContent');
+  // Garder le bloc export/import en tête — ne pas l'écraser
+  const exportCard = document.querySelector('.export-card');
+  if(!S.activityLog || !S.activityLog.length){
+    document.getElementById('historyContent').innerHTML =
+      '<div class="history-empty">Aucune activité enregistrée.<br>Complète tes premières quêtes !</div>';
+    return;
   }
-  function getCurrentPalierExercise(pattern){
-    const idx = getCurrentPalierIndex(pattern);
-    return PALIERS[pattern].steps[idx];
-  }
-
-  // ===== NAVIGATION =====
-  function goPage(name){
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    document.getElementById('page'+name).classList.add('active');
-    document.getElementById('nav'+name).classList.add('active');
-    if(name === 'Historique') renderHistory();
-    if(name === 'Niveau') renderNiveauExtras();
-  }
-
-  // ===== XP & STATS =====
-  function avgLevel(){
-    const s = S.stats;
-    return Math.floor((s.force+s.endurance+s.agility+s.perception+s.intelligence)/5);
-  }
-  function addStatXP(stat, xp){
-    S.statsXP[stat] += xp;
-    while(S.statsXP[stat] >= XPL){
-      S.statsXP[stat] -= XPL;
-      S.stats[stat]++;
-      toast('⬆️ '+stat.toUpperCase()+' niveau '+S.stats[stat]+' !');
-    }
-  }
-
-  // ===== UI UPDATE PRINCIPAL =====
-  function updateUI(){
-    const lvl = avgLevel();
-    const cycle = getCycleInfo();
-
-    // Header
-    document.getElementById('lvlBadge').textContent = 'LVL '+lvl;
-    document.getElementById('streakBadge').textContent = '🔥 '+S.streak;
-    document.getElementById('cycleBadge').textContent = 'S'+cycle.weekInCycle+'/4';
-
-    // XP bar
-    const avgXP = Object.values(S.statsXP).reduce((a,b)=>a+b,0)/5;
-    document.getElementById('xpFill').style.width = (avgXP/XPL*100)+'%';
-    document.getElementById('xpLabel').textContent = 'XP '+Math.floor(avgXP)+'/'+XPL;
-
-    // Stats page
-    ['force','endurance','agility','perception','intelligence'].forEach(s => {
-      const cap = s[0].toUpperCase()+s.slice(1);
-      document.getElementById('s'+cap).textContent = S.stats[s];
-      document.getElementById('b'+cap).style.width = (S.statsXP[s]/XPL*100)+'%';
-      document.getElementById('x'+cap).textContent = S.statsXP[s]+'/'+XPL;
+  const byDate = {};
+  S.activityLog.forEach(a => { if(!byDate[a.date]) byDate[a.date]=[]; byDate[a.date].push(a); });
+  let html = '';
+  Object.keys(byDate).sort((a,b)=>b.localeCompare(a)).forEach(date => {
+    const d = new Date(date);
+    const label = d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
+    html += '<div class="history-day"><div class="history-date">'+label+'</div>';
+    byDate[date].forEach(a => {
+      html += '<div class="history-item"><span class="history-name">'+a.name+'</span><span class="history-xp">+'+a.xp+' XP</span></div>';
     });
+    html += '</div>';
+  });
+  document.getElementById('historyContent').innerHTML = html;
+}
 
-    updatePolarUI();
-    updateDiffBadge();
-    updateFocusBanner();
-    updateCardioButtons();
-    updateCycleBanners();
-    updateGenBtn();
+// ===== SETTINGS =====
+function openSettings(){
+  document.getElementById('apiKeyInput').value = S.apiKey;
+  document.getElementById('injuryInput').value = S.injury;
+  document.querySelectorAll('[id^="eq"]').forEach(cb => cb.checked = S.equipment.includes(cb.value));
+  document.getElementById('settingsModal').classList.add('active');
+}
+function closeSettings(){ document.getElementById('settingsModal').classList.remove('active'); }
+function saveSettings(){
+  S.apiKey = document.getElementById('apiKeyInput').value.trim();
+  S.injury = document.getElementById('injuryInput').value.trim();
+  S.equipment = [];
+  document.querySelectorAll('[id^="eq"]:checked').forEach(cb => S.equipment.push(cb.value));
+  if(!S.equipment.length) S.equipment = ['none'];
+  const sl = parseInt(document.getElementById('startLevelInput').value);
+  if(sl && sl>1 && avgLevel()===1){
+    ['force','endurance','agility','perception','intelligence'].forEach(s => { S.stats[s]=sl; S.statsXP[s]=0; });
+    toast('🎯 Niveau de départ appliqué : '+sl);
+  }
+  save(); updateUI(); closeSettings(); toast('⚙️ Paramètres enregistrés');
+}
+
+// ===== POLAR =====
+function savePolar(){
+  S.polarFatigue = document.getElementById('inFatigue').value !== '' ? parseInt(document.getElementById('inFatigue').value) : null;
+  S.polarTolerance = document.getElementById('inTolerance').value !== '' ? parseInt(document.getElementById('inTolerance').value) : null;
+  S.polarStatus = document.getElementById('inPolarStatus').value;
+  save(); updateUI(); toast('📡 Training Load enregistré');
+}
+function saveNightly(){
+  const sl = document.getElementById('inSleepScore').value;
+  const sn = document.getElementById('inSnaScore').value;
+  S.sleepScore = sl !== '' ? parseInt(sl) : null;
+  S.snaScore = sn !== '' ? parseFloat(sn) : null;
+  S.nightlyStatus = document.getElementById('inNightlyStatus').value;
+  save(); updateUI(); toast('🌙 Nightly Recharge enregistré');
+}
+function saveRunna(){
+  const km = document.getElementById('inRunnaKm').value;
+  const long = document.getElementById('inRunnaLong').value;
+  const day = document.getElementById('inRunnaLongDay').value;
+  S.runnaKm = km !== '' ? parseFloat(km) : null;
+  S.runnaLongKm = long !== '' ? parseFloat(long) : null;
+  S.runnaLongDay = day !== '' ? parseInt(day) : null;
+  save(); updateUI(); toast('🏃 Charge Runna enregistrée');
+}
+
+// ===== DIFF =====
+function setDiff(v){
+  if(v===0){ S.diffOffset=0; }
+  else { S.diffOffset = Math.max(-3, Math.min(3, S.diffOffset+v)); }
+  const ids = ['fbHard','fbOk','fbEasy'];
+  const cls = ['active-hard','active-ok','active-easy'];
+  ids.forEach((id,i) => {
+    document.getElementById(id).className = 'fb-btn'+(v===i-1?' '+cls[i]:'');
+  });
+  save(); updateUI();
+  const msgs = {
+    '-3':'📉 Fortement réduite','-2':'📉 Bien réduite','-1':'📉 Légèrement réduite',
+    '0':'✅ Équilibrée','1':'📈 Légèrement augmentée','2':'📈 Bien augmentée','3':'📈 Fortement augmentée'
+  };
+  toast(msgs[String(S.diffOffset)]||'✅ Ajusté');
+}
+function resetDiff(){ S.diffOffset=0; save(); updateUI(); toast('✅ Difficulté réinitialisée'); }
+
+// ===== TEST MENSUEL =====
+function openTestModal(){
+  const last = getLastTest();
+  // FIX : IDs corrigés testTractions / prevTractions
+  document.getElementById('prevPompes').textContent    = last ? 'Précédent : '+last.pompes    : 'Précédent : --';
+  document.getElementById('prevTractions').textContent = last ? 'Précédent : '+last.tractions : 'Précédent : --';
+  document.getElementById('prevPlanche').textContent   = last ? 'Précédent : '+last.planche+'s' : 'Précédent : --';
+  document.getElementById('prevSquats').textContent    = last ? 'Précédent : '+last.squats    : 'Précédent : --';
+  document.getElementById('testPompes').value    = '';
+  document.getElementById('testTractions').value = '';
+  document.getElementById('testPlanche').value   = '';
+  document.getElementById('testSquats').value    = '';
+  document.getElementById('testModal').classList.add('active');
+}
+function closeTestModal(){ document.getElementById('testModal').classList.remove('active'); }
+
+function saveTestResults(){
+  const pompes    = parseInt(document.getElementById('testPompes').value)||0;
+  // FIX : ID corrigé testTractions
+  const tractions = parseInt(document.getElementById('testTractions').value)||0;
+  const planche   = parseInt(document.getElementById('testPlanche').value)||0;
+  const squats    = parseInt(document.getElementById('testSquats').value)||0;
+  if(!pompes && !tractions && !planche && !squats){ toast('❌ Entre au moins un résultat','err'); return; }
+
+  const result = { date:today(), pompes, tractions, planche, squats };
+  if(!S.testHistory) S.testHistory = [];
+  S.testHistory.push(result);
+  S.lastTestDate = today();
+
+  addStatXP('force',      Math.floor(pompes * 1.5));
+  addStatXP('force',      Math.floor(tractions * 3));
+  addStatXP('perception', Math.floor(planche * 0.3));
+  addStatXP('agility',    Math.floor(squats * 1.2));
+
+  S.activityLog.unshift({
+    date:today(),
+    name:'🏆 Test mensuel',
+    xp: pompes + tractions*2 + Math.floor(planche/3) + squats,
+    type:'test'
+  });
+
+  save(); updateUI(); closeTestModal();
+  toast('🏆 Test enregistré ! XP bonus attribué', 'gold');
+
+  if(S.testHistory.length >= 2){
+    const prev = S.testHistory[S.testHistory.length - 2];
+    const diffPompes = pompes - prev.pompes;
+    if(diffPompes > 0) setTimeout(()=>toast('💪 +'+diffPompes+' pompes vs mois dernier !','gold'),1200);
   }
 
-  function updateGenBtn(){
-    const btn = document.getElementById('genBtn');
-    const cycle = getCycleInfo();
-    const isRecov = S.cardioToday && S.lastGenDate !== today();
-
-    if(S.lastGenDate === today()){
-      btn.textContent = '✅ Programme généré aujourd\'hui';
-      btn.disabled = true;
-      btn.className = 'gen-btn';
-      document.getElementById('feedbackWrap').style.display = 'block';
-    } else if(isRecov){
-      btn.textContent = '🌿 GÉNÉRER ROUTINE RÉCUP';
-      btn.disabled = false;
-      btn.className = 'gen-btn recovery';
-      document.getElementById('feedbackWrap').style.display = 'none';
-    } else if(cycle.isDecharge){
-      btn.textContent = '🌙 GÉNÉRER PROGRAMME DÉCHARGE';
-      btn.disabled = false;
-      btn.className = 'gen-btn decharge';
-      document.getElementById('feedbackWrap').style.display = 'none';
-    } else {
-      btn.textContent = '⚡ GÉNÉRER PROGRAMME QUOTIDIEN';
-      btn.disabled = false;
-      btn.className = 'gen-btn';
-      document.getElementById('feedbackWrap').style.display = 'none';
-    }
-  }
-
-  function updateCycleBanners(){
-    const cycle = getCycleInfo();
-    // Bannière décharge
-    document.getElementById('dischargeBanner').style.display = cycle.isDecharge ? 'flex' : 'none';
-    // Bannière test mensuel
-    document.getElementById('testBanner').style.display = shouldShowTest() ? 'flex' : 'none';
-  }
-
-  function updateFocusBanner(){
-    const f = getTodayFocus();
-    const val = document.getElementById('focusBannerVal');
-    const day = document.getElementById('focusBannerDay');
-    const cycle = getCycleInfo();
-    if(S.cardioToday){
-      val.textContent = '🌿 Récupération active';
-      day.textContent = S.cardioToday==='course' ? 'après course' : 'après badminton';
-    } else if(cycle.isDecharge){
-      val.textContent = '🌙 Décharge — '+f.focus+' (volume -45%)';
-      day.textContent = f.dayName;
-    } else {
-      val.textContent = f.focus+' — '+f.desc;
-      day.textContent = f.dayName;
-    }
-  }
-
-  function updateCardioButtons(){
-    document.getElementById('actCourse').classList.toggle('done', S.cardioToday==='course');
-    document.getElementById('actBadminton').classList.toggle('done', S.cardioToday==='badminton');
-  }
-
-  function updateDiffBadge(){
-    const b = document.getElementById('diffBadge');
-    const t = document.getElementById('diffText');
-    if(S.diffOffset===0){ b.style.display='none'; return; }
-    b.style.display='flex';
-    if(S.diffOffset>0){ b.className='diff-badge easy'; t.textContent='😎 Volume augmenté (difficulté +'+S.diffOffset+')'; }
-    else { b.className='diff-badge hard'; t.textContent='😰 Volume réduit (difficulté '+S.diffOffset+')'; }
-  }
-
-  function updatePolarUI(){
-    const labels = {productif:'🟢 Productif',maintien:'🔵 Maintien',excessif:'🟠 Excessif',desentrainement:'🔴 Désentraînement',recuperation:'🟣 Récupération'};
-    document.getElementById('polarBig').textContent = S.polarStatus ? (labels[S.polarStatus]||S.polarStatus) : 'Non configuré';
-    document.getElementById('polarRatioTxt').textContent = S.polarFatigue!=null ? 'Fatigue '+S.polarFatigue+' / Tolérance '+S.polarTolerance : 'Configure tes données ci-dessous';
-    document.getElementById('polarFatVal').textContent = S.polarFatigue!=null ? S.polarFatigue : '--';
-    document.getElementById('polarTolVal').textContent = S.polarTolerance!=null ? S.polarTolerance : '--';
-    document.getElementById('inFatigue').value = S.polarFatigue||'';
-    document.getElementById('inTolerance').value = S.polarTolerance||'';
-    document.getElementById('inPolarStatus').value = S.polarStatus||'';
-
-    const nLabels = {tres_bon:'🟢 Très bon',bon:'🟢 Bon',assez_bon:'🟢 Assez bon',moyen:'🟡 Moyen',faible:'🟠 Faible',tres_faible:'🔴 Très faible'};
-    document.getElementById('nightlyBig').textContent = 'Nightly : '+(S.nightlyStatus ? nLabels[S.nightlyStatus] : 'Non configuré');
-    document.getElementById('nightlyRatioTxt').textContent = (S.sleepScore!=null||S.snaScore!=null) ? 'Sommeil '+(S.sleepScore??'--')+' / SNA '+(S.snaScore??'--') : 'Renseigne ton statut du matin';
-    document.getElementById('polarSleepVal').textContent = S.sleepScore!=null ? S.sleepScore : '--';
-    document.getElementById('polarSnaVal').textContent = S.snaScore!=null ? (S.snaScore>0?'+':'')+S.snaScore : '--';
-    document.getElementById('inSleepScore').value = S.sleepScore!=null ? S.sleepScore : '';
-    document.getElementById('inSnaScore').value = S.snaScore!=null ? S.snaScore : '';
-    document.getElementById('inNightlyStatus').value = S.nightlyStatus||'';
-
-    // Runna
-    document.getElementById('runnaBig').textContent = S.runnaKm!=null ? '🏃 '+S.runnaKm+' km cette semaine' : 'Runna : Non configuré';
-    document.getElementById('runnaRatioTxt').textContent = S.runnaLongKm ? 'Sortie longue : '+S.runnaLongKm+' km' : 'Charge course de la semaine';
-    document.getElementById('runnaKmVal').textContent = S.runnaKm!=null ? S.runnaKm : '--';
-    document.getElementById('runnaLongVal').textContent = S.runnaLongKm!=null ? S.runnaLongKm+' km' : '--';
-    document.getElementById('inRunnaKm').value = S.runnaKm!=null ? S.runnaKm : '';
-    document.getElementById('inRunnaLong').value = S.runnaLongKm!=null ? S.runnaLongKm : '';
-    document.getElementById('inRunnaLongDay').value = S.runnaLongDay!=null ? S.runnaLongDay : '';
-  }
-
-  // ===== RENDER NIVEAU EXTRAS =====
-  function renderNiveauExtras(){
-    renderPaliers();
-    renderCycleTracker();
+  // Rafraîchir graphique si page Niveau visible
+  if(document.getElementById('pageNiveau').classList.contains('active')){
+    renderChart(S.chartMetric || 'pompes');
     renderTestHistory();
   }
+}
 
-  function renderPaliers(){
-    const wrap = document.getElementById('paliersWrap');
-    wrap.innerHTML = '';
-    Object.keys(PALIERS).forEach(pattern => {
-      const p = PALIERS[pattern];
-      const currentIdx = getCurrentPalierIndex(pattern);
-      const statMap = { push:'force', pull:'force', legs:'agility', core:'perception', mobility:'intelligence' };
-      const statLvl = S.stats[statMap[pattern]] || 1;
+// ===== DEBUG =====
+function toggleDebug(){
+  const p = document.getElementById('debugPanel');
+  p.style.display = p.style.display==='none' ? 'block' : 'none';
+}
+function applyDebugVal(n){
+  ['force','endurance','agility','perception','intelligence'].forEach(s=>{ S.stats[s]=n; S.statsXP[s]=250; });
+  S.streak=7; save(); updateUI(); renderNiveauExtras(); toast('🎮 Niveau simulé : '+n);
+}
+function applyDebug(){
+  const v = parseInt(document.getElementById('debugInput').value);
+  if(!v||v<1||v>100){ toast('❌ Niveau invalide','err'); return; }
+  applyDebugVal(v);
+}
+function resetAll(){
+  if(!confirm('⚠️ Réinitialiser toute la progression ?')) return;
+  localStorage.removeItem('hs4'); location.reload();
+}
+</script>
+<script>
+// =============================================
+// ===== PART 3 : GENERATE + QUESTS + INIT ====
+// =============================================
 
-      const div = document.createElement('div');
-      div.className = 'palier-card';
-      let stepsHtml = p.steps.map((step, i) => {
-        let cls = 'palier-step';
-        if(i < currentIdx) cls += ' done';
-        else if(i === currentIdx) cls += ' current';
-        return '<span class="'+cls+'">'+step+'</span>';
-      }).join('');
+// ===== VOLUME GUIDE =====
+function getVolumeGuide(){
+  const cycle = getCycleInfo();
+  const eff = Math.max(1, avgLevel() + (S.diffOffset||0));
+  let vm = 1.0;
 
-      div.innerHTML = `
-        <div class="palier-header">
-          <div class="palier-name">${p.icon} ${p.name}</div>
-          <div class="palier-level">Stat niv. ${statLvl}</div>
-        </div>
-        <div class="palier-current ${currentIdx > 0 ? 'unlocked' : ''}">
-          Actuel : ${p.steps[currentIdx]}
-        </div>
-        <div class="palier-steps">${stepsHtml}</div>
-      `;
-      wrap.appendChild(div);
-    });
+  // Modulation cycle décharge
+  if(cycle.isDecharge) vm *= 0.55;
+
+  // Modulation Polar Training Load
+  if(S.polarStatus==='excessif')          vm *= 0.7;
+  else if(S.polarStatus==='maintien')     vm *= 0.9;
+  else if(S.polarStatus==='desentrainement') vm *= 1.15;
+  else if(S.polarStatus==='recuperation') vm *= 0.5;
+
+  // Modulation Nightly Recharge
+  if(S.nightlyStatus==='faible')          vm *= 0.85;
+  else if(S.nightlyStatus==='tres_faible') vm *= 0.6;
+  else if(S.nightlyStatus==='tres_bon')   vm *= 1.05;
+
+  // FIX : ordre corrigé — >=60 avant >=40 pour éviter court-circuit
+  const todayDay = new Date().getDay();
+  const isLongRunDay = S.runnaLongDay !== null && S.runnaLongDay === todayDay;
+  if(isLongRunDay){
+    vm *= 0.7;
+  } else if(S.runnaKm !== null && S.runnaKm >= 60){
+    vm *= 0.7;
+  } else if(S.runnaKm !== null && S.runnaKm >= 40){
+    vm *= 0.85;
   }
 
-  function renderCycleTracker(){
-    const cycle = getCycleInfo();
-    document.getElementById('cycleTitle').textContent = 'Cycle '+cycle.cycleNumber;
-    const startFmt = new Date(cycle.startDate).toLocaleDateString('fr-FR',{day:'numeric',month:'long'});
-    document.getElementById('cycleStartDate').textContent = 'Démarré le '+startFmt;
-    document.getElementById('cycleDesc').textContent =
-      'Semaine '+cycle.weekInCycle+' sur 4 — '+(cycle.isDecharge ? '🌙 Décharge (volume -45%)' : 'Charge normale');
+  // Base volume selon niveau effectif
+  let g = '';
+  if(eff<=2)       g = '2x8 pompes, 2x12 squats, 2x20sec planche.';
+  else if(eff<=4)  g = '3x10 pompes, 3x15 squats, 3x30sec planche.';
+  else if(eff<=6)  g = '3x12 pompes, 3x18 squats, 3x40sec planche.';
+  else if(eff<=8)  g = '3x15 pompes, 3x20 squats, 3x45sec planche.';
+  else if(eff<=10) g = '4x15 pompes, 4x20 squats, 3x60sec planche.';
+  else if(eff<=13) g = '4x18 pompes, 4x22 squats, 4x60sec planche.';
+  else if(eff<=16) g = '4x20 pompes, 4x25 squats, 4x75sec planche.';
+  else             g = '5x20 pompes, 5x25 squats, 4x90sec planche.';
 
-    const weeksEl = document.getElementById('cycleWeeks');
-    weeksEl.innerHTML = '';
-    for(let w=1; w<=4; w++){
-      const div = document.createElement('div');
-      let cls = 'cycle-week';
-      let label = w < 4 ? 'Charge' : '🌙 Décharge';
-      if(w === cycle.weekInCycle) cls += w===4 ? ' decharge' : ' active';
-      else if(w < cycle.weekInCycle) cls += ' done';
-      div.className = cls;
-      div.innerHTML = `<div class="cycle-week-num">S${w}</div><div class="cycle-week-label">${label}</div>`;
-      weeksEl.appendChild(div);
-    }
+  if(vm !== 1.0) g += ' Volume global à '+Math.round(vm*100)+'%.';
+  if(isLongRunDay) g += ' (sortie longue Runna aujourd\'hui : éviter jambes)';
+  return g;
+}
+
+// ===== ÉQUIPEMENT =====
+function getEquip(){
+  if(!S.equipment.length || (S.equipment.length===1 && S.equipment[0]==='none'))
+    return 'Poids du corps uniquement';
+  const l = {
+    none:'Poids du corps', pullup:'Barre traction', dips:'Barre de dips',
+    rings:'Anneaux', dumbbells:'Haltères', bands:'Élastiques', chair:'Chaise/Table'
+  };
+  return S.equipment.map(e => l[e]||e).join(', ');
+}
+
+// ===== POOL D'EXERCICES =====
+function getPool(){
+  const focus = getTodayFocus();
+  const cycle = getCycleInfo();
+  const todayDay = new Date().getDay();
+  const isLongRunDay = S.runnaLongDay !== null && S.runnaLongDay === todayDay;
+
+  const fullPool = {
+    push:[
+      'pompes genoux','pompes classiques','pompes déclinées','pompes diamant',
+      'pompes archer','pompes pike','pseudo-planche pompes','pompes explosives',
+      'pompes wide','pompes inclinées sur chaise'
+    ],
+    pull:[
+      'superman','rowing sur table','bird dog','scapular pulls',
+      'tractions australiennes','tractions négatives lentes','tractions pronation',
+      'tractions supination','dead hang','hanging knee raise','hanging leg raise'
+    ],
+    legs:[
+      'squats classiques','squats sumo','wall sit','fentes avant','fentes arrière',
+      'fentes latérales','squats bulgares','squats jump','pont fessier',
+      'pont fessier unilatéral','mollets debout','step-ups sur chaise'
+    ],
+    core:[
+      'planche classique','planche latérale','hollow body hold','dead bug',
+      'crunchs bicycle','leg raises','mountain climbers','russian twist',
+      'bear crawl','L-sit progression'
+    ],
+    mobility:[
+      'cat-cow','world greatest stretch','rotations épaules','ouverture hanches 90/90',
+      'étirement ischios','étirement quadriceps','étirement pectoraux porte',
+      'respiration diaphragmatique 5min','mobilité thoracique','étirement mollets'
+    ],
+    pullup:[
+      'tractions pronation','tractions supination','tractions prise neutre',
+      'tractions négatives lentes','tractions australiennes','dead hang',
+      'hanging knee raise','hanging leg raise'
+    ],
+    dips:['dips à la barre','dips négatifs lents','support hold','L-sit progression'],
+    rings:['dips aux anneaux','tractions aux anneaux','rows aux anneaux','support hold anneaux'],
+    dumbbells:[
+      'développé haltères','rowing haltères','curls haltères','élévations latérales',
+      'goblet squat','soulevé de terre roumain haltères','développé militaire haltères'
+    ],
+    bands:[
+      'tirage élastique vertical','tirage élastique horizontal','face pull élastique',
+      'squat avec bande','curl biceps élastique'
+    ],
+    chair:['dips sur chaise','step-ups sur chaise','pompes inclinées sur chaise']
+  };
+
+  // Exercices de palier courant pour chaque groupe du focus
+  const palierExercises = [];
+  focus.groups.forEach(g => {
+    if(PALIERS[g]) palierExercises.push(getCurrentPalierExercise(g));
+  });
+
+  let pool = [...palierExercises];
+
+  // Mode récup cardio
+  if(S.cardioToday){
+    return [...new Set([...fullPool.mobility, ...fullPool.core.slice(0,4)])];
   }
 
-  function renderTestHistory(){
-    const wrap = document.getElementById('testHistoryWrap');
-    if(!S.testHistory || !S.testHistory.length){
-      wrap.innerHTML = '<div class="history-empty" style="padding:20px;">Aucun test effectué pour l\'instant.</div>';
-      return;
-    }
-    wrap.innerHTML = '';
-    [...S.testHistory].reverse().forEach(t => {
-      const div = document.createElement('div');
-      div.className = 'test-history-item';
-      const d = new Date(t.date).toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'});
-      div.innerHTML = `
-        <div class="test-history-date">${d}</div>
-        <div class="test-history-scores">
-          <span class="test-history-score">💪 ${t.pompes} pompes</span>
-          <span class="test-history-score">🏋️ ${t.tractions} tractions</span>
-          <span class="test-history-score">🧱 ${t.planche}s planche</span>
-          <span class="test-history-score">🦵 ${t.squats} squats</span>
-        </div>
-      `;
-      wrap.appendChild(div);
-    });
+  // Mode décharge
+  if(cycle.isDecharge){
+    return [...new Set([...fullPool.mobility, ...fullPool.core.slice(0,5)])];
   }
 
-  // ===== HISTORY =====
-  function renderHistory(){
-    const c = document.getElementById('historyContent');
-    if(!S.activityLog || !S.activityLog.length){
-      c.innerHTML = '<div class="history-empty">Aucune activité enregistrée.<br>Complète tes premières quêtes !</div>';
-      return;
-    }
-    const byDate = {};
-    S.activityLog.forEach(a => { if(!byDate[a.date]) byDate[a.date]=[]; byDate[a.date].push(a); });
-    c.innerHTML = '';
-    Object.keys(byDate).sort((a,b)=>b.localeCompare(a)).forEach(date => {
-      const div = document.createElement('div'); div.className = 'history-day';
-      const d = new Date(date);
-      const label = d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
-      div.innerHTML = '<div class="history-date">'+label+'</div>';
-      byDate[date].forEach(a => {
-        div.innerHTML += '<div class="history-item"><span class="history-name">'+a.name+'</span><span class="history-xp">+'+a.xp+' XP</span></div>';
-      });
-      c.appendChild(div);
-    });
-  }
-
-  // ===== SETTINGS =====
-  function openSettings(){
-    document.getElementById('apiKeyInput').value = S.apiKey;
-    document.getElementById('injuryInput').value = S.injury;
-    document.querySelectorAll('[id^="eq"]').forEach(cb => cb.checked = S.equipment.includes(cb.value));
-    document.getElementById('settingsModal').classList.add('active');
-  }
-  function closeSettings(){ document.getElementById('settingsModal').classList.remove('active'); }
-  function saveSettings(){
-    S.apiKey = document.getElementById('apiKeyInput').value.trim();
-    S.injury = document.getElementById('injuryInput').value.trim();
-    S.equipment = [];
-    document.querySelectorAll('[id^="eq"]:checked').forEach(cb => S.equipment.push(cb.value));
-    if(!S.equipment.length) S.equipment = ['none'];
-    const sl = parseInt(document.getElementById('startLevelInput').value);
-    if(sl && sl>1 && avgLevel()===1){
-      ['force','endurance','agility','perception','intelligence'].forEach(s => { S.stats[s]=sl; S.statsXP[s]=0; });
-      toast('🎯 Niveau de départ appliqué : '+sl);
-    }
-    save(); updateUI(); closeSettings(); toast('⚙️ Paramètres enregistrés');
-  }
-
-  // ===== POLAR =====
-  function savePolar(){
-    S.polarFatigue = document.getElementById('inFatigue').value ? parseInt(document.getElementById('inFatigue').value) : null;
-    S.polarTolerance = document.getElementById('inTolerance').value ? parseInt(document.getElementById('inTolerance').value) : null;
-    S.polarStatus = document.getElementById('inPolarStatus').value;
-    save(); updateUI(); toast('📡 Training Load enregistré');
-  }
-  function saveNightly(){
-    const sl = document.getElementById('inSleepScore').value;
-    const sn = document.getElementById('inSnaScore').value;
-    S.sleepScore = sl!=='' ? parseInt(sl) : null;
-    S.snaScore = sn!=='' ? parseFloat(sn) : null;
-    S.nightlyStatus = document.getElementById('inNightlyStatus').value;
-    save(); updateUI(); toast('🌙 Nightly Recharge enregistré');
-  }
-  function saveRunna(){
-    const km = document.getElementById('inRunnaKm').value;
-    const long = document.getElementById('inRunnaLong').value;
-    const day = document.getElementById('inRunnaLongDay').value;
-    S.runnaKm = km!=='' ? parseFloat(km) : null;
-    S.runnaLongKm = long!=='' ? parseFloat(long) : null;
-    S.runnaLongDay = day!=='' ? parseInt(day) : null;
-    save(); updateUI(); toast('🏃 Charge Runna enregistrée');
-  }
-
-  // ===== DIFF =====
-  function setDiff(v){
-    if(v===0){ S.diffOffset=0; }
-    else { S.diffOffset = Math.max(-3, Math.min(3, S.diffOffset+v)); }
-    const ids = ['fbHard','fbOk','fbEasy'];
-    const cls = ['active-hard','active-ok','active-easy'];
-    ids.forEach((id,i) => {
-      document.getElementById(id).className = 'fb-btn'+(v===i-1?' '+cls[i]:'');
-    });
-    save(); updateUI();
-    const msgs = {'-3':'📉 Fortement réduite','-2':'📉 Bien réduite','-1':'📉 Légèrement réduite','0':'✅ Équilibrée','1':'📈 Légèrement augmentée','2':'📈 Bien augmentée','3':'📈 Fortement augmentée'};
-    toast(msgs[S.diffOffset]||'✅ Ajusté');
-  }
-  function resetDiff(){ S.diffOffset=0; save(); updateUI(); toast('✅ Difficulté réinitialisée'); }
-
-  // ===== TEST MENSUEL =====
-  function openTestModal(){
-    const last = getLastTest();
-    document.getElementById('prevPompes').textContent = last ? 'Précédent : '+last.pompes : 'Précédent : --';
-    document.getElementById('prevTrections').textContent = last ? 'Précédent : '+last.tractions : 'Précédent : --';
-    document.getElementById('prevPlanche').textContent = last ? 'Précédent : '+last.planche+'s' : 'Précédent : --';
-    document.getElementById('prevSquats').textContent = last ? 'Précédent : '+last.squats : 'Précédent : --';
-    document.getElementById('testPompes').value = '';
-    document.getElementById('testTrections').value = '';
-    document.getElementById('testPlanche').value = '';
-    document.getElementById('testSquats').value = '';
-    document.getElementById('testModal').classList.add('active');
-  }
-  function closeTestModal(){ document.getElementById('testModal').classList.remove('active'); }
-  function saveTestResults(){
-    const pompes = parseInt(document.getElementById('testPompes').value)||0;
-    const tractions = parseInt(document.getElementById('testTrections').value)||0;
-    const planche = parseInt(document.getElementById('testPlanche').value)||0;
-    const squats = parseInt(document.getElementById('testSquats').value)||0;
-    if(!pompes && !tractions && !planche && !squats){ toast('❌ Entre au moins un résultat','err'); return; }
-
-    const result = { date:today(), pompes, tractions, planche, squats };
-    if(!S.testHistory) S.testHistory = [];
-    S.testHistory.push(result);
-    S.lastTestDate = today();
-
-    // Bonus XP selon les résultats
-    addStatXP('force', Math.floor(pompes * 1.5));
-    addStatXP('force', Math.floor(tractions * 3));
-    addStatXP('perception', Math.floor(planche * 0.3));
-    addStatXP('agility', Math.floor(squats * 1.2));
-
-    // Log
-    S.activityLog.unshift({ date:today(), name:'🏆 Test mensuel', xp: pompes+tractions*2+Math.floor(planche/3)+squats, type:'test' });
-
-    save(); updateUI(); closeTestModal();
-    toast('🏆 Test enregistré ! XP bonus attribué', 'gold');
-
-    // Comparer avec le précédent
-    if(S.testHistory.length >= 2){
-      const prev = S.testHistory[S.testHistory.length-2];
-      const diffPompes = pompes - prev.pompes;
-      if(diffPompes > 0) setTimeout(()=>toast('💪 +'+diffPompes+' pompes vs mois dernier !','gold'),1000);
-    }
-  }
-
-  // ===== DEBUG =====
-  function toggleDebug(){ const p=document.getElementById('debugPanel'); p.style.display=p.style.display==='none'?'block':'none'; }
-  function applyDebugVal(n){
-    ['force','endurance','agility','perception','intelligence'].forEach(s=>{ S.stats[s]=n; S.statsXP[s]=250; });
-    S.streak=7; save(); updateUI(); renderNiveauExtras(); toast('🎮 Niveau simulé : '+n);
-  }
-  function applyDebug(){
-    const v = parseInt(document.getElementById('debugInput').value);
-    if(!v||v<1||v>100){ toast('❌ Niveau invalide','err'); return; }
-    applyDebugVal(v);
-  }
-  function resetAll(){
-    if(!confirm('⚠️ Réinitialiser toute la progression ?')) return;
-    localStorage.removeItem('hs4'); location.reload();
-  }
-  </script>
-    <script>
-  // =============================================
-  // ===== PART 4 : GENERATE + QUESTS + INIT ====
-  // =============================================
-
-  // ===== VOLUME GUIDE =====
-  function getVolumeGuide(){
-    const cycle = getCycleInfo();
-    const eff = Math.max(1, avgLevel() + (S.diffOffset||0));
-    let vm = 1.0;
-
-    // Modulation cycle décharge
-    if(cycle.isDecharge) vm *= 0.55;
-
-    // Modulation Polar Training Load
-    if(S.polarStatus==='excessif') vm *= 0.7;
-    else if(S.polarStatus==='maintien') vm *= 0.9;
-    else if(S.polarStatus==='desentrainement') vm *= 1.15;
-    else if(S.polarStatus==='recuperation') vm *= 0.5;
-
-    // Modulation Nightly Recharge
-    if(S.nightlyStatus==='faible') vm *= 0.85;
-    else if(S.nightlyStatus==='tres_faible') vm *= 0.6;
-    else if(S.nightlyStatus==='tres_bon') vm *= 1.05;
-
-    // Modulation Runna — si sortie longue aujourd'hui ou km élevés
-    const todayDay = new Date().getDay();
-    const isLongRunDay = S.runnaLongDay !== null && S.runnaLongDay === todayDay;
-    if(isLongRunDay) vm *= 0.7;
-    else if(S.runnaKm !== null && S.runnaKm >= 40) vm *= 0.85;
-    else if(S.runnaKm !== null && S.runnaKm >= 60) vm *= 0.7;
-
-    // Base volume selon niveau effectif
-    let g = '';
-    if(eff<=2)       g = '2x8 pompes, 2x12 squats, 2x20sec planche.';
-    else if(eff<=4)  g = '3x10 pompes, 3x15 squats, 3x30sec planche.';
-    else if(eff<=6)  g = '3x12 pompes, 3x18 squats, 3x40sec planche.';
-    else if(eff<=8)  g = '3x15 pompes, 3x20 squats, 3x45sec planche.';
-    else if(eff<=10) g = '4x15 pompes, 4x20 squats, 3x60sec planche.';
-    else if(eff<=13) g = '4x18 pompes, 4x22 squats, 4x60sec planche.';
-    else if(eff<=16) g = '4x20 pompes, 4x25 squats, 4x75sec planche.';
-    else             g = '5x20 pompes, 5x25 squats, 4x90sec planche.';
-
-    if(vm !== 1.0) g += ' Volume global à '+Math.round(vm*100)+'%.';
-    if(isLongRunDay) g += ' (sortie longue Runna aujourd\'hui : éviter jambes)';
-    return g;
-  }
-
-  // ===== ÉQUIPEMENT =====
-  function getEquip(){
-    if(!S.equipment.length||(S.equipment.length===1&&S.equipment[0]==='none'))
-      return 'Poids du corps uniquement';
-    const l = {none:'Poids du corps',pullup:'Barre traction',dips:'Barre de dips',
-                rings:'Anneaux',dumbbells:'Haltères',bands:'Élastiques',chair:'Chaise/Table'};
-    return S.equipment.map(e=>l[e]||e).join(', ');
-  }
-
-  // ===== POOL D'EXERCICES (basé sur paliers) =====
-  function getPool(){
-    const focus = getTodayFocus();
-    const cycle = getCycleInfo();
-    const todayDay = new Date().getDay();
-    const isLongRunDay = S.runnaLongDay !== null && S.runnaLongDay === todayDay;
-
-    // Pool de base par catégorie (exercices complets disponibles)
-    const fullPool = {
-      push:[
-        'pompes genoux','pompes classiques','pompes déclinées','pompes diamant',
-        'pompes archer','pompes pike','pseudo-planche pompes','pompes explosives',
-        'pompes wide','pompes inclinées sur chaise'
-      ],
-      pull:[
-        'superman','rowing sur table','bird dog','scapular pulls',
-        'tractions australiennes','tractions négatives lentes','tractions pronation',
-        'tractions supination','dead hang','hanging knee raise','hanging leg raise'
-      ],
-      legs:[
-        'squats classiques','squats sumo','wall sit','fentes avant','fentes arrière',
-        'fentes latérales','squats bulgares','squats jump','pont fessier',
-        'pont fessier unilatéral','mollets debout','step-ups sur chaise'
-      ],
-      core:[
-        'planche classique','planche latérale','hollow body hold','dead bug',
-        'crunchs bicycle','leg raises','mountain climbers','russian twist',
-        'bear crawl','L-sit progression'
-      ],
-      mobility:[
-        'cat-cow','world greatest stretch','rotations épaules','ouverture hanches 90/90',
-        'étirement ischios','étirement quadriceps','étirement pectoraux porte',
-        'respiration diaphragmatique 5min','mobilité thoracique','étirement mollets'
-      ],
-      pullup:['tractions pronation','tractions supination','tractions prise neutre',
-              'tractions négatives lentes','tractions australiennes','dead hang',
-              'hanging knee raise','hanging leg raise'],
-      dips:['dips à la barre','dips négatifs lents','support hold','L-sit progression'],
-      rings:['dips aux anneaux','tractions aux anneaux','rows aux anneaux','support hold anneaux'],
-      dumbbells:['développé haltères','rowing haltères','curls haltères','élévations latérales',
-                 'goblet squat','soulevé de terre roumain haltères','développé militaire haltères'],
-      bands:['tirage élastique vertical','tirage élastique horizontal','face pull élastique',
-             'squat avec bande','curl biceps élastique'],
-      chair:['dips sur chaise','step-ups sur chaise','pompes inclinées sur chaise']
-    };
-
-    // Exercice de palier courant pour chaque pattern du focus
-    const palierExercises = [];
-    focus.groups.forEach(g => {
-      if(PALIERS[g]) palierExercises.push(getCurrentPalierExercise(g));
-    });
-
-    let pool = [...palierExercises];
-
-    // Mode récup cardio
-    if(S.cardioToday){
-      return [...new Set([...fullPool.mobility, ...fullPool.core.slice(0,4)])];
-    }
-
-    // Mode décharge : uniquement mobilité + core léger
-    if(cycle.isDecharge){
-      return [...new Set([...fullPool.mobility, ...fullPool.core.slice(0,5)])];
-    }
-
-    // Sortie longue Runna aujourd'hui : éviter jambes, focus haut du corps + core
-    if(isLongRunDay){
-      pool = pool.filter(e => !fullPool.legs.includes(e));
-      pool = [...pool, ...fullPool.push, ...fullPool.pull, ...fullPool.core, ...fullPool.mobility];
-      S.equipment.forEach(e => { if(e!=='none' && fullPool[e]) pool = [...pool, ...fullPool[e]]; });
-      return [...new Set(pool)];
-    }
-
-    // Programme normal : focus du jour + équipement
-    focus.groups.forEach(g => { if(fullPool[g]) pool = [...pool, ...fullPool[g]]; });
+  // Sortie longue Runna : éviter jambes
+  if(isLongRunDay){
+    pool = pool.filter(e => !fullPool.legs.includes(e));
+    pool = [...pool, ...fullPool.push, ...fullPool.pull, ...fullPool.core, ...fullPool.mobility];
     S.equipment.forEach(e => {
-      if(e!=='none' && fullPool[e]){
-        if(focus.groups.includes('push') && ['dips','rings','dumbbells','chair'].includes(e))
-          pool = [...pool, ...fullPool[e]];
-        if(focus.groups.includes('pull') && ['pullup','rings','bands','dumbbells'].includes(e))
-          pool = [...pool, ...fullPool[e]];
-        if(focus.groups.includes('legs') && ['dumbbells','bands','chair'].includes(e))
-          pool = [...pool, ...fullPool[e]];
-        if(focus.groups.includes('core') && ['pullup','dips','rings'].includes(e))
-          pool = [...pool, ...fullPool[e]];
-      }
+      if(e!=='none' && fullPool[e]) pool = [...pool, ...fullPool[e]];
     });
-
     return [...new Set(pool)];
   }
 
-  // ===== CONSTRUCTION DU PROMPT =====
-  function buildPrompt(){
-    const lvl = avgLevel();
-    const focus = getTodayFocus();
-    const cycle = getCycleInfo();
-    const isRecov = !!S.cardioToday;
-    const isDecharge = cycle.isDecharge;
-    const todayDay = new Date().getDay();
-    const isLongRunDay = S.runnaLongDay !== null && S.runnaLongDay === todayDay;
-    const injury = S.injury ? 'Blessure : '+S.injury+'. Évite la zone.' : 'Aucune blessure.';
-
-    // Paliers courants
-    const palierInfo = Object.keys(PALIERS).map(p =>
-      p+' → palier actuel : '+getCurrentPalierExercise(p)
-    ).join(' | ');
-
-    // Polar Training Load
-    let polar = '';
-    if(S.polarStatus){
-      const pl = {productif:'Productif',maintien:'Maintien (volume stable)',
-                  excessif:'Excessif (RÉDUIRE 30%)',desentrainement:'Désentraînement (augmenter)',
-                  recuperation:'Récupération (étirements uniquement)'};
-      polar = '\nTraining Load : Fatigue '+(S.polarFatigue||'N/A')+
-              ' / Tolérance '+(S.polarTolerance||'N/A')+' — '+(pl[S.polarStatus]);
+  // Programme normal
+  focus.groups.forEach(g => { if(fullPool[g]) pool = [...pool, ...fullPool[g]]; });
+  S.equipment.forEach(e => {
+    if(e!=='none' && fullPool[e]){
+      if(focus.groups.includes('push') && ['dips','rings','dumbbells','chair'].includes(e))
+        pool = [...pool, ...fullPool[e]];
+      if(focus.groups.includes('pull') && ['pullup','rings','bands','dumbbells'].includes(e))
+        pool = [...pool, ...fullPool[e]];
+      if(focus.groups.includes('legs') && ['dumbbells','bands','chair'].includes(e))
+        pool = [...pool, ...fullPool[e]];
+      if(focus.groups.includes('core') && ['pullup','dips','rings'].includes(e))
+        pool = [...pool, ...fullPool[e]];
     }
+  });
 
-    // Nightly Recharge
-    let nightly = '';
-    if(S.nightlyStatus){
-      const nl = {tres_bon:'Très bon (volume +5%)',bon:'Bon (normal)',assez_bon:'Assez bon (normal)',
-                  moyen:'Moyen (intensité -10%)',faible:'Faible (intensité -25%)',
-                  tres_faible:'Très faible (mobilité uniquement)'};
-      nightly = '\nNightly Recharge : '+nl[S.nightlyStatus]+
-                ' | Sommeil '+(S.sleepScore??'N/A')+'/100 | SNA '+(S.snaScore??'N/A');
-    }
+  return [...new Set(pool)];
+}
 
-    // Runna
-    let runna = '';
-    if(S.runnaKm !== null){
-      runna = '\nCharge Runna semaine : '+S.runnaKm+' km courus';
-      if(S.runnaLongKm) runna += ' | Sortie longue : '+S.runnaLongKm+' km';
-      if(isLongRunDay) runna += ' ⚠️ SORTIE LONGUE AUJOURD\'HUI — éviter exercices jambes, focus haut du corps uniquement.';
-    }
+// ===== CONSTRUCTION DU PROMPT =====
+function buildPrompt(){
+  const lvl = avgLevel();
+  const focus = getTodayFocus();
+  const cycle = getCycleInfo();
+  const isRecov = !!S.cardioToday;
+  const isDecharge = cycle.isDecharge;
+  const todayDay = new Date().getDay();
+  const isLongRunDay = S.runnaLongDay !== null && S.runnaLongDay === todayDay;
+  const injury = S.injury ? 'Blessure : '+S.injury+'. Évite la zone.' : 'Aucune blessure.';
 
-    // Diff
-    let diff = '';
-    if(S.diffOffset>0) diff = '\nRetour utilisateur : trop facile. Augmenter volume.';
-    else if(S.diffOffset<0) diff = '\nRetour utilisateur : trop difficile. Réduire volume.';
+  // Paliers courants
+  const palierInfo = Object.keys(PALIERS).map(p =>
+    p+' → palier actuel : '+getCurrentPalierExercise(p)
+  ).join(' | ');
 
-    // Cycle
-    const cycleInfo = '\nCycle '+cycle.cycleNumber+' — Semaine '+cycle.weekInCycle+'/4'+(isDecharge?' (DÉCHARGE)':'');
-
-    // Focus line
-    let focusLine = '';
-    if(isRecov){
-      focusLine = '\nMODE RÉCUPÉRATION ACTIVE : a fait '+(S.cardioToday==='course'?'une course':'du badminton')+
-                  ' aujourd\'hui. UNIQUEMENT mobilité, étirements, gainage doux. Pas de renforcement.';
-    } else if(isDecharge){
-      focusLine = '\nMODE DÉCHARGE (semaine 4/4) : volume réduit à 55%. Exercices légers uniquement. '+
-                  'Pas d\'exercices intenses. Focus mobilité + gainage doux. Préparer la super-compensation.';
-    } else {
-      focusLine = '\nFOCUS DU JOUR ('+focus.dayName+') : '+focus.focus+' — '+focus.desc;
-      if(isLongRunDay) focusLine += '\n⚠️ Sortie longue Runna prévue aujourd\'hui : EXCLURE tout exercice de jambes.';
-    }
-
-    // Règles
-    let rules = '';
-    const nbQuests = (isRecov || isDecharge) ? 2 : 4;
-    if(isRecov){
-      rules = 'RÈGLES MODE RÉCUP : 2 quêtes uniquement. Total 5-7 min. Mobilité ciblée + 1 respiration ou gainage doux. Catégorie "mobility" ou "recovery". XP 60-90.';
-    } else if(isDecharge){
-      rules = 'RÈGLES MODE DÉCHARGE : 2 quêtes uniquement. Total 8-10 min. Exercices légers du palier inférieur. Volume -45%. Catégorie "recovery" ou "mobility". XP 70-90. Insiste sur la récupération active.';
-    } else {
-      rules = 'RÈGLES : 4 quêtes ciblant le focus du jour ('+focus.focus+'). Total 10-12 min MAX (3 min/quête max). '+
-              'Pas de course/vélo/natation. Exercices différents. XP 80-130. '+
-              'Catégorie "muscle" pour les 3 premières, "recovery" pour la 4ème (étirement final court). '+
-              'PRIORITÉ aux exercices du palier courant : '+palierInfo+'.';
-    }
-
-    const timingRule = (isRecov||isDecharge)
-      ? 'Timing : "matin" ou "soir" pour chaque quête.'
-      : 'Timing pour chaque quête parmi : "matin", "midi", "après-midi", "soir", "libre". Répartis sur la journée.';
-
-    // Dernier test pour calibrage
-    const lastTest = getLastTest();
-    let testRef = '';
-    if(lastTest){
-      testRef = '\nRéférence test mensuel : '+lastTest.pompes+' pompes | '+
-                lastTest.tractions+' tractions | '+lastTest.planche+'s planche | '+
-                lastTest.squats+' squats. Calibre le volume en conséquence.';
-    }
-
-    const exJson = (isRecov||isDecharge)
-      ? '{"advice":"1-2 phrases.","quests":[{"name":"Mobilité","description":"...","xp":80,"category":"mobility","timing":"soir"},{"name":"Respiration","description":"...","xp":70,"category":"recovery","timing":"soir"}]}'
-      : '{"advice":"2 phrases motivantes.","quests":[{"name":"Nom","description":"X séries Y reps. 1 conseil forme.","xp":110,"category":"muscle","timing":"matin"},{"name":"Nom","description":"...","xp":105,"category":"muscle","timing":"midi"},{"name":"Nom","description":"...","xp":100,"category":"muscle","timing":"après-midi"},{"name":"Étirement final","description":"Étirement 2-3 min.","xp":80,"category":"recovery","timing":"soir"}]}';
-
-    return 'Tu es Hunter System RPG. Programme micro-workout quotidien (15 min max) pour niveau '+lvl+'.\n'+
-      'Stats : Force '+S.stats.force+' | Endurance '+S.stats.endurance+' | Agilité '+S.stats.agility+
-      ' | Perception '+S.stats.perception+' | Intelligence '+S.stats.intelligence+'\n'+
-      'Streak : '+S.streak+' jours | '+injury+'\n'+
-      'Équipement : '+getEquip()+'\n'+
-      'Volume guide : '+getVolumeGuide()+
-      cycleInfo+polar+nightly+runna+diff+focusLine+testRef+'\n'+
-      'Contraintes santé : hypoglycémie fonctionnelle + intolérance fructose/sucrose/sorbitol. '+
-      'Éviter HIIT à jeun, intensité modérée.\n'+
-      'Exercices disponibles (UNIQUEMENT ceux-là) : '+getPool().join(', ')+'\n\n'+
-      rules+' '+timingRule+'\n\n'+
-      'Réponds UNIQUEMENT en JSON valide ('+nbQuests+' quêtes) :\n'+exJson;
+  // Polar Training Load
+  let polar = '';
+  if(S.polarStatus){
+    const pl = {
+      productif:'Productif',
+      maintien:'Maintien (volume stable)',
+      excessif:'Excessif (RÉDUIRE 30%)',
+      desentrainement:'Désentraînement (augmenter)',
+      recuperation:'Récupération (étirements uniquement)'
+    };
+    polar = '\nTraining Load : Fatigue '+(S.polarFatigue||'N/A')+
+            ' / Tolérance '+(S.polarTolerance||'N/A')+
+            ' — '+(pl[S.polarStatus]||S.polarStatus);
   }
 
-  // ===== GÉNÉRATION =====
-  async function generateProgram(){
-    if(!S.apiKey){ openSettings(); toast('⚙️ Entre ta clé API d\'abord','err'); return; }
-    const btn = document.getElementById('genBtn');
-    btn.disabled = true;
-    document.getElementById('loadingOverlay').classList.add('active');
-
-    try {
-      const res = await fetch('https://openrouter.ai/api/v1/chat/completions',{
-        method:'POST',
-        headers:{
-          'Authorization':'Bearer '+S.apiKey,
-          'Content-Type':'application/json',
-          'HTTP-Referer':location.href,
-          'X-Title':'Hunter System'
-        },
-        body: JSON.stringify({
-          model:'openai/gpt-4o-mini',
-          messages:[{role:'user', content:buildPrompt()}],
-          temperature:0.7,
-          max_tokens:1200
-        })
-      });
-
-      if(!res.ok){
-        const e = await res.json();
-        throw new Error(e.error?.message||'Erreur '+res.status);
-      }
-
-      const data = await res.json();
-      let raw = data.choices[0].message.content.trim()
-        .replace(/```json/g,'').replace(/```/g,'').trim();
-      const si = raw.indexOf('{'), ei = raw.lastIndexOf('}');
-      if(si===-1||ei===-1) throw new Error('JSON introuvable');
-      const parsed = JSON.parse(raw.substring(si,ei+1));
-
-      const cycle = getCycleInfo();
-      const expectedNb = (S.cardioToday || cycle.isDecharge) ? 2 : 4;
-      if(!parsed.quests || parsed.quests.length < 2)
-        throw new Error('Format invalide ('+parsed.quests?.length+' quêtes)');
-
-      S.todayQuests = parsed.quests;
-      S.questsDone = new Array(parsed.quests.length).fill(false);
-      S.lastGenDate = today();
-      S.todayMode = S.cardioToday ? 'recovery' : cycle.isDecharge ? 'decharge' : 'normal';
-
-      if(parsed.advice){
-        document.getElementById('adviceText').textContent = parsed.advice;
-        document.getElementById('adviceCard').classList.add('show');
-      }
-
-      save(); updateUI(); renderQuests();
-
-      const msg = S.cardioToday ? '🌿 Routine récup générée !'
-                : cycle.isDecharge ? '🌙 Programme décharge généré !'
-                : '⚡ Quêtes générées ! Au combat !';
-      toast(msg);
-
-    } catch(e){
-      btn.disabled = false;
-      toast('❌ '+e.message,'err');
-      console.error(e);
-    } finally {
-      document.getElementById('loadingOverlay').classList.remove('active');
-    }
+  // Nightly Recharge
+  let nightly = '';
+  if(S.nightlyStatus){
+    const nl = {
+      tres_bon:'Très bon (volume +5%)', bon:'Bon (normal)', assez_bon:'Assez bon (normal)',
+      moyen:'Moyen (intensité -10%)', faible:'Faible (intensité -25%)',
+      tres_faible:'Très faible (mobilité uniquement)'
+    };
+    nightly = '\nNightly Recharge : '+(nl[S.nightlyStatus]||S.nightlyStatus)+
+              ' | Sommeil '+(S.sleepScore??'N/A')+'/100 | SNA '+(S.snaScore??'N/A');
   }
 
-  // ===== QUÊTES =====
-  function renderQuests(){
-    const w = document.getElementById('questsWrap');
-    const h = document.getElementById('hintWrap');
-    if(!S.todayQuests.length){ w.innerHTML=''; h.style.display='block'; return; }
-    h.style.display = 'none';
-    w.innerHTML = '';
-    S.todayQuests.forEach((q,i) => {
-      const d = document.createElement('div');
-      const isTest = q.category === 'test';
-      d.className = 'quest-card'+(S.questsDone[i]?' done':'')+(isTest?' test-quest':'');
-      const timing = q.timing ? '<div class="quest-timing">⏱ '+q.timing+'</div>' : '';
-      const palierTag = q.isPalier ? '<span class="quest-palier">🎯 Palier</span>' : '';
-      const xpClass = isTest ? 'quest-xp gold' : 'quest-xp';
-      const btnClass = isTest ? 'quest-btn gold-btn' : 'quest-btn';
-      d.innerHTML =
-        '<div class="quest-head">'+
-          '<div class="quest-name">'+q.name+'</div>'+
-          '<div class="'+xpClass+'">+'+q.xp+' XP</div>'+
-        '</div>'+
-        timing+palierTag+
-        '<div class="quest-desc">'+q.description+'</div>'+
-        '<button class="'+btnClass+'" onclick="doneQuest('+i+')" '+(S.questsDone[i]?'disabled':'')+'>'+
-        (S.questsDone[i]?'✓ Terminée':'✓ Marquer comme terminée')+'</button>';
-      w.appendChild(d);
+  // Runna
+  let runna = '';
+  if(S.runnaKm !== null){
+    runna = '\nCharge Runna semaine : '+S.runnaKm+' km courus';
+    if(S.runnaLongKm) runna += ' | Sortie longue : '+S.runnaLongKm+' km';
+    if(isLongRunDay)  runna += ' ⚠️ SORTIE LONGUE AUJOURD\'HUI — éviter exercices jambes, focus haut du corps uniquement.';
+  }
+
+  // Diff
+  let diff = '';
+  if(S.diffOffset > 0)      diff = '\nRetour utilisateur : trop facile. Augmenter volume.';
+  else if(S.diffOffset < 0) diff = '\nRetour utilisateur : trop difficile. Réduire volume.';
+
+  // Cycle
+  const cycleInfo = '\nCycle '+cycle.cycleNumber+' — Semaine '+cycle.weekInCycle+'/4'+(isDecharge?' (DÉCHARGE)':'');
+
+  // Focus line
+  let focusLine = '';
+  if(isRecov){
+    focusLine = '\nMODE RÉCUPÉRATION ACTIVE : a fait '+(S.cardioToday==='course'?'une course':'du badminton')+
+                ' aujourd\'hui. UNIQUEMENT mobilité, étirements, gainage doux. Pas de renforcement.';
+  } else if(isDecharge){
+    focusLine = '\nMODE DÉCHARGE (semaine 4/4) : volume réduit à 55%. Exercices légers uniquement. '+
+                'Pas d\'exercices intenses. Focus mobilité + gainage doux. Préparer la super-compensation.';
+  } else {
+    focusLine = '\nFOCUS DU JOUR ('+focus.dayName+') : '+focus.focus+' — '+focus.desc;
+    if(isLongRunDay) focusLine += '\n⚠️ Sortie longue Runna prévue aujourd\'hui : EXCLURE tout exercice de jambes.';
+  }
+
+  // Référence test mensuel
+  const lastTest = getLastTest();
+  let testRef = '';
+  if(lastTest){
+    testRef = '\nRéférence test mensuel : '+lastTest.pompes+' pompes | '+
+              lastTest.tractions+' tractions | '+lastTest.planche+'s planche | '+
+              lastTest.squats+' squats. Calibre le volume en conséquence.';
+  }
+
+  // Nombre de quêtes et règles selon mode
+  const nbQuests = (isRecov || isDecharge) ? 2 : 4;
+
+  let rules = '';
+  if(isRecov){
+    rules = 'RÈGLES MODE RÉCUP : 2 quêtes uniquement. Total 5-7 min. '+
+            'Mobilité ciblée + 1 respiration ou gainage doux. '+
+            'Catégorie "mobility" ou "recovery". XP 60-90.';
+  } else if(isDecharge){
+    rules = 'RÈGLES MODE DÉCHARGE : 2 quêtes uniquement. Total 8-10 min. '+
+            'Exercices légers du palier inférieur. Volume -45%. '+
+            'Catégorie "recovery" ou "mobility". XP 70-90. '+
+            'Insiste sur la récupération active.';
+  } else {
+    rules = 'RÈGLES : 4 quêtes ciblant le focus du jour ('+focus.focus+'). '+
+            'Total 10-12 min MAX (3 min/quête max). Pas de course/vélo/natation. '+
+            'Exercices différents. XP 80-130. '+
+            'Catégorie "muscle" pour les 3 premières, "recovery" pour la 4ème (étirement final court). '+
+            'PRIORITÉ aux exercices du palier courant : '+palierInfo+'.';
+  }
+
+  const timingRule = (isRecov || isDecharge)
+    ? 'Timing : "matin" ou "soir" pour chaque quête.'
+    : 'Timing pour chaque quête parmi : "matin", "midi", "après-midi", "soir", "libre". Répartis sur la journée.';
+
+  const exJson = (isRecov || isDecharge)
+    ? '{"advice":"1-2 phrases.","quests":[{"name":"Mobilité","description":"...","xp":80,"category":"mobility","timing":"soir"},{"name":"Respiration","description":"...","xp":70,"category":"recovery","timing":"soir"}]}'
+    : '{"advice":"2 phrases motivantes.","quests":[{"name":"Nom","description":"X séries Y reps. 1 conseil forme.","xp":110,"category":"muscle","timing":"matin"},{"name":"Nom","description":"...","xp":105,"category":"muscle","timing":"midi"},{"name":"Nom","description":"...","xp":100,"category":"muscle","timing":"après-midi"},{"name":"Étirement final","description":"Étirement 2-3 min.","xp":80,"category":"recovery","timing":"soir"}]}';
+
+  return 'Tu es Hunter System RPG. Programme micro-workout quotidien (15 min max) pour niveau '+lvl+'.\n'+
+    'Stats : Force '+S.stats.force+' | Endurance '+S.stats.endurance+' | Agilité '+S.stats.agility+
+    ' | Perception '+S.stats.perception+' | Intelligence '+S.stats.intelligence+'\n'+
+    'Streak : '+S.streak+' jours | '+injury+'\n'+
+    'Équipement : '+getEquip()+'\n'+
+    'Volume guide : '+getVolumeGuide()+
+    cycleInfo+polar+nightly+runna+diff+focusLine+testRef+'\n'+
+    'Contraintes santé : hypoglycémie fonctionnelle + intolérance fructose/sucrose/sorbitol. '+
+    'Éviter HIIT à jeun, intensité modérée.\n'+
+    'Exercices disponibles (UNIQUEMENT ceux-là) : '+getPool().join(', ')+'\n\n'+
+    rules+' '+timingRule+'\n\n'+
+    'Réponds UNIQUEMENT en JSON valide ('+nbQuests+' quêtes) :\n'+exJson;
+}
+
+// ===== GÉNÉRATION =====
+async function generateProgram(){
+  if(!S.apiKey){ openSettings(); toast('⚙️ Entre ta clé API d\'abord','err'); return; }
+  const btn = document.getElementById('genBtn');
+  btn.disabled = true;
+  document.getElementById('loadingOverlay').classList.add('active');
+
+  try {
+    const res = await fetch('https://openrouter.ai/api/v1/chat/completions',{
+      method:'POST',
+      headers:{
+        'Authorization':'Bearer '+S.apiKey,
+        'Content-Type':'application/json',
+        'HTTP-Referer':location.href,
+        'X-Title':'Hunter System'
+      },
+      body: JSON.stringify({
+        model:'openai/gpt-4o-mini',
+        messages:[{role:'user', content:buildPrompt()}],
+        temperature:0.7,
+        max_tokens:1200
+      })
     });
-  }
 
-  function doneQuest(i){
-    if(S.questsDone[i]) return;
-    const q = S.todayQuests[i];
-    S.questsDone[i] = true;
-    S.totalDone++;
-
-    // Distribution XP selon catégorie
-    if(q.category==='muscle'){
-      addStatXP('force', Math.floor(q.xp*0.5));
-      addStatXP('perception', Math.floor(q.xp*0.3));
-      addStatXP('agility', Math.floor(q.xp*0.2));
-    } else if(q.category==='recovery'||q.category==='mobility'){
-      addStatXP('intelligence', Math.floor(q.xp*0.6));
-      addStatXP('agility', Math.floor(q.xp*0.4));
-    } else if(q.category==='test'){
-      addStatXP('force', Math.floor(q.xp*0.4));
-      addStatXP('perception', Math.floor(q.xp*0.3));
-      addStatXP('intelligence', Math.floor(q.xp*0.3));
+    if(!res.ok){
+      const e = await res.json();
+      throw new Error(e.error?.message||'Erreur '+res.status);
     }
 
-    // Streak
-    const td = today();
-    if(S.questsDone.every(c=>c)){
-      const y = new Date(); y.setDate(y.getDate()-1);
-      const ys = y.toISOString().split('T')[0];
-      if(!S.lastStreakDate||S.lastStreakDate===ys){ S.streak++; S.lastStreakDate=td; }
-      else if(S.lastStreakDate!==td){ S.streak=1; S.lastStreakDate=td; }
+    const data = await res.json();
+    let raw = data.choices[0].message.content.trim()
+      .replace(/```json/g,'').replace(/```/g,'').trim();
+    const si = raw.indexOf('{');
+    const ei = raw.lastIndexOf('}');
+    if(si===-1||ei===-1) throw new Error('JSON introuvable dans la réponse');
+    const parsed = JSON.parse(raw.substring(si, ei+1));
+
+    const cycle = getCycleInfo();
+    if(!parsed.quests || parsed.quests.length < 2)
+      throw new Error('Format invalide ('+( parsed.quests?.length||0)+' quêtes reçues)');
+
+    S.todayQuests  = parsed.quests;
+    S.questsDone   = new Array(parsed.quests.length).fill(false);
+    S.lastGenDate  = today();
+    S.todayMode    = S.cardioToday ? 'recovery' : cycle.isDecharge ? 'decharge' : 'normal';
+
+    if(parsed.advice){
+      document.getElementById('adviceText').textContent = parsed.advice;
+      document.getElementById('adviceCard').classList.add('show');
     }
 
-    // Log activité
-    S.activityLog.unshift({date:td, name:q.name, xp:q.xp, type:q.category});
     save(); updateUI(); renderQuests();
-    toast('✅ +'+q.xp+' XP — '+q.name);
+
+    const msg = S.cardioToday      ? '🌿 Routine récup générée !'
+              : cycle.isDecharge   ? '🌙 Programme décharge généré !'
+              : '⚡ Quêtes générées ! Au combat !';
+    toast(msg);
+
+  } catch(e){
+    btn.disabled = false;
+    toast('❌ '+e.message,'err');
+    console.error('generateProgram error:', e);
+  } finally {
+    document.getElementById('loadingOverlay').classList.remove('active');
+  }
+}
+
+// ===== QUÊTES =====
+function renderQuests(){
+  const w = document.getElementById('questsWrap');
+  const h = document.getElementById('hintWrap');
+  if(!S.todayQuests || !S.todayQuests.length){
+    w.innerHTML = '';
+    h.style.display = 'block';
+    return;
+  }
+  h.style.display = 'none';
+  w.innerHTML = '';
+  S.todayQuests.forEach((q, i) => {
+    const d = document.createElement('div');
+    const isTest = q.category === 'test';
+    d.className = 'quest-card'+(S.questsDone[i]?' done':'')+(isTest?' test-quest':'');
+    const timing   = q.timing   ? '<div class="quest-timing">⏱ '+q.timing+'</div>' : '';
+    const palierTag = q.isPalier ? '<span class="quest-palier">🎯 Palier</span>' : '';
+    const xpClass  = isTest ? 'quest-xp gold' : 'quest-xp';
+    const btnClass = isTest ? 'quest-btn gold-btn' : 'quest-btn';
+    d.innerHTML =
+      '<div class="quest-head">'+
+        '<div class="quest-name">'+q.name+'</div>'+
+        '<div class="'+xpClass+'">+'+q.xp+' XP</div>'+
+      '</div>'+
+      timing+palierTag+
+      '<div class="quest-desc">'+q.description+'</div>'+
+      '<button class="'+btnClass+'" onclick="doneQuest('+i+')" '+(S.questsDone[i]?'disabled':'')+'>'+
+      (S.questsDone[i]?'✓ Terminée':'✓ Marquer comme terminée')+'</button>';
+    w.appendChild(d);
+  });
+}
+
+function doneQuest(i){
+  if(S.questsDone[i]) return;
+  const q = S.todayQuests[i];
+  S.questsDone[i] = true;
+  S.totalDone++;
+
+  // Distribution XP selon catégorie
+  if(q.category==='muscle'){
+    addStatXP('force',      Math.floor(q.xp * 0.5));
+    addStatXP('perception', Math.floor(q.xp * 0.3));
+    addStatXP('agility',    Math.floor(q.xp * 0.2));
+  } else if(q.category==='recovery' || q.category==='mobility'){
+    addStatXP('intelligence', Math.floor(q.xp * 0.6));
+    addStatXP('agility',      Math.floor(q.xp * 0.4));
+  } else if(q.category==='test'){
+    addStatXP('force',        Math.floor(q.xp * 0.4));
+    addStatXP('perception',   Math.floor(q.xp * 0.3));
+    addStatXP('intelligence', Math.floor(q.xp * 0.3));
   }
 
-  // ===== CARDIO =====
-  function completeEndurance(type){
-    const td = today();
-    if(S.cardioToday===type){
-      S.cardioToday = null;
-      save(); updateUI();
-      toast('↩️ '+(type==='course'?'Course':'Badminton')+' annulé');
-      return;
-    }
-    const xpV = {course:120, badminton:100};
-    const xp = xpV[type];
-    addStatXP('endurance', Math.floor(xp*0.6));
-    addStatXP('agility', Math.floor(xp*0.4));
-    S.activityLog.unshift({date:td, name:type==='course'?'🏃 Course':'🏸 Badminton', xp, type:'endurance'});
-    S.cardioToday = type;
-    save(); updateUI();
-    toast('✅ +'+xp+' XP — '+(type==='course'?'Course validée':'Badminton validé')+' • Mode récup activé');
-  }
-
-  // ===== INIT =====
-  function init(){
-    load();
-
-    // Reset quotidien si nouveau jour
-    if(S.lastGenDate && S.lastGenDate !== today()){
-      S.todayQuests = [];
-      S.questsDone = [];
-      S.lastGenDate = null;
-      S.cardioToday = null;
-      S.todayMode = 'normal';
-    }
-
-    // Reset cardio si dernier log cardio pas aujourd'hui
-    if(S.activityLog && S.activityLog.length){
-      const lastCardio = S.activityLog.find(a => a.type==='endurance');
-      if(!lastCardio || lastCardio.date !== today()) S.cardioToday = null;
+  // FIX streak : vérification que lastStreakDate !== today avant d'incrémenter
+  const td = today();
+  const allDone = S.questsDone.every(c => c);
+  if(allDone && S.lastStreakDate !== td){
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const ys = yesterday.toISOString().split('T')[0];
+    if(!S.lastStreakDate || S.lastStreakDate === ys){
+      S.streak++;
     } else {
-      S.cardioToday = null;
+      // Rupture de streak
+      S.streak = 1;
     }
-
-    // Init cycle si absent
-    if(!S.cycleStartDate){
-      S.cycleStartDate = today();
-      S.cycleNumber = 1;
-    }
-
-    save();
-    updateUI();
-    renderQuests();
+    S.lastStreakDate = td;
+    if(S.streak > 1) setTimeout(()=>toast('🔥 Streak '+S.streak+' jours !'),800);
   }
 
-  init();
-  </script>
-  </body>
-  </html>
+  // Log activité
+  S.activityLog.unshift({ date:td, name:q.name, xp:q.xp, type:q.category });
+  save(); updateUI(); renderQuests();
+  toast('✅ +'+q.xp+' XP — '+q.name);
+}
+
+// ===== CARDIO =====
+function completeEndurance(type){
+  const td = today();
+  // Toggle : re-clic annule
+  if(S.cardioToday === type){
+    S.cardioToday = null;
+    save(); updateUI();
+    toast('↩️ '+(type==='course'?'Course':'Badminton')+' annulé');
+    return;
+  }
+  const xpV = { course:120, badminton:100 };
+  const xp = xpV[type];
+  addStatXP('endurance', Math.floor(xp * 0.6));
+  addStatXP('agility',   Math.floor(xp * 0.4));
+  S.activityLog.unshift({
+    date:td,
+    name: type==='course' ? '🏃 Course' : '🏸 Badminton',
+    xp,
+    type:'endurance'
+  });
+  S.cardioToday = type;
+  save(); updateUI();
+  toast('✅ +'+xp+' XP — '+(type==='course'?'Course validée':'Badminton validé')+' • Mode récup activé');
+}
+
+// ===== INIT =====
+function init(){
+  load();
+
+  // Reset quotidien si nouveau jour
+  if(S.lastGenDate && S.lastGenDate !== today()){
+    S.todayQuests  = [];
+    S.questsDone   = [];
+    S.lastGenDate  = null;
+    S.cardioToday  = null;
+    S.todayMode    = 'normal';
+  }
+
+  // Reset cardio si le dernier log cardio n'est pas aujourd'hui
+  if(S.activityLog && S.activityLog.length){
+    const lastCardio = S.activityLog.find(a => a.type === 'endurance');
+    if(!lastCardio || lastCardio.date !== today()){
+      S.cardioToday = null;
+    }
+  } else {
+    S.cardioToday = null;
+  }
+
+  // Init cycle si absent
+  if(!S.cycleStartDate){
+    S.cycleStartDate = today();
+    S.cycleNumber    = 1;
+  }
+
+  // Init chartMetric si absent
+  if(!S.chartMetric) S.chartMetric = 'pompes';
+
+  save();
+  updateUI();
+  renderQuests();
+}
+
+init();
+</script>
+<script>
+// =============================================
+// ===== PART 4 : GRAPHIQUE SVG + EXPORT/IMPORT
+// =============================================
+
+// ===== GRAPHIQUE SVG =====
+
+// Métrique active (onglet sélectionné)
+function setChartMetric(metric, btn){
+  S.chartMetric = metric;
+  save();
+  // Mise à jour des onglets
+  document.querySelectorAll('.chart-tab').forEach(t => t.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  renderChart(metric);
+}
+
+function renderChart(metric){
+  const wrap = document.getElementById('chartWrap');
+  if(!wrap) return;
+
+  if(!S.testHistory || S.testHistory.length < 1){
+    wrap.innerHTML = '<div class="chart-empty">Aucun test enregistré.<br>Lance ton premier test mensuel !</div>';
+    return;
+  }
+
+  // Données
+  const data    = S.testHistory;
+  const labels  = { pompes:'💪 Pompes', tractions:'🏋️ Tractions', planche:'🧱 Planche (sec)', squats:'🦵 Squats' };
+  const colors  = { pompes:'#00d4ff', tractions:'#ff4757', planche:'#ffd700', squats:'#2ed573' };
+  const values  = data.map(t => t[metric] || 0);
+  const dates   = data.map(t => {
+    const d = new Date(t.date);
+    return d.toLocaleDateString('fr-FR',{ day:'numeric', month:'short' });
+  });
+
+  const maxVal  = Math.max(...values, 1);
+  const minVal  = 0;
+  const color   = colors[metric] || '#00d4ff';
+  const label   = labels[metric] || metric;
+
+  // Dimensions SVG
+  const W       = Math.max(300, data.length * 70);
+  const H       = 160;
+  const padL    = 36;
+  const padR    = 16;
+  const padT    = 16;
+  const padB    = 40;
+  const chartW  = W - padL - padR;
+  const chartH  = H - padT - padB;
+
+  // Calcul positions points
+  function xPos(i){
+    if(data.length === 1) return padL + chartW / 2;
+    return padL + (i / (data.length - 1)) * chartW;
+  }
+  function yPos(v){
+    return padT + chartH - ((v - minVal) / (maxVal - minVal || 1)) * chartH;
+  }
+
+  // Lignes de grille horizontales (4 lignes)
+  let gridLines = '';
+  for(let g = 0; g <= 4; g++){
+    const yG  = padT + (g / 4) * chartH;
+    const val = Math.round(maxVal - (g / 4) * maxVal);
+    gridLines +=
+      '<line x1="'+padL+'" y1="'+yG+'" x2="'+(W-padR)+'" y2="'+yG+'" '+
+      'stroke="rgba(255,255,255,0.06)" stroke-width="1"/>' +
+      '<text x="'+(padL-4)+'" y="'+(yG+4)+'" text-anchor="end" '+
+      'font-size="9" fill="rgba(255,255,255,0.3)">'+val+'</text>';
+  }
+
+  // Polyline (courbe)
+  let polyPoints = '';
+  values.forEach((v, i) => {
+    polyPoints += xPos(i)+','+yPos(v)+' ';
+  });
+
+  // Zone remplie sous la courbe
+  let areaPoints = '';
+  if(data.length === 1){
+    areaPoints =
+      xPos(0)+','+(padT+chartH)+' '+
+      xPos(0)+','+yPos(values[0])+' '+
+      xPos(0)+','+(padT+chartH);
+  } else {
+    areaPoints = padL+','+(padT+chartH)+' ';
+    values.forEach((v, i) => { areaPoints += xPos(i)+','+yPos(v)+' '; });
+    areaPoints += (W-padR)+','+(padT+chartH);
+  }
+
+  // Points + labels valeurs
+  let dots = '';
+  values.forEach((v, i) => {
+    const x = xPos(i);
+    const y = yPos(v);
+    // Cercle extérieur (halo)
+    dots +=
+      '<circle cx="'+x+'" cy="'+y+'" r="6" fill="'+color+'" opacity="0.2"/>';
+    // Cercle principal
+    dots +=
+      '<circle cx="'+x+'" cy="'+y+'" r="4" fill="'+color+'" stroke="#0f1923" stroke-width="2"/>';
+    // Valeur au-dessus du point
+    dots +=
+      '<text x="'+x+'" y="'+(y-10)+'" text-anchor="middle" '+
+      'font-size="10" font-weight="700" fill="'+color+'">'+v+'</text>';
+    // Delta vs point précédent
+    if(i > 0){
+      const diff = v - values[i-1];
+      if(diff !== 0){
+        const sign     = diff > 0 ? '+' : '';
+        const dColor   = diff > 0 ? '#2ed573' : '#ff4757';
+        dots +=
+          '<text x="'+x+'" y="'+(y-22)+'" text-anchor="middle" '+
+          'font-size="9" fill="'+dColor+'">'+sign+diff+'</text>';
+      }
+    }
+    // Label date en bas
+    dots +=
+      '<text x="'+x+'" y="'+(H-padB+16)+'" text-anchor="middle" '+
+      'font-size="9" fill="rgba(255,255,255,0.4)">'+dates[i]+'</text>';
+  });
+
+  // Ligne de tendance (régression linéaire simple)
+  let trendLine = '';
+  if(data.length >= 3){
+    const n   = values.length;
+    const sumX  = values.reduce((a,_,i) => a+i, 0);
+    const sumY  = values.reduce((a,v) => a+v, 0);
+    const sumXY = values.reduce((a,v,i) => a+i*v, 0);
+    const sumX2 = values.reduce((a,_,i) => a+i*i, 0);
+    const slope = (n*sumXY - sumX*sumY) / (n*sumX2 - sumX*sumX || 1);
+    const inter = (sumY - slope*sumX) / n;
+    const y0    = yPos(inter);
+    const y1    = yPos(slope*(n-1)+inter);
+    const tColor = slope >= 0 ? 'rgba(46,213,115,0.4)' : 'rgba(255,71,87,0.4)';
+    trendLine =
+      '<line x1="'+xPos(0)+'" y1="'+y0+'" x2="'+xPos(n-1)+'" y2="'+y1+'" '+
+      'stroke="'+tColor+'" stroke-width="1.5" stroke-dasharray="4,3"/>';
+  }
+
+  // Dégradé SVG
+  const gradId = 'grad_'+metric;
+  const svgDefs =
+    '<defs>'+
+      '<linearGradient id="'+gradId+'" x1="0" y1="0" x2="0" y2="1">'+
+        '<stop offset="0%" stop-color="'+color+'" stop-opacity="0.25"/>'+
+        '<stop offset="100%" stop-color="'+color+'" stop-opacity="0.02"/>'+
+      '</linearGradient>'+
+    '</defs>';
+
+  // Assemblage SVG final
+  const svg =
+    '<svg width="'+W+'" height="'+H+'" xmlns="http://www.w3.org/2000/svg" '+
+    'style="display:block; min-width:'+W+'px;">'+
+      svgDefs+
+      // Zone remplie
+      '<polygon points="'+areaPoints+'" fill="url(#'+gradId+')"/>'+
+      // Lignes de grille
+      gridLines+
+      // Ligne de tendance
+      trendLine+
+      // Courbe principale
+      '<polyline points="'+polyPoints+'" fill="none" stroke="'+color+'" stroke-width="2.5" '+
+      'stroke-linejoin="round" stroke-linecap="round"/>'+
+      // Points et labels
+      dots+
+    '</svg>';
+
+  wrap.innerHTML = svg;
+}
+
+// ===== EXPORT / IMPORT JSON =====
+
+function exportData(){
+  try {
+    const exportObj = {
+      version: '1.0',
+      exportDate: new Date().toISOString(),
+      appName: 'Hunter System',
+      data: S
+    };
+    const json     = JSON.stringify(exportObj, null, 2);
+    const blob     = new Blob([json], { type:'application/json' });
+    const url      = URL.createObjectURL(blob);
+    const a        = document.createElement('a');
+    const dateStr  = new Date().toISOString().split('T')[0];
+    a.href         = url;
+    a.download     = 'hunter-system-backup-'+dateStr+'.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast('⬇️ Sauvegarde exportée !');
+  } catch(e){
+    toast('❌ Erreur export : '+e.message, 'err');
+    console.error('exportData error:', e);
+  }
+}
+
+function importData(event){
+  const file = event.target.files[0];
+  if(!file){ return; }
+
+  // Vérification extension
+  if(!file.name.endsWith('.json')){
+    toast('❌ Fichier JSON requis', 'err');
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = function(e){
+    try {
+      const parsed = JSON.parse(e.target.result);
+
+      // Vérification structure minimale
+      if(!parsed.data || !parsed.data.stats){
+        toast('❌ Fichier invalide ou corrompu', 'err');
+        return;
+      }
+
+      // Confirmation avant écrasement
+      const confirmMsg =
+        '⚠️ Importer cette sauvegarde ?\n\n'+
+        'Exportée le : '+(parsed.exportDate ? new Date(parsed.exportDate).toLocaleDateString('fr-FR') : 'inconnu')+'\n'+
+        'Streak : '+(parsed.data.streak||0)+' jours\n'+
+        'Tests enregistrés : '+(parsed.data.testHistory?.length||0)+'\n\n'+
+        'Ta progression actuelle sera remplacée.';
+
+      if(!confirm(confirmMsg)) return;
+
+      // Fusion sécurisée : on garde la structure de S comme base
+      S = { ...S, ...parsed.data };
+
+      // Réinitialiser les données de session du jour
+      if(S.lastGenDate && S.lastGenDate !== today()){
+        S.todayQuests = [];
+        S.questsDone  = [];
+        S.lastGenDate = null;
+        S.cardioToday = null;
+        S.todayMode   = 'normal';
+      }
+
+      save();
+      updateUI();
+      renderQuests();
+
+      // Si page Niveau visible, rafraîchir
+      if(document.getElementById('pageNiveau').classList.contains('active')){
+        renderNiveauExtras();
+      }
+
+      toast('⬆️ Données importées avec succès !', 'gold');
+
+    } catch(err){
+      toast('❌ Erreur lecture JSON : '+err.message, 'err');
+      console.error('importData error:', err);
+    }
+  };
+
+  reader.onerror = function(){
+    toast('❌ Impossible de lire le fichier', 'err');
+  };
+
+  reader.readAsText(file);
+
+  // Reset input pour permettre re-import du même fichier
+  event.target.value = '';
+}
+
+</script>
+</body>
+</html>
