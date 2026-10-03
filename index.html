@@ -1,3 +1,4 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -83,9 +84,10 @@
     }
     .quest-card.done { opacity: 0.55; border-color: var(--green); }
     .quest-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
-    .quest-name { font-weight: 700; font-size: 1.05em; }
+    .quest-name { font-weight: 700; font-size: 1.05em; cursor: pointer; color: var(--accent); text-decoration: underline; }
     .quest-xp { background: rgba(0,212,255,0.15); color: var(--accent); padding: 3px 10px; border-radius: 12px; font-size: 0.82em; font-weight: 700; }
     .quest-desc { color: #aab; font-size: 0.88em; line-height: 1.55; margin-bottom: 12px; }
+    .quest-specs { font-size: 0.8em; color: var(--muted); margin-bottom: 10px; font-style: italic; }
     .quest-btn {
       width: 100%; padding: 11px; border-radius: 9px; border: none;
       background: linear-gradient(135deg, var(--accent), var(--accent2));
@@ -97,27 +99,22 @@
     /* ===== FORMS ===== */
     .form-group { margin-bottom: 16px; }
     .form-label { font-size: 0.82em; color: var(--muted); margin-bottom: 6px; display: block; }
-    .form-input {
+    .form-input, .form-select {
       width: 100%; padding: 11px 14px; background: rgba(0,0,0,0.3);
       border: 1px solid rgba(255,255,255,0.15); border-radius: 10px;
       color: var(--text); font-size: 0.95em;
     }
-    .form-input:focus { outline: none; border-color: var(--accent); }
+    .form-input:focus, .form-select:focus { outline: none; border-color: var(--accent); }
+    .form-select { cursor: pointer; }
 
-    /* ===== EXERCICE EDITOR ===== */
-    .exercise-group {
-      background: var(--bg2); border-radius: 12px; padding: 14px;
-      margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.07);
+    .option-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+    .option-btn {
+      padding: 16px; border-radius: 12px; border: 2px solid rgba(255,255,255,0.15);
+      background: rgba(0,0,0,0.2); color: var(--text); cursor: pointer;
+      font-weight: 600; font-size: 0.95em; transition: all 0.2s;
     }
-    .exercise-group-title { font-weight: 700; font-size: 0.95em; margin-bottom: 10px; color: var(--accent); }
-    .exercise-list { display: flex; flex-direction: column; gap: 8px; }
-    .exercise-item {
-      background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 9px; padding: 10px 12px; display: flex; align-items: center; gap: 8px;
-      cursor: pointer; font-size: 0.88em;
-    }
-    .exercise-item input { cursor: pointer; accent-color: var(--accent); }
-    .exercise-item:has(input:checked) { border-color: var(--accent); background: rgba(0,212,255,0.08); }
+    .option-btn:hover { border-color: var(--accent); }
+    .option-btn.selected { border-color: var(--accent); background: rgba(0,212,255,0.15); color: var(--accent); }
 
     /* ===== STATS ===== */
     .stat-row {
@@ -152,6 +149,12 @@
     @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
     .modal-handle { width: 40px; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; margin: 0 auto 20px; }
     .modal-title { font-size: 1.2em; font-weight: 700; margin-bottom: 20px; color: var(--accent); }
+
+    .exercise-modal-img { width: 100%; background: rgba(0,0,0,0.3); border-radius: 12px; margin-bottom: 16px; padding: 8px; }
+    .exercise-modal-img svg { width: 100%; height: auto; display: block; }
+    .exercise-modal-desc { font-size: 0.9em; line-height: 1.6; margin-bottom: 16px; }
+    .exercise-modal-points { font-size: 0.85em; color: var(--muted); }
+    .exercise-modal-points li { margin-left: 20px; margin-bottom: 6px; }
 
     /* ===== NAV ===== */
     .bottom-nav {
@@ -189,6 +192,17 @@
 
     .section-title { font-size: 1.1em; font-weight: 700; color: var(--accent); margin-bottom: 14px; margin-top: 6px; }
     .hint { text-align: center; color: var(--muted); font-size: 0.88em; padding: 10px; }
+
+    #restBar { position: fixed; left: 0; right: 0; bottom: var(--nav-h); background: var(--bg3); border-top: 2px solid var(--accent); padding: 10px 16px 12px; z-index: 250; display: none; }
+    #restBar.show { display: block; }
+    .rest-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .rest-time { font-size: 1.6em; font-weight: 800; color: var(--accent); }
+    .rest-label { font-size: 0.78em; color: var(--muted); }
+    .rest-skip { background: rgba(255,255,255,0.1); border: none; color: var(--text); padding: 8px 14px; border-radius: 10px; cursor: pointer; font-weight: 600; }
+    .rest-track { height: 5px; background: rgba(0,0,0,0.4); border-radius: 3px; margin-top: 8px; overflow: hidden; }
+    #restFill { height: 100%; width: 0; background: var(--accent); transition: width 0.25s linear; }
+    .timing-info { background: rgba(124,58,237,0.15); border: 1px solid rgba(124,58,237,0.3); padding: 12px; border-radius: 10px; margin-bottom: 16px; font-size: 0.9em; }
+    .timing-info strong { color: var(--accent); }
   </style>
 </head>
 <body>
@@ -212,15 +226,51 @@
   <!-- PAGE : HOME -->
   <div class="page active" id="pageHome">
     <div style="background: linear-gradient(135deg, rgba(124,58,237,0.15), rgba(79,70,229,0.1)); border: 1px solid rgba(124,58,237,0.3); border-radius: 12px; padding: 12px 14px; margin-bottom: 14px;">
-      <div style="font-size: 0.75em; color: var(--muted); margin-bottom: 3px;">FOCUS DU JOUR</div>
-      <div id="focusBannerVal" style="font-size: 1em; font-weight: 700; color: #c4b5fd;">Push</div>
-      <div id="focusBannerDay" style="font-size: 0.8em; color: var(--muted); margin-top: 4px;">lundi</div>
+      <div style="font-size: 0.75em; color: var(--muted); margin-bottom: 3px;">GÉNÉRATEUR DE PROGRAMME</div>
+      <div id="modeDisplay" style="font-size: 1em; font-weight: 700; color: #c4b5fd;">Maison</div>
+    </div>
+
+    <div id="testBanner"></div>
+
+    <!-- Configuration -->
+    <div class="card">
+      <div class="form-group">
+        <label class="form-label">⏱️ Combien de temps tu as ? (minutes)</label>
+        <input type="number" class="form-input" id="duration" placeholder="30-45" min="15" max="120" value="30">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">📍 Type d'entraînement</label>
+        <div class="option-grid">
+          <button class="option-btn selected" onclick="APP.selectMode('maison')">🏠 Maison</button>
+          <button class="option-btn" onclick="APP.selectMode('salle')">🏋️ Salle</button>
+        </div>
+      </div>
+
+      <div id="salleOptions" style="display: none;">
+        <div class="form-group">
+          <label class="form-label">💪 Format</label>
+          <div class="option-grid">
+            <button class="option-btn selected" onclick="APP.selectFormat('split')">Split (H/B)</button>
+            <button class="option-btn" onclick="APP.selectFormat('fullbody')">Full Body</button>
+          </div>
+        </div>
+
+        <div id="splitOptions" class="form-group">
+          <label class="form-label">🎯 Focus</label>
+          <div class="option-grid">
+            <button class="option-btn selected" onclick="APP.selectFocus('haut')">Haut du corps</button>
+            <button class="option-btn" onclick="APP.selectFocus('bas')">Bas du corps</button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <button class="gen-btn" id="genBtn" onclick="APP.generateProgram()">⚡ GÉNÉRER PROGRAMME</button>
 
+    <div id="timingInfo"></div>
     <div id="questsWrap"></div>
-    <div id="hintWrap" class="hint">Lance la génération pour recevoir tes quêtes ✦</div>
+    <div id="hintWrap" class="hint">Configure et génère pour recevoir ton programme ✦</div>
   </div>
 
   <!-- PAGE : STATS -->
@@ -237,19 +287,71 @@
     <button class="btn-primary" onclick="APP.saveExercicePrefs()">💾 Enregistrer</button>
   </div>
 
-  <!-- PAGE : HISTORIQUE -->
-  <div class="page" id="pageHistorique">
-    <div class="section-title">📜 Historique</div>
-    <div id="historyWrap"></div>
+  <!-- PAGE : ÉVALUATION -->
+  <div class="page" id="pageEvaluation">
+    <div class="section-title">📋 Évaluation Initiale</div>
+    <p style="color: var(--muted); font-size: 0.88em; margin-bottom: 16px;">Une fois par semaine : fais une série à fond par exercice et note le résultat. L'app en déduit ta charge du jour (≈ 2/3 du max) et trace ta progression.</p>
+
+    <div class="form-group">
+      <label class="form-label">💪 Pompes classiques (reps max d'un coup)</label>
+      <input type="number" class="form-input" id="maxPompes" placeholder="ex: 30" min="1">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">🔙 Tractions pronation (reps max d'un coup)</label>
+      <input type="number" class="form-input" id="maxTractions" placeholder="ex: 14" min="1">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">🦵 Squats classiques (reps max d'un coup)</label>
+      <input type="number" class="form-input" id="maxSquats" placeholder="ex: 100" min="1">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">🧱 Planche frontale (secondes max)</label>
+      <input type="number" class="form-input" id="maxPlanche" placeholder="ex: 120" min="1">
+    </div>
+
+    <button class="btn-primary" onclick="APP.saveEvaluation()">💾 Enregistrer</button>
+
+    <div id="evaluationResults" style="margin-top: 20px; display: none;">
+      <div class="section-title" style="margin-top: 0;">📊 Tes séries recommandées :</div>
+      <div id="resultsWrap"></div>
+    </div>
+
+    <div class="card" style="margin-top: 20px;">
+      <div class="card-title">🏋️ Altères : estimer ton 1RM (formule d'Epley)</div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+        <input type="number" class="form-input" id="epleyW" placeholder="Poids (kg)" min="1" step="0.5">
+        <input type="number" class="form-input" id="epleyR" placeholder="Reps" min="1" max="30">
+      </div>
+      <button class="btn-primary" onclick="APP.calcEpley()">Calculer</button>
+      <div id="epleyOut" style="margin-top:10px; font-size:0.9em;"></div>
+    </div>
   </div>
 
   <!-- BOTTOM NAV -->
   <nav class="bottom-nav">
     <button class="nav-item active" id="navHome" onclick="APP.goPage('Home')"><span class="nav-icon">🏠</span>Accueil</button>
+    <button class="nav-item" id="navEvaluation" onclick="APP.goPage('Evaluation')"><span class="nav-icon">📋</span>Éval</button>
     <button class="nav-item" id="navStats" onclick="APP.goPage('Stats')"><span class="nav-icon">📊</span>Stats</button>
-    <button class="nav-item" id="navExercices" onclick="APP.goPage('Exercices')"><span class="nav-icon">🏋️</span>Exercices</button>
-    <button class="nav-item" id="navHistorique" onclick="APP.goPage('Historique')"><span class="nav-icon">📜</span>Historique</button>
+    <button class="nav-item" id="navExercices" onclick="APP.goPage('Exercices')"><span class="nav-icon">🏋️</span>Exos</button>
   </nav>
+
+  <!-- MODAL EXERCISE INFO -->
+  <div class="modal" id="exerciseModal">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-title" id="modalExerciseName">Exercice</div>
+      <div class="exercise-modal-img" id="modalExerciseImg">💪</div>
+      <div class="exercise-modal-desc" id="modalExerciseDesc">Description...</div>
+      <div class="exercise-modal-points">
+        <strong>Points clés :</strong>
+        <ul id="modalExercisePoints"></ul>
+      </div>
+      <button class="btn-primary" onclick="APP.closeExerciseModal()" style="margin-top: 20px;">Fermer</button>
+    </div>
+  </div>
 
   <!-- MODAL SETTINGS -->
   <div class="modal" id="settingsModal">
@@ -258,18 +360,8 @@
       <div class="modal-title">⚙️ Paramètres</div>
 
       <div class="form-group">
-        <label class="form-label">🔑 Clé API OpenRouter</label>
-        <input type="password" class="form-input" id="apiKeyInput" placeholder="sk-or-v1-...">
-      </div>
-
-      <div class="form-group">
         <label class="form-label">🩹 Blessure actuelle</label>
         <input type="text" class="form-input" id="injuryInput" placeholder="Ex: Épaule droite">
-      </div>
-
-      <div class="form-group">
-        <label class="form-label">🏋️ Équipement</label>
-        <div id="equipmentCheckboxes" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;"></div>
       </div>
 
       <button class="btn-primary" onclick="APP.saveSettings()">💾 Enregistrer</button>
@@ -284,6 +376,15 @@
     <div style="color: var(--accent); margin-top: 16px;">Génération...</div>
   </div>
 
+  <!-- REST TIMER -->
+  <div id="restBar">
+    <div class="rest-row">
+      <div><div class="rest-label" id="restLabel">Repos</div><div class="rest-time" id="restTime">60s</div></div>
+      <button class="rest-skip" onclick="APP.stopRest()">Passer ⏭</button>
+    </div>
+    <div class="rest-track"><div id="restFill"></div></div>
+  </div>
+
   <!-- TOAST -->
   <div class="toast" id="toast"></div>
 
@@ -291,7 +392,6 @@
 // ===== CONFIG =====
 const CONFIG = {
   XP_PER_LEVEL: 500,
-  EQUIPMENT: { none:'Poids du corps', pullup:'Barre traction', dips:'Barre de dips', rings:'Anneaux', dumbbells:'Haltères', bands:'Élastiques', chair:'Chaise' },
 
   PALIERS: {
     push: { name:'Push', icon:'💪', steps:['Pompes genoux','Pompes classiques','Pompes déclinées','Pompes diamant','Pompes pike','Pseudo-planche pompes','Pompes explosives','Pompes wide'] },
@@ -327,14 +427,51 @@ const CONFIG = {
     4: { focus:'Entraînement', desc:'4 exercices', groups:['push','pull','legs','core'] },
     5: { focus:'Entraînement', desc:'4 exercices', groups:['push','pull','legs','core'] },
     6: { focus:'Entraînement', desc:'4 exercices', groups:['push','pull','legs','core'] }
+  },
+
+  GYM_EXERCISES: {
+    haut: [
+      {
+        variations: ['chest press machine','machine pec fly','smith machine press','cable crossover'],
+        icon: '💪', name: 'Poitrine', type: 'haut'
+      },
+      {
+        variations: ['lat pulldown machine','assisted pullup','lever row machine','t-bar row'],
+        icon: '🔙', name: 'Dos', type: 'haut'
+      },
+      {
+        variations: ['shoulder press machine','lateral raise machine','assisted dips','machine shoulder fly'],
+        icon: '⬆️', name: 'Épaules', type: 'haut'
+      },
+      {
+        variations: ['rowing machine','cable machine row','leverage row','assisted row'],
+        icon: '🏃', name: 'Dos Tirage', type: 'haut'
+      }
+    ],
+    bas: [
+      {
+        variations: ['leg press machine','hack squat machine','v-squat machine','smith machine squat'],
+        icon: '🦵', name: 'Quadriceps', type: 'bas'
+      },
+      {
+        variations: ['leg curl machine','lying leg curl','seated leg curl','standing leg curl'],
+        icon: '🍗', name: 'Ischio', type: 'bas'
+      },
+      {
+        variations: ['leg extension machine','knee extension machine','assisted leg press','smith machine hack'],
+        icon: '💥', name: 'Ext Jambes', type: 'bas'
+      },
+      {
+        variations: ['abductor machine','adductor machine','hip abduction machine','hip adduction machine'],
+        icon: '⬌', name: 'Abduc/Adduc', type: 'bas'
+      }
+    ]
   }
 };
 
 // ===== STATE =====
 let STATE = {
-  apiKey: '',
   injury: '',
-  equipment: ['none'],
   stats: { force:1, endurance:1, agility:1, perception:1, intelligence:1 },
   statsXP: { force:0, endurance:0, agility:0, perception:0, intelligence:0 },
   streak: 0,
@@ -345,7 +482,13 @@ let STATE = {
   cycleStartDate: null,
   cycleNumber: 1,
   activityLog: [],
-  exercicePrefs: {}
+  exercicePrefs: {},
+  maxReps: { pompes: 0, tractions: 0, squats: 0, planche: 0 },
+  currentMode: 'maison',
+  currentFormat: 'split',
+  currentFocus: 'haut',
+  setsDone: [],
+  maxHistory: { pompes: [], tractions: [], squats: [], planche: [] }
 };
 
 // ===== UTILS =====
@@ -387,52 +530,236 @@ const GAME = {
     }
     return { week, isDecharge: week === 4 };
   },
-  getTodayFocus: () => {
-    const day = new Date().getDay();
-    const focus = CONFIG.DAY_FOCUS[day];
-    return { ...focus, dayName: ['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'][day] };
-  },
-  getCurrentPalier: (pattern) => {
-    const lvl = STATE.stats[['force','force','agility','perception','intelligence'][['push','pull','legs','core','mobility'].indexOf(pattern)]] || 1;
-    let idx = 0;
-    if(lvl >= 2) idx = 1;
-    if(lvl >= 4) idx = 2;
-    if(lvl >= 6) idx = 3;
-    if(lvl >= 9) idx = 4;
-    if(lvl >= 12) idx = 5;
-    if(lvl >= 16) idx = 6;
-    if(lvl >= 20) idx = 7;
-    return CONFIG.PALIERS[pattern].steps[Math.min(idx, CONFIG.PALIERS[pattern].steps.length - 1)];
-  },
-  getVariationByLevel: (group) => {
-    const lvl = UTILS.avgLevel();
-    const variations = CONFIG.EXERCISE_VARIATIONS[group];
-    let idx = Math.min(Math.floor(lvl / 3), variations.length - 1);
-    const exercise = variations[idx];
 
-    // Vérifier équipement
-    const requiredEquip = CONFIG.EXERCISE_EQUIPMENT[exercise];
-    if(requiredEquip && !STATE.equipment.includes(requiredEquip)) {
-      // Retourner la première variation sans équipement
-      for(let i = 0; i < variations.length; i++){
-        if(!CONFIG.EXERCISE_EQUIPMENT[variations[i]]) return variations[i];
-      }
+  calculateProgramSpecs: (duration) => {
+    if(duration <= 20) return { exercises: 3, series: 2, reps: 10, rest: 60 };
+    if(duration <= 30) return { exercises: 5, series: 3, reps: 12, rest: 60 };
+    if(duration <= 40) return { exercises: 6, series: 3, reps: 12, rest: 75 };
+    return { exercises: 6, series: 3, reps: 15, rest: 90 };
+  },
+
+  estimateTime: (specs) => {
+    const perExercise = (specs.series * (45 + specs.rest)) + 60; // temps exo + transition
+    const planche = 90; // planche finale
+    return Math.ceil((perExercise * specs.exercises + planche) / 60);
+  },
+
+  getRecommendedReps: (exerciseName) => {
+    const name = exerciseName.toLowerCase();
+    let key, def, unit = 'reps';
+    if(name.includes('pompe')){ key='pompes'; def=30; }
+    else if(name.includes('traction')){ key='tractions'; def=14; }
+    else if(name.includes('squat') && !/machine|smith|hack/.test(name)){ key='squats'; def=100; }
+    else if(name.includes('planche')){ key='planche'; def=120; unit='sec'; }
+    else return null;
+    const max = STATE.maxReps[key] || def;
+    return { key, unit, series: 3, max, min: Math.ceil(max*0.6), top: Math.ceil(max*0.7), target: Math.round(max*2/3) };
+  },
+
+  generateGymProgram: (duration, format, focus) => {
+    const specs = GAME.calculateProgramSpecs(duration);
+    const exercises = CONFIG.GYM_EXERCISES[focus];
+    let selected = [];
+
+    for(let i = 0; i < Math.min(specs.exercises - 1, exercises.length); i++){
+      const ex = exercises[i];
+      const variation = ex.variations[Math.floor(Math.random() * ex.variations.length)];
+      selected.push({
+        name: variation.toUpperCase(),
+        icon: ex.icon,
+        description: `${ex.name}: ${specs.series}x${specs.reps} reps, repos ${specs.rest}s`,
+        fullName: variation
+      });
     }
-    return exercise;
+
+    // Ajouter planche finale
+    selected.push({
+      name: 'PLANCHE FINALE',
+      icon: '🧱',
+      description: `Planche: ${specs.series}x30-60s, repos ${specs.rest}s`,
+      fullName: 'planche'
+    });
+
+    return { exercises: selected, specs, estimatedTime: GAME.estimateTime(specs) };
+  }
+};
+
+
+// ===== GUIDE MACHINES =====
+const GUIDE = {
+  DATA: {
+    press: {
+      muscles: 'pectoraux, triceps, avant des épaules',
+      setup: ['Règle le siège pour que les poignées soient à hauteur de milieu de poitrine','Dos bien plaqué contre le dossier, pieds à plat au sol','Saisis les poignées, coudes un peu sous les épaules'],
+      move: 'Pousse les poignées droit devant toi jusqu\'à presque tendre les bras, puis reviens lentement (2-3 secondes).',
+      points: ['Ne décolle pas le dos du dossier','Ne verrouille pas les coudes en fin de poussée','Contrôle le retour, pas de rebond']
+    },
+    fly: {
+      muscles: 'pectoraux (isolation)',
+      setup: ['Règle le siège pour que les poignées soient à hauteur de poitrine','Dos au dossier, avant-bras ou mains sur les appuis','Bras ouverts, coudes légèrement fléchis'],
+      move: 'Ramène les bras devant toi comme pour faire un câlin, serre les pectoraux une seconde, puis ouvre lentement.',
+      points: ['Coudes légèrement fléchis, jamais bloqués','N\'ouvre pas trop en arrière (étirement confortable)','Épaules basses, pas haussées']
+    },
+    pulldown: {
+      muscles: 'grand dorsal, biceps, haut du dos',
+      setup: ['Règle le boudin pour qu\'il bloque juste le haut des cuisses','Saisis la barre, mains un peu plus larges que les épaules','Bras tendus, buste légèrement incliné en arrière'],
+      move: 'Tire la barre vers le haut de la poitrine en menant avec les coudes, puis remonte lentement bras presque tendus.',
+      points: ['Tire avec le dos, pas seulement avec les bras','Ne balance pas le buste','Barre devant le visage, pas derrière la nuque']
+    },
+    row: {
+      muscles: 'milieu du dos, dorsaux, biceps',
+      setup: ['Règle le siège pour que les poignées soient à hauteur de poitrine','Poitrine appuyée sur le coussin (si présent)','Saisis les poignées, bras tendus devant toi'],
+      move: 'Tire les poignées vers toi en rapprochant les omoplates, marque un temps, puis reviens lentement.',
+      points: ['Omoplates serrées en fin de mouvement','Ne penche pas le buste en arrière','Épaules basses, loin des oreilles']
+    },
+    shoulder: {
+      muscles: 'épaules (deltoïdes), triceps',
+      setup: ['Règle le siège pour que les poignées soient à hauteur des épaules','Dos au dossier, pieds à plat','Saisis les poignées, coudes sous les poignées'],
+      move: 'Pousse les poignées vers le haut jusqu\'à presque tendre les bras, puis redescends lentement à hauteur des épaules.',
+      points: ['Ne cambre pas le bas du dos','Ne verrouille pas les coudes en haut','Descends jusqu\'aux épaules, pas plus bas']
+    },
+    legpress: {
+      muscles: 'cuisses (quadriceps), fessiers',
+      setup: ['Assis, dos et fessiers bien collés au dossier','Pieds au milieu de la plateforme, largeur d\'épaules','Règle le dossier pour que les genoux soient à ~90° au départ'],
+      move: 'Pousse la plateforme avec tout le pied jusqu\'à presque tendre les jambes, puis reviens lentement.',
+      points: ['Ne verrouille jamais les genoux en haut','Les genoux restent alignés avec les pieds','Le bas du dos ne décolle pas du dossier']
+    },
+    legcurl: {
+      muscles: 'arrière des cuisses (ischio-jambiers)',
+      setup: ['Règle le dossier pour que le genou soit aligné avec l\'axe de la machine','Cale le coussin juste au-dessus des talons / bas du mollet','Bloque les cuisses avec le boudin'],
+      move: 'Ramène les talons vers les fessiers en pliant les genoux, serre une seconde, puis reviens lentement.',
+      points: ['Ne soulève pas les fesses du siège','Mouvement lent au retour (3 secondes)','Amplitude complète sans à-coups']
+    },
+    legext: {
+      muscles: 'devant des cuisses (quadriceps)',
+      setup: ['Règle le dossier pour que le genou soit aligné avec l\'axe de la machine','Cale le coussin sur le bas du tibia, juste au-dessus des pieds','Saisis les poignées sur les côtés du siège'],
+      move: 'Tends les jambes jusqu\'à l\'horizontale, serre les cuisses une seconde, puis redescends lentement.',
+      points: ['Pas de coup sec en haut','Dos plaqué au dossier','Prends une charge modérée: les genoux sont fragiles']
+    },
+    abduct: {
+      muscles: 'fessiers, côté extérieur des hanches (abducteurs)',
+      setup: ['Assis, dos au dossier, pieds sur les repose-pieds','Coussins sur l\'extérieur des genoux','Jambes serrées au départ'],
+      move: 'Écarte les jambes vers l\'extérieur, marque un temps, puis reviens lentement. Pour la machine adducteurs (coussins à l\'intérieur), le mouvement est inverse: tu pars écarté et tu rapproches.',
+      points: ['Reste bien assis, bassin stable','Mouvement lent et contrôlé','Ne pars pas avec trop de charge']
+    },
+    plank: {
+      muscles: 'abdominaux, gainage complet',
+      setup: ['Avant-bras au sol, coudes sous les épaules','Jambes tendues, appui sur la pointe des pieds','Corps en ligne droite de la tête aux talons'],
+      move: 'Tiens la position sans bouger. Respire normalement.',
+      points: ['Serre les abdos et les fessiers','Ne laisse pas le bassin descendre ni monter','Regarde le sol, nuque neutre']
+    },
+    pushup: {
+      muscles: 'pectoraux, triceps, épaules',
+      setup: ['Mains au sol un peu plus larges que les épaules','Corps gainé en ligne droite','Pieds joints ou légèrement écartés'],
+      move: 'Descends la poitrine vers le sol en gardant les coudes à ~45°, puis repousse.',
+      points: ['Corps droit, pas de ventre qui tombe','Poitrine proche du sol','Respire: inspire en descendant']
+    },
+    pullup: {
+      muscles: 'dos, biceps',
+      setup: ['Saisis la barre, mains un peu plus larges que les épaules, paumes vers l\'avant','Pars bras tendus, corps stable'],
+      move: 'Tire pour amener le menton au-dessus de la barre, puis redescends lentement.',
+      points: ['Pas d\'élan','Descends bras presque tendus','Épaules basses']
+    },
+    squat: {
+      muscles: 'cuisses, fessiers',
+      setup: ['Pieds largeur d\'épaules, pointes légèrement ouvertes','Poitrine haute, regard devant'],
+      move: 'Descends en poussant les fesses en arrière jusqu\'à ce que les cuisses soient parallèles au sol, puis remonte.',
+      points: ['Genoux dans l\'axe des pieds','Talons au sol','Dos droit']
+    }
   },
 
-  getPool: () => {
-    const focus = GAME.getTodayFocus();
-    if(!focus.groups.length) return []; // Repos
+  // associe un nom d'exercice à un type de guide
+  typeOf: (name) => {
+    const n = name.toLowerCase();
+    if(n.includes('planche') || n.includes('plank')) return 'plank';
+    if(n.includes('pompe')) return 'pushup';
+    if(n.includes('traction')) return 'pullup';
+    if(n.includes('abduct') || n.includes('adduct')) return 'abduct';
+    if(n.includes('fly') || n.includes('crossover')) return 'fly';
+    if(n.includes('leg press') || n.includes('hack') || n.includes('v-squat') || n.includes('smith machine squat')) return 'legpress';
+    if(n.includes('leg curl')) return 'legcurl';
+    if(n.includes('extension')) return 'legext';
+    if(n.includes('squat')) return 'squat';
+    if(n.includes('shoulder') || n.includes('lateral') || n.includes('dips')) return 'shoulder';
+    if(n.includes('pulldown') || n.includes('pullup')) return 'pulldown';
+    if(n.includes('row')) return 'row';
+    if(n.includes('press')) return 'press';
+    return 'press';
+  },
 
-    let exercises = [];
-    focus.groups.forEach(g => {
-      const ex = GAME.getVariationByLevel(g);
-      if(!STATE.exercicePrefs[g] || STATE.exercicePrefs[g][ex] !== false){
-        exercises.push(ex);
-      }
-    });
-    return exercises;
+  get: (name) => {
+    const type = GUIDE.typeOf(name);
+    return Object.assign({ type }, GUIDE.DATA[type]);
+  },
+
+  svg: (type) => {
+    const stroke = 'stroke="#e0e0e0" stroke-width="5" stroke-linecap="round" fill="none"';
+    const mach = 'stroke="#7f8c9a" stroke-width="4" stroke-linecap="round" fill="none"';
+    const move = 'stroke="#00d4ff" stroke-width="5" stroke-linecap="round" fill="none"';
+    const dur = '2.4s';
+    const anim = (attr, a, b) => '<animate attributeName="'+attr+'" values="'+a+';'+b+';'+a+'" dur="'+dur+'" repeatCount="indefinite"/>';
+    const head = (x,y) => '<circle cx="'+x+'" cy="'+y+'" r="13" fill="#e0e0e0"/>';
+    const cap = (t) => '<text x="150" y="196" text-anchor="middle" fill="#7f8c9a" font-size="12">'+t+'</text>';
+    const wrap = (inner, c) => '<svg viewBox="0 0 300 205" xmlns="http://www.w3.org/2000/svg">'+inner+cap(c)+'</svg>';
+    // personnage assis de profil (dossier à gauche, regarde à droite)
+    const seated = head(112,45)+
+      '<path d="M112 60 L112 118 L162 118 L162 168" '+stroke+'/>'+
+      '<path d="M96 40 L96 135" '+mach+'/><path d="M96 135 L180 135" '+mach+'/>';
+    const base = '<line x1="30" y1="172" x2="270" y2="172" '+mach+'/>';
+
+    if(type==='press') return wrap(base+seated+
+      '<line x1="116" y1="80" x2="150" y2="84" '+stroke+'><animate attributeName="x2" values="150;190;150" dur="'+dur+'" repeatCount="indefinite"/></line>'+
+      '<circle cx="150" cy="84" r="8" fill="#00d4ff"><animate attributeName="cx" values="150;190;150" dur="'+dur+'" repeatCount="indefinite"/></circle>'+
+      '<line x1="214" y1="62" x2="214" y2="106" '+mach+'/>', 'Pousse devant toi ↔ reviens lentement');
+    if(type==='fly') return wrap(base+
+      head(150,42)+'<path d="M150 56 L150 118 L150 168" '+stroke+'/>'+
+      '<path d="M150 72 L108 76" '+stroke+'><animate attributeName="d" values="M150 72 L88 90;M150 72 L128 82;M150 72 L88 90" dur="'+dur+'" repeatCount="indefinite"/></path>'+
+      '<path d="M150 72 L192 76" '+stroke+'><animate attributeName="d" values="M150 72 L212 90;M150 72 L172 82;M150 72 L212 90" dur="'+dur+'" repeatCount="indefinite"/></path>'+
+      '<circle r="8" fill="#00d4ff"><animate attributeName="cx" values="88;128;88" dur="'+dur+'" repeatCount="indefinite"/><animate attributeName="cy" values="90;82;90" dur="'+dur+'" repeatCount="indefinite"/></circle>'+
+      '<circle r="8" fill="#00d4ff"><animate attributeName="cx" values="212;172;212" dur="'+dur+'" repeatCount="indefinite"/><animate attributeName="cy" values="90;82;90" dur="'+dur+'" repeatCount="indefinite"/></circle>', 'Ouvre les bras ↔ ramène devant la poitrine');
+    if(type==='pulldown') return wrap(base+seated+
+      '<line x1="116" y1="78" x2="140" y2="30" '+stroke+'><animate attributeName="x2" values="140;132;140" dur="'+dur+'" repeatCount="indefinite"/><animate attributeName="y2" values="30;82;30" dur="'+dur+'" repeatCount="indefinite"/></line>'+
+      '<rect x="118" y="22" width="44" height="7" rx="3" fill="#00d4ff"><animate attributeName="y" values="22;76;22" dur="'+dur+'" repeatCount="indefinite"/></rect>'+
+      '<line x1="140" y1="8" x2="140" y2="22" '+mach+'><animate attributeName="y2" values="22;76;22" dur="'+dur+'" repeatCount="indefinite"/></line>', 'Barre vers la poitrine ↔ remonte lentement');
+    if(type==='row') return wrap(base+seated+
+      '<line x1="116" y1="82" x2="190" y2="88" '+stroke+'><animate attributeName="x2" values="190;138;190" dur="'+dur+'" repeatCount="indefinite"/></line>'+
+      '<circle cx="190" cy="88" r="8" fill="#00d4ff"><animate attributeName="cx" values="190;138;190" dur="'+dur+'" repeatCount="indefinite"/></circle>', 'Tire vers toi, omoplates serrées ↔ reviens');
+    if(type==='shoulder') return wrap(base+seated+
+      '<line x1="116" y1="76" x2="136" y2="76" '+stroke+'><animate attributeName="x2" values="136;132;136" dur="'+dur+'" repeatCount="indefinite"/><animate attributeName="y2" values="76;22;76" dur="'+dur+'" repeatCount="indefinite"/></line>'+
+      '<circle cx="136" cy="76" r="8" fill="#00d4ff"><animate attributeName="cx" values="136;132;136" dur="'+dur+'" repeatCount="indefinite"/><animate attributeName="cy" values="76;22;76" dur="'+dur+'" repeatCount="indefinite"/></circle>', 'Pousse vers le haut ↔ redescends aux épaules');
+    if(type==='legpress') return wrap(base+
+      head(70,92)+'<path d="M80 104 L100 150" '+stroke+'/>'+
+      '<path d="M100 150 L150 120 L150 120" '+stroke+'><animate attributeName="d" values="M100 150 L150 118 L170 160;M100 150 L170 134 L220 138;M100 150 L150 118 L170 160" dur="'+dur+'" repeatCount="indefinite"/></path>'+
+      '<path d="M60 78 L100 160" '+mach+'/>'+
+      '<rect x="168" y="118" width="8" height="52" rx="3" fill="#00d4ff"><animate attributeName="x" values="166;218;166" dur="'+dur+'" repeatCount="indefinite"/></rect>', 'Pousse la plateforme ↔ reviens (genoux à 90°)');
+    if(type==='legcurl') return wrap(base+seated+
+      '<path d="M162 118 L162 168" '+move+'><animate attributeName="d" values="M162 118 L162 168;M162 118 L116 150;M162 118 L162 168" dur="'+dur+'" repeatCount="indefinite"/></path>'+
+      '<rect x="156" y="152" width="14" height="14" rx="4" fill="#00d4ff"><animate attributeName="x" values="156;108;156" dur="'+dur+'" repeatCount="indefinite"/><animate attributeName="y" values="152;140;152" dur="'+dur+'" repeatCount="indefinite"/></rect>', 'Talons vers les fesses ↔ reviens lentement');
+    if(type==='legext') return wrap(base+seated+
+      '<path d="M162 118 L162 168" '+move+'><animate attributeName="d" values="M162 118 L162 168;M162 118 L216 124;M162 118 L162 168" dur="'+dur+'" repeatCount="indefinite"/></path>'+
+      '<rect x="156" y="152" width="14" height="14" rx="4" fill="#00d4ff"><animate attributeName="x" values="156;208;156" dur="'+dur+'" repeatCount="indefinite"/><animate attributeName="y" values="152;114;152" dur="'+dur+'" repeatCount="indefinite"/></rect>', 'Tends les jambes ↔ redescends lentement');
+    if(type==='abduct') return wrap(base+
+      head(150,38)+'<path d="M150 52 L150 108" '+stroke+'/>'+
+      '<path d="M150 108 L125 108 L125 160" '+stroke+'><animate attributeName="d" values="M150 108 L125 108 L125 160;M150 108 L95 118 L85 162;M150 108 L125 108 L125 160" dur="'+dur+'" repeatCount="indefinite"/></path>'+
+      '<path d="M150 108 L175 108 L175 160" '+stroke+'><animate attributeName="d" values="M150 108 L175 108 L175 160;M150 108 L205 118 L215 162;M150 108 L175 108 L175 160" dur="'+dur+'" repeatCount="indefinite"/></path>'+
+      '<rect x="112" y="130" width="10" height="26" rx="4" fill="#00d4ff"><animate attributeName="x" values="112;80;112" dur="'+dur+'" repeatCount="indefinite"/></rect>'+
+      '<rect x="178" y="130" width="10" height="26" rx="4" fill="#00d4ff"><animate attributeName="x" values="178;210;178" dur="'+dur+'" repeatCount="indefinite"/></rect>', 'Écarte les jambes ↔ reviens (adducteurs: inverse)');
+    if(type==='plank') return wrap(base+
+      head(220,102)+'<path d="M206 112 L60 150" '+stroke+'><animate attributeName="d" values="M206 112 L60 150;M206 110 L60 148;M206 112 L60 150" dur="3s" repeatCount="indefinite"/></path>'+
+      '<path d="M190 118 L190 166 L222 166" '+move+'/>', 'Corps aligné, tiens la position sans bouger');
+    if(type==='pushup') return wrap(base+
+      '<circle r="13" fill="#e0e0e0"><animate attributeName="cx" values="224;224;224" dur="'+dur+'" repeatCount="indefinite"/><animate attributeName="cy" values="96;132;96" dur="'+dur+'" repeatCount="indefinite"/></circle>'+
+      '<path d="M210 106 L50 164" '+stroke+'><animate attributeName="d" values="M210 106 L50 164;M210 142 L50 166;M210 106 L50 164" dur="'+dur+'" repeatCount="indefinite"/></path>'+
+      '<line x1="196" y1="116" x2="196" y2="170" '+move+'><animate attributeName="y1" values="116;148;116" dur="'+dur+'" repeatCount="indefinite"/></line>', 'Descends la poitrine ↔ repousse');
+    if(type==='pullup') return wrap('<line x1="60" y1="24" x2="240" y2="24" '+mach+'/>'+
+      '<circle cx="150" r="13" fill="#e0e0e0"><animate attributeName="cy" values="110;54;110" dur="'+dur+'" repeatCount="indefinite"/></circle>'+
+      '<path d="M150 124 L150 175" '+stroke+'><animate attributeName="d" values="M150 124 L150 180;M150 68 L150 124;M150 124 L150 180" dur="'+dur+'" repeatCount="indefinite"/></path>'+
+      '<path d="M118 24 L150 96" '+stroke+'><animate attributeName="d" values="M112 24 L150 100;M120 24 L150 70;M112 24 L150 100" dur="'+dur+'" repeatCount="indefinite"/></path>'+
+      '<path d="M188 24 L150 96" '+stroke+'><animate attributeName="d" values="M188 24 L150 100;M180 24 L150 70;M188 24 L150 100" dur="'+dur+'" repeatCount="indefinite"/></path>', 'Menton au-dessus de la barre ↔ redescends');
+    // squat
+    return wrap(base+
+      '<circle cx="130" r="13" fill="#e0e0e0"><animate attributeName="cy" values="40;84;40" dur="'+dur+'" repeatCount="indefinite"/></circle>'+
+      '<path d="M130 54 L130 110 L150 168" '+stroke+'><animate attributeName="d" values="M130 54 L130 108 L140 168;M126 98 L100 128 L150 168;M130 54 L130 108 L140 168" dur="'+dur+'" repeatCount="indefinite"/></path>', 'Fesses en arrière, cuisses parallèles ↔ remonte');
   }
 };
 
@@ -448,11 +775,7 @@ const UI = {
     document.getElementById('xpFill').style.width = (avgXP/CONFIG.XP_PER_LEVEL*100)+'%';
     document.getElementById('xpLabel').textContent = 'XP '+Math.floor(avgXP)+'/'+CONFIG.XP_PER_LEVEL;
   },
-  updateFocus: () => {
-    const f = GAME.getTodayFocus();
-    document.getElementById('focusBannerVal').textContent = f.focus+' — '+f.desc;
-    document.getElementById('focusBannerDay').textContent = f.dayName;
-  },
+
   updateStats: () => {
     const wrap = document.getElementById('statsWrap');
     wrap.innerHTML = '';
@@ -471,6 +794,7 @@ const UI = {
       wrap.appendChild(div);
     });
   },
+
   renderQuests: () => {
     const w = document.getElementById('questsWrap');
     const h = document.getElementById('hintWrap');
@@ -478,16 +802,28 @@ const UI = {
     h.style.display = 'none';
     w.innerHTML = '';
     STATE.todayQuests.forEach((q, i) => {
+      const done = STATE.questsDone[i];
+      const sets = q.sets || 3;
+      const n = Math.min((STATE.setsDone && STATE.setsDone[i]) || 0, sets);
+      const rec = GAME.getRecommendedReps(q.fullName || q.name);
+      const recTxt = rec ? '📌 '+sets+' × '+rec.target+' '+rec.unit+' <span style="color:var(--muted); font-weight:400;">(60-70 % de ton max : '+rec.min+'-'+rec.top+')</span>' : '';
+      const specs = q._specs;
+      const specTxt = (!rec && specs) ? 'Séries: '+specs.series+' | Reps: '+specs.reps+' | Repos: '+specs.rest+'s' : '';
+      const dots = Array.from({length: sets}, (_, k) => k < n ? '●' : '○').join(' ');
       const d = document.createElement('div');
-      d.className = 'quest-card'+(STATE.questsDone[i]?' done':'');
+      d.className = 'quest-card'+(done?' done':'');
       d.innerHTML =
-        '<div class="quest-head"><div class="quest-name">'+q.name+'</div><div class="quest-xp">+'+q.xp+'</div></div>'+
+        '<div class="quest-head"><div class="quest-name" onclick="APP.showExerciseInfo(\''+(q.fullName||q.name)+'\')">'+q.name+'</div><div class="quest-xp">+'+q.xp+'</div></div>'+
         '<div class="quest-desc">'+q.description+'</div>'+
-        '<button class="quest-btn" onclick="APP.doneQuest('+i+')" '+(STATE.questsDone[i]?'disabled':'')+'>'+
-        (STATE.questsDone[i]?'✓ Done':'✓ Marquer')+' </button>';
+        (recTxt ? '<div style="font-size:0.85em; color:var(--accent); margin-bottom:8px; font-weight:600;">'+recTxt+'</div>' : '')+
+        (specTxt ? '<div class="quest-specs">'+specTxt+'</div>' : '')+
+        '<div style="letter-spacing:4px; color:var(--accent); margin-bottom:10px;">'+dots+'</div>'+
+        '<button class="quest-btn" onclick="APP.doneSet('+i+')" '+(done?'disabled':'')+'>'+
+        (done ? '✓ Terminé' : '✓ Série '+(n+1)+'/'+sets+' validée')+'</button>';
       w.appendChild(d);
     });
   },
+
   renderExercices: () => {
     const wrap = document.getElementById('exerciceEditWrap');
     wrap.innerHTML = '';
@@ -509,49 +845,123 @@ const UI = {
       wrap.appendChild(div);
     });
   },
-  renderHistory: () => {
-    const wrap = document.getElementById('historyWrap');
-    if(!STATE.activityLog.length){ wrap.innerHTML = '<div class="hint">Aucune activité.</div>'; return; }
-    const byDate = {};
-    STATE.activityLog.forEach(a => { if(!byDate[a.date]) byDate[a.date] = []; byDate[a.date].push(a); });
-    let html = '';
-    Object.keys(byDate).sort((a,b)=>b.localeCompare(a)).forEach(date => {
-      const d = new Date(date);
-      const label = d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
-      html += '<div style="margin-bottom:18px;"><div style="font-size:0.8em; color:var(--muted); font-weight:600; margin-bottom:8px;">'+label+'</div>';
-      byDate[date].forEach(a => {
-        html += '<div style="background:var(--bg2); border-radius:10px; padding:12px; margin-bottom:6px; display:flex; justify-content:space-between;"><span>'+a.name+'</span><span style="color:var(--accent); font-weight:700;">+'+a.xp+'</span></div>';
-      });
-      html += '</div>';
+
+  chart: (h) => {
+    const vals = h.slice(-8).map(x => x.val);
+    const W=280, H=64, pad=12;
+    const mn=Math.min(...vals), mx=Math.max(...vals), rng=(mx-mn)||1;
+    const pts = vals.map((v,i) => [ vals.length===1 ? W/2 : pad+i*(W-2*pad)/(vals.length-1), H-pad-(v-mn)/rng*(H-2*pad) ]);
+    return '<svg viewBox="0 0 '+W+' '+H+'" style="width:100%; height:auto; display:block; margin:8px 0;">'+
+      '<polyline points="'+pts.map(p=>p.join(',')).join(' ')+'" fill="none" stroke="#00d4ff" stroke-width="2.5" stroke-linejoin="round"/>'+
+      pts.map((p,i)=>'<circle cx="'+p[0]+'" cy="'+p[1]+'" r="3.5" fill="#00d4ff"/><text x="'+p[0]+'" y="'+(p[1]-7)+'" text-anchor="middle" fill="#e0e0e0" font-size="10">'+vals[i]+'</text>').join('')+
+      '</svg>';
+  },
+
+  updateTestBanner: () => {
+    const el = document.getElementById('testBanner');
+    const dates = Object.values(STATE.maxHistory||{}).flat().map(x => x.date).sort();
+    let msg = '';
+    if(!dates.length) msg = '🧪 Fais ton premier test de max (1 série à fond par exercice)';
+    else {
+      const days = Math.floor((new Date(UTILS.today()) - new Date(dates[dates.length-1])) / 86400000);
+      if(days >= 7) msg = '🧪 Test de max hebdo : dernier test il y a '+days+' jours';
+    }
+    el.innerHTML = msg ? '<div onclick="APP.goPage(\'Evaluation\')" style="cursor:pointer; background:rgba(255,165,2,0.12); border:1px solid var(--orange); color:var(--orange); border-radius:12px; padding:12px 14px; margin-bottom:14px; font-size:0.9em; font-weight:600;">'+msg+' →</div>' : '';
+  },
+
+  renderEvaluationResults: () => {
+    const resultsWrap = document.getElementById('resultsWrap');
+    const resultsDiv = document.getElementById('evaluationResults');
+    const m = STATE.maxReps;
+    if(!m.pompes || !m.tractions || !m.squats || !m.planche){ resultsDiv.style.display = 'none'; return; }
+    resultsDiv.style.display = 'block';
+    resultsWrap.innerHTML = '';
+    [
+      { key:'pompes', label:'Pompes', icon:'💪', ex:'pompes' },
+      { key:'tractions', label:'Tractions', icon:'🔙', ex:'tractions' },
+      { key:'squats', label:'Squats', icon:'🦵', ex:'squats' },
+      { key:'planche', label:'Planche', icon:'🧱', ex:'planche' }
+    ].forEach(e => {
+      const rec = GAME.getRecommendedReps(e.ex);
+      const h = (STATE.maxHistory && STATE.maxHistory[e.key]) || [];
+      let msg = 'Max '+e.label.toLowerCase()+' : '+m[e.key]+(rec.unit==='sec'?' s':'')+' (premier test — refais-en un dans 7 jours)';
+      if(h.length >= 2){
+        const first = h[0].val, last = h[h.length-1].val;
+        const pct = Math.round((last-first)/first*100);
+        msg = 'Max '+e.label.toLowerCase()+' : '+first+' → '+last+' ('+(pct>0?'+':'')+pct+' %)';
+      }
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML =
+        '<div style="font-weight:700; margin-bottom:6px;">'+e.icon+' '+e.label+'</div>'+
+        '<div style="font-size:0.85em; color:var(--green); font-weight:600;">'+msg+'</div>'+
+        (h.length ? UI.chart(h) : '')+
+        '<div style="background:rgba(0,212,255,0.08); border-left:3px solid var(--accent); padding:10px 12px; border-radius:8px;">'+
+          '<div style="font-size:0.8em; color:var(--muted);">Charge du jour (≈ 2/3 du max)</div>'+
+          '<div style="font-size:1.1em; color:var(--accent); font-weight:700;">3 × '+rec.target+' '+rec.unit+'</div>'+
+        '</div>';
+      resultsWrap.appendChild(card);
     });
-    wrap.innerHTML = html;
   }
 };
 
 // ===== APP =====
 const APP = {
+  selectMode: (mode) => {
+    STATE.currentMode = mode;
+    document.querySelectorAll('[onclick*="selectMode"]').forEach(b => b.classList.remove('selected'));
+    event.target.classList.add('selected');
+    const salleOpts = document.getElementById('salleOptions');
+    if(mode === 'salle') salleOpts.style.display = 'block';
+    else salleOpts.style.display = 'none';
+    document.getElementById('modeDisplay').textContent = mode === 'maison' ? 'Maison - 4 exercices' : 'Salle - Machine';
+    UTILS.save();
+  },
+
+  selectFormat: (format) => {
+    STATE.currentFormat = format;
+    document.querySelectorAll('[onclick*="selectFormat"]').forEach(b => b.classList.remove('selected'));
+    event.target.classList.add('selected');
+    const splitOpts = document.getElementById('splitOptions');
+    if(format === 'split') splitOpts.style.display = 'block';
+    else splitOpts.style.display = 'none';
+    UTILS.save();
+  },
+
+  selectFocus: (focus) => {
+    STATE.currentFocus = focus;
+    document.querySelectorAll('[onclick*="selectFocus"]').forEach(b => b.classList.remove('selected'));
+    event.target.classList.add('selected');
+    UTILS.save();
+  },
+
+  showExerciseInfo: (exerciseName) => {
+    const info = GUIDE.get(exerciseName);
+    document.getElementById('modalExerciseName').textContent = exerciseName.toUpperCase();
+    document.getElementById('modalExerciseImg').innerHTML = GUIDE.svg(info.type);
+    document.getElementById('modalExerciseDesc').innerHTML =
+      '<div style="margin-bottom:10px;"><strong style="color:var(--accent)">Muscles :</strong> '+info.muscles+'</div>'+
+      '<div style="margin-bottom:10px;"><strong style="color:var(--accent)">Installation :</strong><ol style="margin:6px 0 0 20px;">'+
+      info.setup.map(x=>'<li style="margin-bottom:4px;">'+x+'</li>').join('')+'</ol></div>'+
+      '<div><strong style="color:var(--accent)">Mouvement :</strong> '+info.move+'</div>';
+    document.getElementById('modalExercisePoints').innerHTML = info.points.map(p => '<li>'+p+'</li>').join('');
+    document.getElementById('exerciseModal').classList.add('active');
+  },
+
+  closeExerciseModal: () => document.getElementById('exerciseModal').classList.remove('active'),
+
   openSettings: () => {
-    document.getElementById('apiKeyInput').value = STATE.apiKey;
     document.getElementById('injuryInput').value = STATE.injury;
-    const eq = document.getElementById('equipmentCheckboxes');
-    eq.innerHTML = '';
-    Object.keys(CONFIG.EQUIPMENT).forEach(k => {
-      const label = document.createElement('label');
-      label.style.cssText = 'display:flex; gap:8px; cursor:pointer; font-size:0.88em;';
-      label.innerHTML = '<input type="checkbox" value="'+k+'" '+(STATE.equipment.includes(k)?'checked':'')+'> '+CONFIG.EQUIPMENT[k];
-      eq.appendChild(label);
-    });
     document.getElementById('settingsModal').classList.add('active');
   },
+
   closeSettings: () => document.getElementById('settingsModal').classList.remove('active'),
+
   saveSettings: () => {
-    STATE.apiKey = document.getElementById('apiKeyInput').value.trim();
     STATE.injury = document.getElementById('injuryInput').value.trim();
-    STATE.equipment = [];
-    document.querySelectorAll('#equipmentCheckboxes input:checked').forEach(cb => STATE.equipment.push(cb.value));
-    if(!STATE.equipment.length) STATE.equipment = ['none'];
     UTILS.save(); APP.updateUI(); APP.closeSettings(); UTILS.toast('✅ Paramètres sauvegardés');
   },
+
   saveExercicePrefs: () => {
     document.querySelectorAll('[data-g]').forEach(i => {
       const g = i.getAttribute('data-g');
@@ -561,6 +971,31 @@ const APP = {
     });
     UTILS.save(); UTILS.toast('✅ Exercices sauvegardés');
   },
+
+  saveEvaluation: () => {
+    const maxPompes = parseInt(document.getElementById('maxPompes').value) || 0;
+    const maxTractions = parseInt(document.getElementById('maxTractions').value) || 0;
+    const maxSquats = parseInt(document.getElementById('maxSquats').value) || 0;
+    const maxPlanche = parseInt(document.getElementById('maxPlanche').value) || 0;
+
+    if(!maxPompes || !maxTractions || !maxSquats || !maxPlanche){
+      UTILS.toast('⚠️ Remplissez tous les champs', true);
+      return;
+    }
+
+    STATE.maxReps = { pompes: maxPompes, tractions: maxTractions, squats: maxSquats, planche: maxPlanche };
+    const td = UTILS.today();
+    if(!STATE.maxHistory) STATE.maxHistory = { pompes: [], tractions: [], squats: [], planche: [] };
+    Object.keys(STATE.maxReps).forEach(k => {
+      const h = STATE.maxHistory[k] = STATE.maxHistory[k] || [];
+      if(h.length && h[h.length-1].date === td) h[h.length-1].val = STATE.maxReps[k];
+      else h.push({ date: td, val: STATE.maxReps[k] });
+    });
+    UTILS.save();
+    UI.renderEvaluationResults(); UI.updateTestBanner();
+    UTILS.toast('✅ Test enregistré!');
+  },
+
   goPage: (name) => {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -568,14 +1003,18 @@ const APP = {
     document.getElementById('nav'+name).classList.add('active');
     if(name === 'Stats') UI.updateStats();
     if(name === 'Exercices') UI.renderExercices();
-    if(name === 'Historique') UI.renderHistory();
+    if(name === 'Evaluation'){
+      const ids = { pompes:'maxPompes', tractions:'maxTractions', squats:'maxSquats', planche:'maxPlanche' };
+      Object.keys(ids).forEach(k => { if(STATE.maxReps[k]) document.getElementById(ids[k]).value = STATE.maxReps[k]; });
+      UI.renderEvaluationResults();
+    }
   },
+
   generateProgram: async function(){
-    const focus = GAME.getTodayFocus();
-    if(!focus.groups.length){
-      UTILS.toast('📆 Repos - Récupération active', false);
-      STATE.todayQuests = [];
-      STATE.questsDone = [];
+    const duration = parseInt(document.getElementById('duration').value) || 30;
+
+    if(duration < 15 || duration > 120){
+      UTILS.toast('⚠️ Durée entre 15 et 120 min', true);
       return;
     }
 
@@ -584,47 +1023,50 @@ const APP = {
     document.getElementById('loadingOverlay').classList.add('active');
 
     try {
-      const lvl = UTILS.avgLevel();
-      const exercises = GAME.getPool();
-      const descriptions = {
-        'pompes classiques': '3 séries à rythme normal',
-        'pompes déclinées': '3 séries déclinées',
-        'pompes diamant': '3 séries diamant',
-        'pompes pike': '3 séries pike',
-        'pompes explosives': '3 séries explosives',
-        'dumbbell bench press': '3 séries avec haltères',
-        'dumbbell floor press': '3 séries au sol',
-        'tractions pronation': '3 séries pronation',
-        'tractions supination': '3 séries supination',
-        'tractions australiennes': '3 séries australiennes',
-        'dead hang': '3 séries hang',
-        'hanging knee raise': '3 séries genoux',
-        'dumbbell rows': '3 séries rows',
-        'single arm rows': '3 séries unilatérales',
-        'squats classiques': '3 séries classiques',
-        'squats sumo': '3 séries sumo',
-        'squats jump': '3 séries explosives',
-        'fentes avant': '3 séries fentes',
-        'squats bulgares': '3 séries bulgares',
-        'dumbbell squats': '3 séries avec haltères',
-        'goblet squats': '3 séries goblet',
-        'planche frontale': '3 séries, tenir le plus longtemps',
-        'planche latérale': '3 séries par côté',
-        'hollow body': '3 séries hollow',
-        'leg raises': '3 séries jambes',
-        'mountain climbers': '3 séries montagne',
-        'dumbbell rotations': '3 séries rotations',
-        'dumbbell chop': '3 séries chop'
-      };
+      let program;
 
-      STATE.todayQuests = exercises.map((ex, i) => ({
-        name: ex.toUpperCase(),
-        description: descriptions[ex] || '3 séries, maximal',
-        xp: 100
-      }));
-      STATE.questsDone = new Array(exercises.length).fill(false);
+      if(STATE.currentMode === 'maison'){
+        // Mode maison - générer les 4 exercices habituels
+        const day = new Date().getDay();
+        const focus = CONFIG.DAY_FOCUS[day];
+        if(!focus.groups.length){
+          UTILS.toast('📆 Repos - Récupération active', false);
+          STATE.todayQuests = [];
+          STATE.questsDone = [];
+        } else {
+          const exercises = ['POMPES CLASSIQUES','TRACTIONS PRONATION','SQUATS CLASSIQUES','PLANCHE FRONTALE'];
+          STATE.todayQuests = exercises.map((ex, i) => ({
+            name: ex,
+            fullName: ex.toLowerCase(),
+            description: 'Repos automatique entre les séries',
+            sets: 3,
+            rest: ex.includes('PLANCHE') ? 45 : 60,
+            xp: 100
+          }));
+          STATE.questsDone = new Array(exercises.length).fill(false);
+        }
+      } else {
+        // Mode salle - générer programme gym
+        const result = GAME.generateGymProgram(duration, STATE.currentFormat, STATE.currentFocus);
+        STATE.todayQuests = result.exercises.map((ex) => ({
+          name: ex.name,
+          fullName: ex.fullName,
+          description: ex.description,
+          _specs: result.specs,
+          sets: result.specs.series,
+          rest: ex.fullName === 'planche' ? Math.min(45, result.specs.rest) : result.specs.rest,
+          xp: 100
+        }));
+        STATE.questsDone = new Array(result.exercises.length).fill(false);
+
+        // Afficher timing estimé
+        const timingInfo = document.getElementById('timingInfo');
+        timingInfo.innerHTML = '<div class="timing-info">⏱️ <strong>Durée estimée:</strong> '+result.estimatedTime+' min (config: '+duration+' min disponibles)</div>';
+      }
+
       STATE.lastGenDate = UTILS.today();
-      UTILS.save(); APP.updateUI(); UI.renderQuests(); UTILS.toast('⚡ Programme du jour généré!');
+      STATE.setsDone = new Array(STATE.todayQuests.length).fill(0); APP.stopRest();
+      UTILS.save(); APP.updateUI(); UI.renderQuests(); UTILS.toast('⚡ Programme généré!');
     } catch(e){
       UTILS.toast('❌ '+e.message, true);
     } finally {
@@ -632,6 +1074,53 @@ const APP = {
       document.getElementById('loadingOverlay').classList.remove('active');
     }
   },
+
+  doneSet: (i) => {
+    if(STATE.questsDone[i]) return;
+    const q = STATE.todayQuests[i];
+    const sets = q.sets || 3;
+    if(!STATE.setsDone) STATE.setsDone = [];
+    STATE.setsDone[i] = (STATE.setsDone[i] || 0) + 1;
+    if(STATE.setsDone[i] >= sets){ APP.stopRest(); APP.doneQuest(i); return; }
+    UTILS.save(); UI.renderQuests();
+    APP.startRest(q.rest || 60, q.name+' — série '+STATE.setsDone[i]+'/'+sets+' validée');
+  },
+
+  _restT: null,
+  startRest: (sec, label) => {
+    APP.stopRest();
+    const end = Date.now() + sec*1000;
+    document.getElementById('restLabel').textContent = label;
+    document.getElementById('restBar').classList.add('show');
+    const tick = () => {
+      const left = Math.max(0, Math.ceil((end - Date.now())/1000));
+      document.getElementById('restTime').textContent = left+'s';
+      document.getElementById('restFill').style.width = (100 - left/sec*100)+'%';
+      if(left <= 0) APP.restDone();
+    };
+    tick();
+    APP._restT = setInterval(tick, 250);
+  },
+  stopRest: () => {
+    if(APP._restT){ clearInterval(APP._restT); APP._restT = null; }
+    document.getElementById('restBar').classList.remove('show');
+  },
+  restDone: () => {
+    APP.stopRest();
+    try { const ac = new (window.AudioContext||window.webkitAudioContext)(); const o = ac.createOscillator(); o.connect(ac.destination); o.frequency.value = 880; o.start(); setTimeout(() => { o.stop(); ac.close(); }, 300); } catch(e){}
+    try { if(navigator.vibrate) navigator.vibrate([200,100,200]); } catch(e){}
+    UTILS.toast('⏱️ Repos fini — série suivante !');
+  },
+
+  calcEpley: () => {
+    const w = parseFloat(document.getElementById('epleyW').value);
+    const r = parseInt(document.getElementById('epleyR').value);
+    const out = document.getElementById('epleyOut');
+    if(!w || !r){ out.textContent = 'Entre le poids et le nombre de reps.'; return; }
+    const rm = w * (1 + r/30);
+    out.innerHTML = '1RM estimé : <strong style="color:var(--accent)">'+rm.toFixed(1)+' kg</strong><br>Charge de travail (65 %) : <strong>'+(rm*0.65).toFixed(1)+' kg</strong>';
+  },
+
   doneQuest: (i) => {
     if(STATE.questsDone[i]) return;
     const q = STATE.todayQuests[i];
@@ -650,11 +1139,14 @@ const APP = {
     STATE.activityLog.unshift({date:td,name:q.name,xp:q.xp});
     UTILS.save(); APP.updateUI(); UI.renderQuests(); UTILS.toast('✅ +'+q.xp);
   },
-  updateUI: () => { UI.updateHeader(); UI.updateFocus(); UI.renderQuests(); },
+
+  updateUI: () => { UI.updateHeader(); UI.renderQuests(); UI.updateTestBanner(); },
+
   resetAll: () => { if(confirm('Réinitialiser?')){ localStorage.clear(); location.reload(); } },
+
   init: () => {
     UTILS.load();
-    if(STATE.lastGenDate && STATE.lastGenDate !== UTILS.today()){ STATE.todayQuests = []; STATE.questsDone = []; }
+    if(STATE.lastGenDate && STATE.lastGenDate !== UTILS.today()){ STATE.todayQuests = []; STATE.questsDone = []; STATE.setsDone = []; }
     if(!STATE.cycleStartDate) STATE.cycleStartDate = UTILS.today();
     UTILS.save(); APP.updateUI();
   }
@@ -664,3 +1156,5 @@ APP.init();
 </script>
 </body>
 </html>
+
+</body></html>
