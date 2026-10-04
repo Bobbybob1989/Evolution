@@ -1027,24 +1027,17 @@ const APP = {
 
       if(STATE.currentMode === 'maison'){
         // Mode maison - générer les 4 exercices habituels
-        const day = new Date().getDay();
-        const focus = CONFIG.DAY_FOCUS[day];
-        if(!focus.groups.length){
-          UTILS.toast('📆 Repos - Récupération active', false);
-          STATE.todayQuests = [];
-          STATE.questsDone = [];
-        } else {
-          const exercises = ['POMPES CLASSIQUES','TRACTIONS PRONATION','SQUATS CLASSIQUES','PLANCHE FRONTALE'];
-          STATE.todayQuests = exercises.map((ex, i) => ({
-            name: ex,
-            fullName: ex.toLowerCase(),
-            description: 'Repos automatique entre les séries',
-            sets: 3,
-            rest: ex.includes('PLANCHE') ? 45 : 60,
-            xp: 100
-          }));
-          STATE.questsDone = new Array(exercises.length).fill(false);
-        }
+        const exercises = ['POMPES CLASSIQUES','TRACTIONS PRONATION','SQUATS CLASSIQUES','PLANCHE FRONTALE'];
+        STATE.todayQuests = exercises.map((ex) => ({
+          name: ex,
+          fullName: ex.toLowerCase(),
+          description: 'Repos automatique entre les séries',
+          sets: 3,
+          rest: ex.includes('PLANCHE') ? 45 : 60,
+          xp: 100
+        }));
+        STATE.questsDone = new Array(exercises.length).fill(false);
+        document.getElementById('timingInfo').innerHTML = '<div class="timing-info">⏱️ <strong>Durée estimée:</strong> ~15 min (4 exercices × 3 séries)</div>';
       } else {
         // Mode salle - générer programme gym
         const result = GAME.generateGymProgram(duration, STATE.currentFormat, STATE.currentFocus);
