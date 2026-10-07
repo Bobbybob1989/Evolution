@@ -277,6 +277,19 @@
   <div class="page" id="pageStats">
     <div class="section-title">📊 Progression des Stats</div>
     <div id="statsWrap"></div>
+
+    <div class="section-title" style="margin-top:20px;">📏 Mesures (1 fois par mois)</div>
+    <p style="color: var(--muted); font-size: 0.82em; margin-bottom: 12px;">Le matin à jeun, même endroit à chaque fois. Taille : au niveau du nombril. Bras : contracté, au plus large. Poitrine : sous les aisselles.</p>
+    <div class="card">
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+        <input type="number" class="form-input" id="mPoids" placeholder="Poids (kg)" min="0" step="0.1">
+        <input type="number" class="form-input" id="mTaille" placeholder="Taille (cm)" min="0" step="0.5">
+        <input type="number" class="form-input" id="mBras" placeholder="Bras (cm)" min="0" step="0.5">
+        <input type="number" class="form-input" id="mPoitrine" placeholder="Poitrine (cm)" min="0" step="0.5">
+      </div>
+      <button class="btn-primary" onclick="APP.saveMeasure()">💾 Enregistrer</button>
+    </div>
+    <div id="measuresWrap"></div>
   </div>
 
   <!-- PAGE : EXERCICES -->
@@ -293,18 +306,21 @@
     <p style="color: var(--muted); font-size: 0.88em; margin-bottom: 16px;">Une fois par semaine : fais une série à fond par exercice et note le résultat. L'app en déduit ta charge du jour (≈ 2/3 du max) et trace ta progression.</p>
 
     <div class="form-group">
-      <label class="form-label">💪 Pompes classiques (reps max d'un coup)</label>
+      <label class="form-label" id="labelPompes">💪 Pompes classiques (reps max d'un coup)</label>
       <input type="number" class="form-input" id="maxPompes" placeholder="ex: 30" min="1">
+      <input type="number" class="form-input" id="vestPompes" placeholder="🦺 Gilet utilisé (kg) — 0 si aucun" min="0" step="0.5" style="margin-top:8px;">
     </div>
 
     <div class="form-group">
-      <label class="form-label">🔙 Tractions pronation (reps max d'un coup)</label>
+      <label class="form-label" id="labelTractions">🔙 Tractions pronation (reps max d'un coup)</label>
       <input type="number" class="form-input" id="maxTractions" placeholder="ex: 14" min="1">
+      <input type="number" class="form-input" id="vestTractions" placeholder="🦺 Gilet utilisé (kg) — 0 si aucun" min="0" step="0.5" style="margin-top:8px;">
     </div>
 
     <div class="form-group">
-      <label class="form-label">🦵 Squats classiques (reps max d'un coup)</label>
+      <label class="form-label" id="labelSquats">🦵 Squats classiques (reps max d'un coup)</label>
       <input type="number" class="form-input" id="maxSquats" placeholder="ex: 100" min="1">
+      <input type="number" class="form-input" id="vestSquats" placeholder="🦺 Gilet utilisé (kg) — 0 si aucun" min="0" step="0.5" style="margin-top:8px;">
     </div>
 
     <div class="form-group">
@@ -330,10 +346,34 @@
     </div>
   </div>
 
+  <!-- PAGE : MATÉRIEL -->
+  <div class="page" id="pageMateriel">
+    <div class="section-title">🎒 Mon matériel</div>
+    <p style="color: var(--muted); font-size: 0.88em; margin-bottom: 16px;">Coche ce que tu as. L'app adapte ses conseils (variantes, charge) à ton matériel. Sans matériel, elle propose des variantes au poids du corps.</p>
+
+    <div class="card">
+      <label style="display:flex; gap:10px; align-items:center; cursor:pointer;"><input type="checkbox" id="gearPullup" style="accent-color:var(--accent); width:20px; height:20px;"> 🧗 Barre de traction</label>
+    </div>
+    <div class="card">
+      <label style="display:flex; gap:10px; align-items:center; cursor:pointer; margin-bottom:8px;"><input type="checkbox" id="gearVest" style="accent-color:var(--accent); width:20px; height:20px;"> 🦺 Gilet lesté</label>
+      <input type="number" class="form-input" id="gearVestKg" placeholder="Poids du gilet (kg)" min="0" step="0.5">
+    </div>
+    <div class="card">
+      <label style="display:flex; gap:10px; align-items:center; cursor:pointer; margin-bottom:8px;"><input type="checkbox" id="gearKb" style="accent-color:var(--accent); width:20px; height:20px;"> 🔔 Kettlebell</label>
+      <input type="number" class="form-input" id="gearKbKg" placeholder="Poids (kg)" min="0" step="0.5">
+    </div>
+    <div class="card">
+      <label style="display:flex; gap:10px; align-items:center; cursor:pointer; margin-bottom:8px;"><input type="checkbox" id="gearDb" style="accent-color:var(--accent); width:20px; height:20px;"> 🏋️ Haltères</label>
+      <input type="number" class="form-input" id="gearDbKg" placeholder="Poids par haltère (kg)" min="0" step="0.5">
+    </div>
+    <button class="btn-primary" onclick="APP.saveGear()">💾 Enregistrer</button>
+  </div>
+
   <!-- BOTTOM NAV -->
   <nav class="bottom-nav">
     <button class="nav-item active" id="navHome" onclick="APP.goPage('Home')"><span class="nav-icon">🏠</span>Accueil</button>
     <button class="nav-item" id="navEvaluation" onclick="APP.goPage('Evaluation')"><span class="nav-icon">📋</span>Éval</button>
+    <button class="nav-item" id="navMateriel" onclick="APP.goPage('Materiel')"><span class="nav-icon">🎒</span>Matériel</button>
     <button class="nav-item" id="navStats" onclick="APP.goPage('Stats')"><span class="nav-icon">📊</span>Stats</button>
     <button class="nav-item" id="navExercices" onclick="APP.goPage('Exercices')"><span class="nav-icon">🏋️</span>Exos</button>
   </nav>
@@ -487,6 +527,10 @@ let STATE = {
   currentMode: 'maison',
   currentFormat: 'split',
   currentFocus: 'haut',
+  vest: { pompes: 0, tractions: 0, squats: 0 },
+  measures: [],
+  variant: { pompes: 'classique', tractions: 'classique', squats: 'classique' },
+  gear: { pullup: true, vest: {has:false,kg:0}, kettlebell: {has:false,kg:0}, dumbbells: {has:false,kg:0} },
   setsDone: [],
   maxHistory: { pompes: [], tractions: [], squats: [], planche: [] }
 };
@@ -514,6 +558,22 @@ const UTILS = {
       UTILS.toast('⬆️ '+stat.toUpperCase()+' niv '+STATE.stats[stat]);
     }
   }
+};
+
+// ===== MESURES =====
+const MEASURES = [
+  { k:'poids', l:'Poids', u:'kg', id:'mPoids', icon:'⚖️' },
+  { k:'taille', l:'Tour de taille', u:'cm', id:'mTaille', icon:'📏' },
+  { k:'bras', l:'Tour de bras', u:'cm', id:'mBras', icon:'💪' },
+  { k:'poitrine', l:'Tour de poitrine', u:'cm', id:'mPoitrine', icon:'🫁' }
+];
+
+// ===== VARIANTES =====
+// coef = part approximative du max "classique" faisable dans la variante (estimation, ajustée au test suivant)
+const VARIANTS = {
+  pompes:    { classique:{label:'Pompes classiques',coef:1}, declinees:{label:'Pompes déclinées',coef:0.75}, diamant:{label:'Pompes diamant',coef:0.65} },
+  tractions: { classique:{label:'Tractions pronation',coef:1}, lentes:{label:'Tractions lentes',coef:0.7} },
+  squats:    { classique:{label:'Squats classiques',coef:1}, bulgares:{label:'Squats bulgares',coef:0.3,perLeg:true}, goblet:{label:'Squats goblet',coef:0.5} }
 };
 
 // ===== GAME LOGIC =====
@@ -553,7 +613,32 @@ const GAME = {
     else if(name.includes('planche')){ key='planche'; def=120; unit='sec'; }
     else return null;
     const max = STATE.maxReps[key] || def;
-    return { key, unit, series: 3, max, min: Math.ceil(max*0.6), top: Math.ceil(max*0.7), target: Math.round(max*2/3) };
+    return { key, unit, series: 3, max, min: Math.ceil(max*0.6), top: Math.ceil(max*0.7), target: Math.round(max*2/3), perLeg: !!(VARIANTS[key] && STATE.variant && VARIANTS[key][STATE.variant[key]] && VARIANTS[key][STATE.variant[key]].perLeg) };
+  },
+
+  progressionTip: (key, max) => {
+    const g = STATE.gear || {};
+    const has = (k) => g[k] && g[k].has;
+    const kg = (k) => (g[k] && g[k].kg) ? ' ('+g[k].kg+' kg)' : '';
+    const vestUsed = (STATE.vest && STATE.vest[key]) || 0;
+    if(key === 'planche') return max > 60 ? '💡 Plus de 60 s : passe à une variante plus dure (hollow body, planche bras tendus).' : '';
+    if(max <= 15) return '';
+    const cur = (STATE.variant && STATE.variant[key]) || 'classique';
+    if(vestUsed > 0) return '💡 Max ≥ 15 avec le gilet : passe à '+(vestUsed+2)+' kg et refais un test.';
+    if(has('vest')) return '💡 Ton max dépasse 15 reps : mets ton gilet'+kg('vest')+', fais 1 série à fond, saisis-la dans Éval (avec le poids du gilet) : l\'app calcule ta charge exacte.';
+    if(cur !== 'classique'){
+      const tested = ((STATE.maxHistory && STATE.maxHistory[key]) || []).some(x => x.variant === cur);
+      return tested ? '💡 Même cette variante dépasse 15 reps : le gilet lesté est la suite logique.' : '';
+    }
+    let vk;
+    if(key === 'pompes') vk = 'declinees';
+    else if(key === 'tractions') vk = 'lentes';
+    else vk = (has('kettlebell') || has('dumbbells')) ? 'goblet' : 'bulgares';
+    const v = VARIANTS[key][vk];
+    const est = Math.max(1, Math.round(Math.round(max*v.coef)*2/3));
+    const how = { declinees:'pieds posés sur une chaise', diamant:'mains en diamant', lentes:'descente en 4-5 s', bulgares:'pied arrière sur une chaise', goblet:'tenu contre la poitrine'+(has('kettlebell') ? kg('kettlebell') : kg('dumbbells')) }[vk];
+    return '💡 Trop facile (max > 15). Variante conseillée : <strong>'+v.label+'</strong> ('+how+').<br>Recette estimée : <strong>3 × '+est+' reps'+(v.perLeg?' par jambe':'')+'</strong>, repos 60 s (estimation, ajustée à ton prochain test).<br>'+
+      '<button onclick="APP.setVariant(\''+key+'\',\''+vk+'\')" style="margin-top:8px; background:var(--orange); color:#1a1a1a; border:none; border-radius:8px; padding:8px 12px; font-weight:700; cursor:pointer;">Adopter cette variante</button>';
   },
 
   generateGymProgram: (duration, format, focus) => {
@@ -806,7 +891,8 @@ const UI = {
       const sets = q.sets || 3;
       const n = Math.min((STATE.setsDone && STATE.setsDone[i]) || 0, sets);
       const rec = GAME.getRecommendedReps(q.fullName || q.name);
-      const recTxt = rec ? '📌 '+sets+' × '+rec.target+' '+rec.unit+' <span style="color:var(--muted); font-weight:400;">(60-70 % de ton max : '+rec.min+'-'+rec.top+')</span>' : '';
+      const recTxt = rec ? '📌 '+sets+' × '+rec.target+' '+rec.unit+(rec.perLeg ? ' par jambe' : '')+((STATE.vest && STATE.vest[rec.key]) ? ' 🦺 +'+STATE.vest[rec.key]+' kg' : '')+' <span style="color:var(--muted); font-weight:400;">(60-70 % de ton max : '+rec.min+'-'+rec.top+')</span>' : '';
+      const qtip = rec ? GAME.progressionTip(rec.key, rec.max) : '';
       const specs = q._specs;
       const specTxt = (!rec && specs) ? 'Séries: '+specs.series+' | Reps: '+specs.reps+' | Repos: '+specs.rest+'s' : '';
       const dots = Array.from({length: sets}, (_, k) => k < n ? '●' : '○').join(' ');
@@ -816,6 +902,7 @@ const UI = {
         '<div class="quest-head"><div class="quest-name" onclick="APP.showExerciseInfo(\''+(q.fullName||q.name)+'\')">'+q.name+'</div><div class="quest-xp">+'+q.xp+'</div></div>'+
         '<div class="quest-desc">'+q.description+'</div>'+
         (recTxt ? '<div style="font-size:0.85em; color:var(--accent); margin-bottom:8px; font-weight:600;">'+recTxt+'</div>' : '')+
+        (qtip ? '<div style="font-size:0.78em; color:var(--orange); margin-bottom:8px;">'+qtip+'</div>' : '')+
         (specTxt ? '<div class="quest-specs">'+specTxt+'</div>' : '')+
         '<div style="letter-spacing:4px; color:var(--accent); margin-bottom:10px;">'+dots+'</div>'+
         '<button class="quest-btn" onclick="APP.doneSet('+i+')" '+(done?'disabled':'')+'>'+
@@ -857,6 +944,26 @@ const UI = {
       '</svg>';
   },
 
+  renderMeasures: () => {
+    const wrap = document.getElementById('measuresWrap');
+    wrap.innerHTML = '';
+    const list = STATE.measures || [];
+    MEASURES.forEach(mt => {
+      const h = list.filter(x => x[mt.k]).map(x => ({ date: x.date, val: x[mt.k] }));
+      if(!h.length) return;
+      const last = h[h.length-1].val;
+      let msg = mt.l+' : '+last+' '+mt.u+' (première mesure)';
+      if(h.length >= 2){
+        const d = Math.round((last - h[0].val)*10)/10;
+        msg = mt.l+' : '+h[0].val+' → '+last+' '+mt.u+' ('+(d>0?'+':'')+d+' '+mt.u+')';
+      }
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = '<div style="font-weight:700; margin-bottom:4px;">'+mt.icon+' '+mt.l+'</div><div style="font-size:0.85em; color:var(--green); font-weight:600;">'+msg+'</div>'+UI.chart(h);
+      wrap.appendChild(card);
+    });
+  },
+
   updateTestBanner: () => {
     const el = document.getElementById('testBanner');
     const dates = Object.values(STATE.maxHistory||{}).flat().map(x => x.date).sort();
@@ -867,6 +974,12 @@ const UI = {
       if(days >= 7) msg = '🧪 Test de max hebdo : dernier test il y a '+days+' jours';
     }
     el.innerHTML = msg ? '<div onclick="APP.goPage(\'Evaluation\')" style="cursor:pointer; background:rgba(255,165,2,0.12); border:1px solid var(--orange); color:var(--orange); border-radius:12px; padding:12px 14px; margin-bottom:14px; font-size:0.9em; font-weight:600;">'+msg+' →</div>' : '';
+    if(!msg){
+      const ms = STATE.measures || [];
+      const ld = ms.length ? ms[ms.length-1].date : null;
+      const dd = ld ? Math.floor((new Date(UTILS.today()) - new Date(ld)) / 86400000) : 999;
+      if(dd >= 30) el.innerHTML = '<div onclick="APP.goPage(\'Stats\')" style="cursor:pointer; background:rgba(0,212,255,0.1); border:1px solid var(--accent); color:var(--accent); border-radius:12px; padding:12px 14px; margin-bottom:14px; font-size:0.9em; font-weight:600;">📏 '+(ld ? 'Mesures du mois : dernière il y a '+dd+' jours' : 'Prends tes premières mesures (poids, taille, bras, poitrine)')+' →</div>';
+    }
   },
 
   renderEvaluationResults: () => {
@@ -883,23 +996,29 @@ const UI = {
       { key:'planche', label:'Planche', icon:'🧱', ex:'planche' }
     ].forEach(e => {
       const rec = GAME.getRecommendedReps(e.ex);
-      const h = (STATE.maxHistory && STATE.maxHistory[e.key]) || [];
-      let msg = 'Max '+e.label.toLowerCase()+' : '+m[e.key]+(rec.unit==='sec'?' s':'')+' (premier test — refais-en un dans 7 jours)';
+      const vcur = (STATE.variant && STATE.variant[e.key]) || 'classique';
+      const vinfo = VARIANTS[e.key] ? (VARIANTS[e.key][vcur] || VARIANTS[e.key].classique) : null;
+      const h = ((STATE.maxHistory && STATE.maxHistory[e.key]) || []).filter(x => (x.variant || 'classique') === vcur);
+      let msg = 'Max '+(vinfo ? vinfo.label : e.label).toLowerCase()+' : '+m[e.key]+(rec.unit==='sec'?' s':'')+' (premier test — refais-en un dans 7 jours)';
+      if(!h.length && vcur !== 'classique') msg = 'Max '+vinfo.label.toLowerCase()+' : ~'+m[e.key]+' (estimation — fais 1 série à fond et saisis-la ci-dessus)';
       if(h.length >= 2){
         const first = h[0].val, last = h[h.length-1].val;
         const pct = Math.round((last-first)/first*100);
-        msg = 'Max '+e.label.toLowerCase()+' : '+first+' → '+last+' ('+(pct>0?'+':'')+pct+' %)';
+        msg = 'Max '+(vinfo ? vinfo.label : e.label).toLowerCase()+' : '+first+' → '+last+' ('+(pct>0?'+':'')+pct+' %)';
       }
+      const vest = (STATE.vest && STATE.vest[e.key]) || 0;
+      const tip = GAME.progressionTip(e.key, m[e.key]);
       const card = document.createElement('div');
       card.className = 'card';
       card.innerHTML =
-        '<div style="font-weight:700; margin-bottom:6px;">'+e.icon+' '+e.label+'</div>'+
+        '<div style="font-weight:700; margin-bottom:6px;">'+e.icon+' '+(vinfo ? vinfo.label : e.label)+'</div>'+
         '<div style="font-size:0.85em; color:var(--green); font-weight:600;">'+msg+'</div>'+
         (h.length ? UI.chart(h) : '')+
         '<div style="background:rgba(0,212,255,0.08); border-left:3px solid var(--accent); padding:10px 12px; border-radius:8px;">'+
           '<div style="font-size:0.8em; color:var(--muted);">Charge du jour (≈ 2/3 du max)</div>'+
-          '<div style="font-size:1.1em; color:var(--accent); font-weight:700;">3 × '+rec.target+' '+rec.unit+'</div>'+
-        '</div>';
+          '<div style="font-size:1.1em; color:var(--accent); font-weight:700;">3 × '+rec.target+' '+rec.unit+(rec.perLeg ? ' par jambe' : '')+(vest ? ' 🦺 +'+vest+' kg' : '')+'</div>'+
+        '</div>'+
+        (tip ? '<div style="margin-top:10px; font-size:0.85em; color:var(--orange);">'+tip+'</div>' : '');
       resultsWrap.appendChild(card);
     });
   }
@@ -962,6 +1081,47 @@ const APP = {
     UTILS.save(); APP.updateUI(); APP.closeSettings(); UTILS.toast('✅ Paramètres sauvegardés');
   },
 
+  setVariant: (key, vk) => {
+    const cur = (STATE.variant && STATE.variant[key]) || 'classique';
+    const h = ((STATE.maxHistory && STATE.maxHistory[key]) || []);
+    const lastClassic = [...h].reverse().find(x => (x.variant || 'classique') === 'classique');
+    const classicMax = cur === 'classique' ? STATE.maxReps[key] : (lastClassic ? lastClassic.val : Math.round(STATE.maxReps[key] / VARIANTS[key][cur].coef));
+    STATE.variant[key] = vk;
+    STATE.maxReps[key] = Math.max(1, vk === 'classique' ? classicMax : Math.round(classicMax * VARIANTS[key][vk].coef));
+    const lab = VARIANTS[key][vk].label;
+    STATE.todayQuests.forEach(q => {
+      const r = GAME.getRecommendedReps(q.fullName || q.name);
+      if(r && r.key === key){ q.name = lab.toUpperCase(); q.fullName = lab.toLowerCase(); }
+    });
+    UTILS.save(); UI.renderQuests(); UI.renderEvaluationResults();
+    UTILS.toast('✅ Variante adoptée : '+lab);
+  },
+
+  saveMeasure: () => {
+    const td = UTILS.today();
+    const e = { date: td };
+    let any = false;
+    MEASURES.forEach(mt => { const v = parseFloat(document.getElementById(mt.id).value); if(v > 0){ e[mt.k] = v; any = true; } });
+    if(!any){ UTILS.toast('⚠️ Entre au moins une mesure', true); return; }
+    if(!STATE.measures) STATE.measures = [];
+    const last = STATE.measures[STATE.measures.length-1];
+    if(last && last.date === td) Object.assign(last, e); else STATE.measures.push(e);
+    MEASURES.forEach(mt => { document.getElementById(mt.id).value = ''; });
+    UTILS.save(); UI.renderMeasures(); UI.updateTestBanner();
+    UTILS.toast('✅ Mesures enregistrées');
+  },
+
+  saveGear: () => {
+    const num = (id) => parseFloat(document.getElementById(id).value) || 0;
+    STATE.gear = {
+      pullup: document.getElementById('gearPullup').checked,
+      vest: { has: document.getElementById('gearVest').checked, kg: num('gearVestKg') },
+      kettlebell: { has: document.getElementById('gearKb').checked, kg: num('gearKbKg') },
+      dumbbells: { has: document.getElementById('gearDb').checked, kg: num('gearDbKg') }
+    };
+    UTILS.save(); UI.renderQuests(); UTILS.toast('✅ Matériel enregistré');
+  },
+
   saveExercicePrefs: () => {
     document.querySelectorAll('[data-g]').forEach(i => {
       const g = i.getAttribute('data-g');
@@ -984,12 +1144,19 @@ const APP = {
     }
 
     STATE.maxReps = { pompes: maxPompes, tractions: maxTractions, squats: maxSquats, planche: maxPlanche };
+    const vh = STATE.gear && STATE.gear.vest && STATE.gear.vest.has;
+    STATE.vest = {
+      pompes: vh ? (parseFloat(document.getElementById('vestPompes').value) || 0) : 0,
+      tractions: vh ? (parseFloat(document.getElementById('vestTractions').value) || 0) : 0,
+      squats: vh ? (parseFloat(document.getElementById('vestSquats').value) || 0) : 0
+    };
     const td = UTILS.today();
     if(!STATE.maxHistory) STATE.maxHistory = { pompes: [], tractions: [], squats: [], planche: [] };
     Object.keys(STATE.maxReps).forEach(k => {
       const h = STATE.maxHistory[k] = STATE.maxHistory[k] || [];
-      if(h.length && h[h.length-1].date === td) h[h.length-1].val = STATE.maxReps[k];
-      else h.push({ date: td, val: STATE.maxReps[k] });
+      const vr = (STATE.variant && STATE.variant[k]) || 'classique';
+      if(h.length && h[h.length-1].date === td) { h[h.length-1].val = STATE.maxReps[k]; h[h.length-1].variant = vr; }
+      else h.push({ date: td, val: STATE.maxReps[k], variant: vr });
     });
     UTILS.save();
     UI.renderEvaluationResults(); UI.updateTestBanner();
@@ -1001,11 +1168,23 @@ const APP = {
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     document.getElementById('page'+name).classList.add('active');
     document.getElementById('nav'+name).classList.add('active');
-    if(name === 'Stats') UI.updateStats();
+    if(name === 'Stats'){ UI.updateStats(); UI.renderMeasures(); }
     if(name === 'Exercices') UI.renderExercices();
+    if(name === 'Materiel'){
+      const g = STATE.gear;
+      document.getElementById('gearPullup').checked = !!g.pullup;
+      document.getElementById('gearVest').checked = !!g.vest.has; document.getElementById('gearVestKg').value = g.vest.kg || '';
+      document.getElementById('gearKb').checked = !!g.kettlebell.has; document.getElementById('gearKbKg').value = g.kettlebell.kg || '';
+      document.getElementById('gearDb').checked = !!g.dumbbells.has; document.getElementById('gearDbKg').value = g.dumbbells.kg || '';
+    }
     if(name === 'Evaluation'){
       const ids = { pompes:'maxPompes', tractions:'maxTractions', squats:'maxSquats', planche:'maxPlanche' };
       Object.keys(ids).forEach(k => { if(STATE.maxReps[k]) document.getElementById(ids[k]).value = STATE.maxReps[k]; });
+      const icons = { pompes:'💪', tractions:'🔙', squats:'🦵' };
+      ['pompes','tractions','squats'].forEach(k => { const v = VARIANTS[k][(STATE.variant && STATE.variant[k]) || 'classique'] || VARIANTS[k].classique; document.getElementById('label'+k[0].toUpperCase()+k.slice(1)).textContent = icons[k]+' '+v.label+' (reps max d\'un coup'+(v.perLeg?', par jambe':'')+')'; });
+      const vh = STATE.gear && STATE.gear.vest && STATE.gear.vest.has;
+      ['Pompes','Tractions','Squats'].forEach(n => { document.getElementById('vest'+n).style.display = vh ? '' : 'none'; });
+      ['Pompes','Tractions','Squats'].forEach(n => { const v = STATE.vest && STATE.vest[n.toLowerCase()]; if(v) document.getElementById('vest'+n).value = v; });
       UI.renderEvaluationResults();
     }
   },
@@ -1027,7 +1206,8 @@ const APP = {
 
       if(STATE.currentMode === 'maison'){
         // Mode maison - générer les 4 exercices habituels
-        const exercises = ['POMPES CLASSIQUES','TRACTIONS PRONATION','SQUATS CLASSIQUES','PLANCHE FRONTALE'];
+        const V = STATE.variant || {};
+        const exercises = [ (VARIANTS.pompes[V.pompes]||VARIANTS.pompes.classique).label, (VARIANTS.tractions[V.tractions]||VARIANTS.tractions.classique).label, (VARIANTS.squats[V.squats]||VARIANTS.squats.classique).label, 'Planche frontale' ].map(x => x.toUpperCase());
         STATE.todayQuests = exercises.map((ex) => ({
           name: ex,
           fullName: ex.toLowerCase(),
