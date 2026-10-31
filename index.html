@@ -1,10 +1,9 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hunter System v2</title>
+  <title>Hunter System v3</title>
   <style>
     * { margin:0; padding:0; box-sizing:border-box; }
     :root {
@@ -22,17 +21,17 @@
       border-bottom: 1px solid rgba(0,212,255,0.15);
       position: sticky; top: 0; z-index: 100;
     }
-    .header-row1 { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+    .header-row1 { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; gap: 8px; }
     .lvl-badge {
       background: linear-gradient(135deg, var(--accent), var(--accent2));
       color: #fff; font-weight: 800; font-size: 0.95em;
       padding: 6px 14px; border-radius: 20px; letter-spacing: 1px;
     }
-    .header-right { display: flex; align-items: center; gap: 10px; }
+    .header-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
     .streak-badge {
       background: rgba(255,165,2,0.15); border: 1px solid var(--orange);
-      color: var(--orange); padding: 5px 12px; border-radius: 20px;
-      font-weight: 700; font-size: 0.9em;
+      color: var(--orange); padding: 5px 10px; border-radius: 20px;
+      font-weight: 700; font-size: 0.82em; white-space: nowrap;
     }
     .cycle-badge {
       background: rgba(162,155,254,0.15); border: 1px solid var(--purple);
@@ -58,6 +57,9 @@
     /* ===== CARDS ===== */
     .card { background: var(--bg2); border-radius: 14px; padding: 16px; margin-bottom: 14px; border: 1px solid rgba(255,255,255,0.07); }
     .card-title { font-size: 0.85em; color: var(--accent); font-weight: 700; margin-bottom: 10px; }
+    .section-title { font-size: 1.1em; font-weight: 700; color: var(--accent); margin-bottom: 14px; margin-top: 6px; }
+    .hint { text-align: center; color: var(--muted); font-size: 0.88em; padding: 10px; }
+    .mini { font-size: 0.8em; color: var(--muted); }
 
     /* ===== BUTTONS ===== */
     .btn-primary {
@@ -67,6 +69,11 @@
     }
     .btn-primary:hover { opacity: 0.85; }
     .btn-primary:disabled { background: #2a3444; color: var(--muted); cursor: not-allowed; }
+    .ghost-btn {
+      background: none; border: 1px solid var(--muted); color: var(--muted);
+      border-radius: 8px; padding: 6px 10px; cursor: pointer; font-size: 0.82em; margin-bottom: 8px;
+    }
+    .ghost-btn:disabled { opacity: 0.4; cursor: not-allowed; }
     .gen-btn {
       width: 100%; padding: 18px; border-radius: 14px; border: none;
       background: linear-gradient(135deg, #7c3aed, #4f46e5);
@@ -85,16 +92,22 @@
     .quest-card.done { opacity: 0.55; border-color: var(--green); }
     .quest-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
     .quest-name { font-weight: 700; font-size: 1.05em; cursor: pointer; color: var(--accent); text-decoration: underline; }
-    .quest-xp { background: rgba(0,212,255,0.15); color: var(--accent); padding: 3px 10px; border-radius: 12px; font-size: 0.82em; font-weight: 700; }
+    .quest-xp { background: rgba(0,212,255,0.15); color: var(--accent); padding: 3px 10px; border-radius: 12px; font-size: 0.82em; font-weight: 700; white-space: nowrap; }
     .quest-desc { color: #aab; font-size: 0.88em; line-height: 1.55; margin-bottom: 12px; }
     .quest-specs { font-size: 0.8em; color: var(--muted); margin-bottom: 10px; font-style: italic; }
     .quest-btn {
       width: 100%; padding: 11px; border-radius: 9px; border: none;
       background: linear-gradient(135deg, var(--accent), var(--accent2));
-      color: #fff; font-weight: 700; cursor: pointer; font-size: 0.95em;
+      color: #fff; font-weight: 700; cursor: pointer; font-size: 0.95em; margin-top: 8px;
     }
     .quest-btn:hover { opacity: 0.85; }
     .quest-btn:disabled { background: #2a3444; color: var(--muted); cursor: not-allowed; }
+    .set-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+    .field-label { font-size: 0.75em; color: var(--muted); margin-bottom: 4px; display: block; }
+
+    /* ===== BANDEAUX ===== */
+    .info-banner { background: rgba(46,213,115,0.1); border: 1px solid var(--green); color: var(--green); border-radius: 12px; padding: 10px 14px; margin-bottom: 14px; font-size: 0.88em; font-weight: 600; }
+    .warn-banner { background: rgba(255,71,87,0.12); border: 1px solid var(--red); color: var(--red); border-radius: 12px; padding: 10px 14px; margin-bottom: 14px; font-size: 0.88em; font-weight: 600; }
 
     /* ===== FORMS ===== */
     .form-group { margin-bottom: 16px; }
@@ -126,6 +139,7 @@
     .stat-row.agility { border-color: var(--accent); }
     .stat-row.perception { border-color: var(--green); }
     .stat-row.intelligence { border-color: var(--purple); }
+    .stat-row.presence { border-color: #c084fc; }
     .stat-icon { font-size: 1.4em; }
     .stat-info { flex: 1; }
     .stat-name { font-size: 0.78em; color: var(--muted); font-weight: 600; margin-bottom: 4px; }
@@ -137,6 +151,9 @@
     .stat-row.agility .stat-bar-fill { background: var(--accent); }
     .stat-row.perception .stat-bar-fill { background: var(--green); }
     .stat-row.intelligence .stat-bar-fill { background: var(--purple); }
+    .stat-row.presence .stat-bar-fill { background: #c084fc; }
+    .log-row { display: flex; justify-content: space-between; gap: 8px; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.06); font-size: 0.86em; }
+    .log-row:last-child { border-bottom: none; }
 
     /* ===== MODALES ===== */
     .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 500; padding: 20px; align-items: flex-end; }
@@ -176,7 +193,7 @@
       position: fixed; bottom: calc(var(--nav-h) + 12px); left: 50%; transform: translateX(-50%) translateY(20px);
       background: #1e3a2e; border: 1px solid var(--green); color: var(--green);
       padding: 11px 22px; border-radius: 30px; font-size: 0.9em; font-weight: 600;
-      z-index: 999; opacity: 0; transition: all 0.3s; white-space: nowrap;
+      z-index: 999; opacity: 0; transition: all 0.3s; white-space: nowrap; max-width: 92vw; overflow: hidden; text-overflow: ellipsis;
     }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
     .toast.error { background: #3a1e1e; border-color: var(--red); color: var(--red); }
@@ -190,8 +207,8 @@
     .spinner { width: 48px; height: 48px; border: 4px solid rgba(0,212,255,0.15); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.9s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    .section-title { font-size: 1.1em; font-weight: 700; color: var(--accent); margin-bottom: 14px; margin-top: 6px; }
-    .hint { text-align: center; color: var(--muted); font-size: 0.88em; padding: 10px; }
+    .timing-info { background: rgba(124,58,237,0.15); border: 1px solid rgba(124,58,237,0.3); padding: 12px; border-radius: 10px; margin-bottom: 16px; font-size: 0.9em; }
+    .timing-info strong { color: var(--accent); }
 
     #restBar { position: fixed; left: 0; right: 0; bottom: var(--nav-h); background: var(--bg3); border-top: 2px solid var(--accent); padding: 10px 16px 12px; z-index: 250; display: none; }
     #restBar.show { display: block; }
@@ -201,8 +218,23 @@
     .rest-skip { background: rgba(255,255,255,0.1); border: none; color: var(--text); padding: 8px 14px; border-radius: 10px; cursor: pointer; font-weight: 600; }
     .rest-track { height: 5px; background: rgba(0,0,0,0.4); border-radius: 3px; margin-top: 8px; overflow: hidden; }
     #restFill { height: 100%; width: 0; background: var(--accent); transition: width 0.25s linear; }
-    .timing-info { background: rgba(124,58,237,0.15); border: 1px solid rgba(124,58,237,0.3); padding: 12px; border-radius: 10px; margin-bottom: 16px; font-size: 0.9em; }
-    .timing-info strong { color: var(--accent); }
+
+    /* ===== RITUEL ===== */
+    #pageRituel .rit-card { background: var(--bg2); border-radius: 14px; padding: 14px; margin-bottom: 14px; border: 1px solid rgba(255,255,255,0.07); }
+    #pageRituel .rit-title { font-size: 0.9em; color: var(--accent); font-weight: 700; margin-bottom: 8px; }
+    #pageRituel .rit-item { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid rgba(255,255,255,0.06); cursor: pointer; }
+    #pageRituel .rit-item:last-child { border-bottom: none; }
+    #pageRituel .rit-item input[type=checkbox] { width: 20px; height: 20px; accent-color: var(--accent); flex-shrink: 0; }
+    #pageRituel .rit-lbl { flex: 1; font-size: 0.9em; }
+    #pageRituel .rit-date { font-size: 0.75em; color: var(--muted); white-space: nowrap; }
+    #pageRituel .rit-late .rit-date { color: var(--orange); font-weight: 700; }
+    #pageRituel .rit-urgent .rit-lbl { color: var(--orange); font-weight: 700; }
+    #pageRituel input[type=number], #pageRituel input[type=search], #pageRituel textarea { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; color: var(--text); padding: 10px; font-size: 0.95em; }
+    #pageRituel textarea { min-height: 70px; resize: vertical; }
+    #pageRituel .rit-row { display: flex; align-items: center; gap: 10px; font-size: 0.9em; }
+    #pageRituel .rit-row input { width: 90px; }
+    #pageRituel input[type=search] { margin-bottom: 8px; }
+    #pageRituel .rit-hint, #pageRituel .rit-count { font-size: 0.78em; color: var(--muted); margin: 6px 0; }
   </style>
 </head>
 <body>
@@ -212,6 +244,7 @@
     <div class="header-row1">
       <div class="lvl-badge" id="lvlBadge">LVL 1</div>
       <div class="header-right">
+        <div class="cycle-badge" id="rankBadge">RANG E</div>
         <div class="cycle-badge" id="cycleBadge">S1/4</div>
         <div class="streak-badge" id="streakBadge">🔥 0</div>
         <button class="settings-ico" onclick="APP.openSettings()">⚙️</button>
@@ -227,10 +260,17 @@
   <div class="page active" id="pageHome">
     <div style="background: linear-gradient(135deg, rgba(124,58,237,0.15), rgba(79,70,229,0.1)); border: 1px solid rgba(124,58,237,0.3); border-radius: 12px; padding: 12px 14px; margin-bottom: 14px;">
       <div style="font-size: 0.75em; color: var(--muted); margin-bottom: 3px;">GÉNÉRATEUR DE PROGRAMME</div>
-      <div id="modeDisplay" style="font-size: 1em; font-weight: 700; color: #c4b5fd;">Maison</div>
+      <div id="modeDisplay" style="font-size: 1em; font-weight: 700; color: #c4b5fd;">Maison - 4 exercices</div>
     </div>
 
     <div id="testBanner"></div>
+    <div id="dechargeWrap"></div>
+    <div id="injuryWrap"></div>
+
+    <div class="card">
+      <div class="card-title">⚔️ Quêtes du Système</div>
+      <div id="systemWrap"></div>
+    </div>
 
     <!-- Configuration -->
     <div class="card">
@@ -240,10 +280,14 @@
       </div>
 
       <div class="form-group">
+        <label class="form-label" style="display:flex; align-items:center; gap:8px;"><input type="checkbox" id="runDay" onchange="APP.toggleRunDay(this.checked)"> 🏃 Je cours aujourd'hui (sans squats)</label>
+      </div>
+
+      <div class="form-group">
         <label class="form-label">📍 Type d'entraînement</label>
         <div class="option-grid">
-          <button class="option-btn selected" onclick="APP.selectMode('maison')">🏠 Maison</button>
-          <button class="option-btn" onclick="APP.selectMode('salle')">🏋️ Salle</button>
+          <button class="option-btn selected" data-v="maison" onclick="APP.selectMode(this,'maison')">🏠 Maison</button>
+          <button class="option-btn" data-v="salle" onclick="APP.selectMode(this,'salle')">🏋️ Salle</button>
         </div>
       </div>
 
@@ -251,16 +295,16 @@
         <div class="form-group">
           <label class="form-label">💪 Format</label>
           <div class="option-grid">
-            <button class="option-btn selected" onclick="APP.selectFormat('split')">Split (H/B)</button>
-            <button class="option-btn" onclick="APP.selectFormat('fullbody')">Full Body</button>
+            <button class="option-btn selected" data-v="split" onclick="APP.selectFormat(this,'split')">Split (H/B)</button>
+            <button class="option-btn" data-v="fullbody" onclick="APP.selectFormat(this,'fullbody')">Full Body</button>
           </div>
         </div>
 
         <div id="splitOptions" class="form-group">
           <label class="form-label">🎯 Focus</label>
           <div class="option-grid">
-            <button class="option-btn selected" onclick="APP.selectFocus('haut')">Haut du corps</button>
-            <button class="option-btn" onclick="APP.selectFocus('bas')">Bas du corps</button>
+            <button class="option-btn selected" data-v="haut" onclick="APP.selectFocus(this,'haut')">Haut du corps</button>
+            <button class="option-btn" data-v="bas" onclick="APP.selectFocus(this,'bas')">Bas du corps</button>
           </div>
         </div>
       </div>
@@ -278,6 +322,18 @@
     <div class="section-title">📊 Progression des Stats</div>
     <div id="statsWrap"></div>
 
+    <div class="section-title" style="margin-top:20px;">🏅 Rangs de Chasseur</div>
+    <div id="ranksWrap"></div>
+
+    <div class="section-title" style="margin-top:20px;">💤 Récupération (4 semaines)</div>
+    <div id="recoveryWrap"></div>
+
+    <div class="section-title" style="margin-top:20px;">🏋️ Charges par machine</div>
+    <div id="gymWrap"></div>
+
+    <div class="section-title" style="margin-top:20px;">🗓️ Historique (14 jours)</div>
+    <div class="card" id="activityWrap"></div>
+
     <div class="section-title" style="margin-top:20px;">📏 Mesures (1 fois par mois)</div>
     <p style="color: var(--muted); font-size: 0.82em; margin-bottom: 12px;">Le matin à jeun, même endroit à chaque fois. Taille : au niveau du nombril. Bras : contracté, au plus large. Poitrine : sous les aisselles.</p>
     <div class="card">
@@ -292,18 +348,10 @@
     <div id="measuresWrap"></div>
   </div>
 
-  <!-- PAGE : EXERCICES -->
-  <div class="page" id="pageExercices">
-    <div class="section-title">🏋️ Personnaliser les exercices</div>
-    <p style="color: var(--muted); font-size: 0.88em; margin-bottom: 16px;">Coche les exercices que tu veux inclure. Les exercices non cochés seront exclus des quêtes.</p>
-    <div id="exerciceEditWrap"></div>
-    <button class="btn-primary" onclick="APP.saveExercicePrefs()">💾 Enregistrer</button>
-  </div>
-
   <!-- PAGE : ÉVALUATION -->
   <div class="page" id="pageEvaluation">
-    <div class="section-title">📋 Évaluation Initiale</div>
-    <p style="color: var(--muted); font-size: 0.88em; margin-bottom: 16px;">Une fois par semaine : fais une série à fond par exercice et note le résultat. L'app en déduit ta charge du jour (≈ 2/3 du max) et trace ta progression.</p>
+    <div class="section-title">📋 Évaluation</div>
+    <p style="color: var(--muted); font-size: 0.88em; margin-bottom: 16px;">Une fois par semaine : fais une série à fond par exercice et note le résultat. L'app en déduit ta charge du jour (≈ 2/3 du max) et trace ta progression. Pas de test pendant la semaine de décharge.</p>
 
     <div class="form-group">
       <label class="form-label" id="labelPompes">💪 Pompes classiques (reps max d'un coup)</label>
@@ -324,7 +372,7 @@
     </div>
 
     <div class="form-group">
-      <label class="form-label">🧱 Planche frontale (secondes max)</label>
+      <label class="form-label" id="labelPlanche">🧱 Planche frontale (secondes max)</label>
       <input type="number" class="form-input" id="maxPlanche" placeholder="ex: 120" min="1">
     </div>
 
@@ -349,24 +397,56 @@
   <!-- PAGE : MATÉRIEL -->
   <div class="page" id="pageMateriel">
     <div class="section-title">🎒 Mon matériel</div>
-    <p style="color: var(--muted); font-size: 0.88em; margin-bottom: 16px;">Coche ce que tu as. L'app adapte ses conseils (variantes, charge) à ton matériel. Sans matériel, elle propose des variantes au poids du corps.</p>
+    <p style="color: var(--muted); font-size: 0.88em; margin-bottom: 16px;">Coche ce que tu as. Sans barre de traction, les tractions sont remplacées par du rowing sous une table.</p>
 
     <div class="card">
       <label style="display:flex; gap:10px; align-items:center; cursor:pointer;"><input type="checkbox" id="gearPullup" style="accent-color:var(--accent); width:20px; height:20px;"> 🧗 Barre de traction</label>
+      <div class="mini" style="margin-top:6px;">Utilisée pour : tractions</div>
     </div>
     <div class="card">
       <label style="display:flex; gap:10px; align-items:center; cursor:pointer; margin-bottom:8px;"><input type="checkbox" id="gearVest" style="accent-color:var(--accent); width:20px; height:20px;"> 🦺 Gilet lesté</label>
-      <input type="number" class="form-input" id="gearVestKg" placeholder="Poids du gilet (kg)" min="0" step="0.5">
+      <select class="form-select" id="gearVestType" style="margin-bottom:8px;">
+        <option value="fixe">Poids fixe</option>
+        <option value="reglable">Réglable</option>
+      </select>
+      <input type="number" class="form-input" id="gearVestKg" placeholder="Poids utilisé (kg)" min="0" step="0.5" style="margin-bottom:8px;">
+      <input type="number" class="form-input" id="gearVestMax" placeholder="Poids maximum si réglable (kg)" min="0" step="0.5">
+      <div class="mini" style="margin-top:6px;">Utilisé pour : pompes, tractions, squats (hors jour de course)</div>
     </div>
     <div class="card">
       <label style="display:flex; gap:10px; align-items:center; cursor:pointer; margin-bottom:8px;"><input type="checkbox" id="gearKb" style="accent-color:var(--accent); width:20px; height:20px;"> 🔔 Kettlebell</label>
       <input type="number" class="form-input" id="gearKbKg" placeholder="Poids (kg)" min="0" step="0.5">
+      <div class="mini" style="margin-top:6px;">Utilisée pour : squats goblet</div>
     </div>
     <div class="card">
       <label style="display:flex; gap:10px; align-items:center; cursor:pointer; margin-bottom:8px;"><input type="checkbox" id="gearDb" style="accent-color:var(--accent); width:20px; height:20px;"> 🏋️ Haltères</label>
       <input type="number" class="form-input" id="gearDbKg" placeholder="Poids par haltère (kg)" min="0" step="0.5">
+      <div class="mini" style="margin-top:6px;">Utilisés pour : squats goblet</div>
     </div>
     <button class="btn-primary" onclick="APP.saveGear()">💾 Enregistrer</button>
+  </div>
+
+  <!-- PAGE : RITUEL -->
+  <div class="page" id="pageRituel">
+    <div class="section-title">🧭 Rituel</div>
+    <div class="rit-card" id="ritRituel"><div class="rit-title">Rituel quotidien</div></div>
+    <div class="rit-card" id="ritPres"><div class="rit-title">Présence (3 gestes, 1 minute chacun)</div></div>
+    <div class="rit-card" id="ritProc"><div class="rit-title">Procédures de travail</div></div>
+    <div class="rit-card">
+      <div class="rit-title">Rattrapage mails</div>
+      <div class="rit-hint">Mails en retard à traiter.</div>
+      <div class="rit-row"><span>Mails restants :</span><input type="number" id="ritMails" min="0" step="1" placeholder="0"></div>
+    </div>
+    <div class="rit-card">
+      <div class="rit-title">Note du soir</div>
+      <textarea id="ritNote" placeholder="Ce qui a bloqué, ce qui reste pour demain..."></textarea>
+    </div>
+    <div class="rit-card">
+      <div class="rit-title">Suivi des résidences</div>
+      <input type="search" id="ritSearch" placeholder="Rechercher une résidence...">
+      <div class="rit-count" id="ritCount"></div>
+      <div id="ritRes"></div>
+    </div>
   </div>
 
   <!-- BOTTOM NAV -->
@@ -375,7 +455,7 @@
     <button class="nav-item" id="navEvaluation" onclick="APP.goPage('Evaluation')"><span class="nav-icon">📋</span>Éval</button>
     <button class="nav-item" id="navMateriel" onclick="APP.goPage('Materiel')"><span class="nav-icon">🎒</span>Matériel</button>
     <button class="nav-item" id="navStats" onclick="APP.goPage('Stats')"><span class="nav-icon">📊</span>Stats</button>
-    <button class="nav-item" id="navExercices" onclick="APP.goPage('Exercices')"><span class="nav-icon">🏋️</span>Exos</button>
+    <button class="nav-item" id="navRituel" onclick="APP.goPage('Rituel')"><span class="nav-icon">🧭</span>Rituel</button>
   </nav>
 
   <!-- MODAL EXERCISE INFO -->
@@ -405,7 +485,13 @@
       </div>
 
       <button class="btn-primary" onclick="APP.saveSettings()">💾 Enregistrer</button>
-      <button class="btn-primary" onclick="APP.resetAll()" style="background: rgba(255,71,87,0.15); border: 1px solid var(--red); color: var(--red); margin-top: 16px;">🔄 Réinitialiser</button>
+
+      <div class="section-title" style="margin-top:22px; font-size:1em;">💾 Sauvegarde</div>
+      <button class="btn-primary" onclick="APP.exportData()" style="margin-top:0;">📤 Exporter mes données</button>
+      <button class="btn-primary" onclick="document.getElementById('importFile').click()" style="margin-top:10px;">📥 Importer</button>
+      <input type="file" id="importFile" accept="application/json,.json" style="display:none;" onchange="APP.importData(this)">
+
+      <button class="btn-primary" onclick="APP.resetAll()" style="background: rgba(255,71,87,0.15); border: 1px solid var(--red); color: var(--red); margin-top: 22px;">🔄 Réinitialiser Hunter System</button>
       <button onclick="APP.closeSettings()" style="width:100%; padding:12px; background:none; border:none; color:var(--muted); cursor:pointer; margin-top:10px;">Annuler</button>
     </div>
   </div>
@@ -433,130 +519,306 @@
 const CONFIG = {
   XP_PER_LEVEL: 500,
 
-  PALIERS: {
-    push: { name:'Push', icon:'💪', steps:['Pompes genoux','Pompes classiques','Pompes déclinées','Pompes diamant','Pompes pike','Pseudo-planche pompes','Pompes explosives','Pompes wide'] },
-    pull: { name:'Pull', icon:'🔙', steps:['Superman','Rowing sur table','Tractions australiennes','Tractions négatives','Tractions pronation','Tractions supination','Tractions lestées','Muscle-up'] },
-    legs: { name:'Jambes', icon:'🦵', steps:['Squats classiques','Squats sumo','Wall sit','Fentes avant','Squats bulgares','Squats jump','Pistol squat assisté','Pistol squat'] },
-    core: { name:'Core', icon:'🧱', steps:['Planche 20s','Planche 45s','Hollow body','Dead bug','Planche latérale','Leg raises','Dragon flag neg','L-sit'] },
-    mobility: { name:'Mobilité', icon:'🌿', steps:['Étirements 5min','Cat-cow','World greatest stretch','Hanches 90/90','Mobilité thoracique','Routine 10min','Yoga flow','Yoga avancé'] }
-  },
-
-  EXERCISE_VARIATIONS: {
-    push: ['pompes classiques','pompes déclinées','pompes diamant','pompes pike','pompes explosives','dumbbell bench press','dumbbell floor press'],
-    pull: ['tractions pronation','tractions supination','tractions australiennes','dead hang','hanging knee raise','dumbbell rows','single arm rows'],
-    legs: ['squats classiques','squats sumo','squats jump','fentes avant','squats bulgares','dumbbell squats','goblet squats'],
-    core: ['planche frontale','planche latérale','hollow body','leg raises','mountain climbers','dumbbell rotations','dumbbell chop']
-  },
-
+  // Équipement : quels exercices utilisent chaque matériel
   EXERCISE_EQUIPMENT: {
-    'dumbbell bench press': 'dumbbells',
-    'dumbbell floor press': 'dumbbells',
-    'dumbbell rows': 'dumbbells',
-    'single arm rows': 'dumbbells',
-    'dumbbell squats': 'dumbbells',
-    'goblet squats': 'dumbbells',
-    'dumbbell rotations': 'dumbbells',
-    'dumbbell chop': 'dumbbells'
-  },
-
-  DAY_FOCUS: {
-    0: { focus:'Repos actif', desc:'Récupération', groups:[] },
-    1: { focus:'Entraînement', desc:'4 exercices', groups:['push','pull','legs','core'] },
-    2: { focus:'Entraînement', desc:'4 exercices', groups:['push','pull','legs','core'] },
-    3: { focus:'Entraînement', desc:'4 exercices', groups:['push','pull','legs','core'] },
-    4: { focus:'Entraînement', desc:'4 exercices', groups:['push','pull','legs','core'] },
-    5: { focus:'Entraînement', desc:'4 exercices', groups:['push','pull','legs','core'] },
-    6: { focus:'Entraînement', desc:'4 exercices', groups:['push','pull','legs','core'] }
+    pullup:     { label:'Barre de traction', used:['tractions'], fallback:'Rowing sous table' },
+    vest:       { label:'Gilet lesté',       used:['pompes','tractions','squats'] },
+    kettlebell: { label:'Kettlebell',        used:['squats (goblet)'] },
+    dumbbells:  { label:'Haltères',          used:['squats (goblet)'] }
   },
 
   GYM_EXERCISES: {
     haut: [
-      {
-        variations: ['chest press machine','machine pec fly','smith machine press','cable crossover'],
-        icon: '💪', name: 'Poitrine', type: 'haut'
-      },
-      {
-        variations: ['lat pulldown machine','assisted pullup','lever row machine','t-bar row'],
-        icon: '🔙', name: 'Dos', type: 'haut'
-      },
-      {
-        variations: ['shoulder press machine','lateral raise machine','assisted dips','machine shoulder fly'],
-        icon: '⬆️', name: 'Épaules', type: 'haut'
-      },
-      {
-        variations: ['rowing machine','cable machine row','leverage row','assisted row'],
-        icon: '🏃', name: 'Dos Tirage', type: 'haut'
-      }
+      { variations: ['chest press machine','machine pec fly','smith machine press','cable crossover'], icon: '💪', name: 'Poitrine' },
+      { variations: ['lat pulldown machine','assisted pullup','lever row machine','t-bar row'], icon: '🔙', name: 'Dos' },
+      { variations: ['shoulder press machine','lateral raise machine','assisted dips','machine shoulder fly'], icon: '⬆️', name: 'Épaules' },
+      { variations: ['rowing machine','cable machine row','leverage row','assisted row'], icon: '🏃', name: 'Dos Tirage' }
     ],
     bas: [
-      {
-        variations: ['leg press machine','hack squat machine','v-squat machine','smith machine squat'],
-        icon: '🦵', name: 'Quadriceps', type: 'bas'
-      },
-      {
-        variations: ['leg curl machine','lying leg curl','seated leg curl','standing leg curl'],
-        icon: '🍗', name: 'Ischio', type: 'bas'
-      },
-      {
-        variations: ['leg extension machine','knee extension machine','assisted leg press','smith machine hack'],
-        icon: '💥', name: 'Ext Jambes', type: 'bas'
-      },
-      {
-        variations: ['abductor machine','adductor machine','hip abduction machine','hip adduction machine'],
-        icon: '⬌', name: 'Abduc/Adduc', type: 'bas'
-      }
+      { variations: ['leg press machine','hack squat machine','v-squat machine','smith machine squat'], icon: '🦵', name: 'Quadriceps' },
+      { variations: ['leg curl machine','lying leg curl','seated leg curl','standing leg curl'], icon: '🍗', name: 'Ischio' },
+      { variations: ['leg extension machine','knee extension machine','assisted leg press','smith machine hack'], icon: '💥', name: 'Ext Jambes' },
+      { variations: ['abductor machine','adductor machine','hip abduction machine','hip adduction machine'], icon: '⬌', name: 'Abduc/Adduc' }
     ]
   }
 };
 
-// ===== STATE =====
-let STATE = {
+// ===== DATES (heure locale, jamais toISOString) =====
+const DAY_MS = 86400000;
+const pad2 = n => String(n).padStart(2, '0');
+const toKey = d => d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate());
+const todayKey = () => toKey(new Date());
+const parseKey = s => { const p = s.split('-').map(Number); return new Date(p[0], p[1] - 1, p[2]); };
+const addDays = (s, n) => { const d = parseKey(s); d.setDate(d.getDate() + n); return toKey(d); };
+const dayDiff = (a, b) => Math.round((parseKey(b) - parseKey(a)) / DAY_MS); // jours de a à b
+const weekKey = s => { const d = parseKey(s); d.setDate(d.getDate() - ((d.getDay() + 6) % 7)); return toKey(d); }; // lundi de la semaine
+
+// ===== ÉTAT =====
+const defaultState = () => ({
   injury: '',
   stats: { force:1, endurance:1, agility:1, perception:1, intelligence:1 },
   statsXP: { force:0, endurance:0, agility:0, perception:0, intelligence:0 },
-  streak: 0,
-  lastStreakDate: null,
-  todayQuests: [],
-  questsDone: [],
-  lastGenDate: null,
-  cycleStartDate: null,
-  cycleNumber: 1,
+  streak: 0, lastStreakDate: null, lastCheckedDay: null,
+  validDays: [],          // jours où le programme salle/maison a été complété
+  restLog: [],            // jokers utilisés : { week, date }
+  todayQuests: [], questsDone: [], setsDone: [], setLog: [], lastGenDate: null,
+  cycleStartDate: null, cycleNumber: 1,
   activityLog: [],
-  exercicePrefs: {},
-  maxReps: { pompes: 0, tractions: 0, squats: 0, planche: 0 },
-  currentMode: 'maison',
-  currentFormat: 'split',
-  currentFocus: 'haut',
-  vest: { pompes: 0, tractions: 0, squats: 0 },
+  maxReps: { pompes:0, tractions:0, squats:0, planche:0 },
+  currentMode: 'maison', currentFormat: 'split', currentFocus: 'haut',
+  vest: { pompes:0, tractions:0, squats:0 },
   measures: [],
-  variant: { pompes: 'classique', tractions: 'classique', squats: 'classique' },
-  gear: { pullup: true, vest: {has:false,kg:0}, kettlebell: {has:false,kg:0}, dumbbells: {has:false,kg:0} },
-  setsDone: [],
-  maxHistory: { pompes: [], tractions: [], squats: [], planche: [] }
-};
+  variant: { pompes:'classique', tractions:'classique', squats:'classique', planche:'classique' },
+  runDate: '',
+  gear: {
+    pullup: true,
+    vest: { has:false, kg:0, type:'fixe', max:0 },
+    kettlebell: { has:false, kg:0 },
+    dumbbells: { has:false, kg:0 }
+  },
+  maxHistory: { pompes:[], tractions:[], squats:[], planche:[] },
+  lucidaLog: [],   // dates
+  runLog: [],      // { date, km, min }
+  sleepLog: [],    // { date, bed, wake, hours, hrv, recharge, xp, bonus }
+  machineIdx: {},  // rotation fixe des machines : groupKey -> index
+  gymLog: {},      // machine -> [{ date, kg, reps, hit, inc }]
+  ranks: {},
+  presenceDays: {},      // { 'YYYY-MM-DD': ['resp','pause','ecoute'] }
+  presencePenalty: 0,    // niveaux perdus (7 jours sans geste)
+  presenceRun: 0,        // jours consécutifs sans geste
+  presenceChecked: null  // dernier jour pris en compte pour la pénalité
+});
+
+let STATE = defaultState();
 
 // ===== UTILS =====
 const UTILS = {
-  today: () => new Date().toISOString().split('T')[0],
+  today: todayKey,
   save: () => localStorage.setItem('hs_v2', JSON.stringify(STATE)),
-  load: () => { const d = localStorage.getItem('hs_v2'); if(d) STATE = {...STATE, ...JSON.parse(d)}; },
-  toast: (msg, err=false) => {
+  load: () => {
+    const base = defaultState();
+    let saved = null;
+    try { saved = JSON.parse(localStorage.getItem('hs_v2') || 'null'); } catch(e) { saved = null; }
+    if(saved && typeof saved === 'object'){
+      STATE = { ...base, ...saved };
+      // Migration douce : champs imbriqués complétés par défaut
+      STATE.gear = { ...base.gear, ...(saved.gear || {}) };
+      STATE.gear.vest = { ...base.gear.vest, ...((saved.gear && saved.gear.vest) || {}) };
+      STATE.gear.kettlebell = { ...base.gear.kettlebell, ...((saved.gear && saved.gear.kettlebell) || {}) };
+      STATE.gear.dumbbells = { ...base.gear.dumbbells, ...((saved.gear && saved.gear.dumbbells) || {}) };
+      STATE.stats = { ...base.stats, ...(saved.stats || {}) };
+      STATE.statsXP = { ...base.statsXP, ...(saved.statsXP || {}) };
+      STATE.maxReps = { ...base.maxReps, ...(saved.maxReps || {}) };
+      STATE.vest = { ...base.vest, ...(saved.vest || {}) };
+      STATE.variant = { ...base.variant, ...(saved.variant || {}) };
+      STATE.maxHistory = { ...base.maxHistory, ...(saved.maxHistory || {}) };
+    } else {
+      STATE = base;
+    }
+    if(STATE.lastStreakDate && !STATE.validDays.includes(STATE.lastStreakDate)) STATE.validDays.push(STATE.lastStreakDate);
+    if(!STATE.lastCheckedDay) STATE.lastCheckedDay = STATE.lastStreakDate || addDays(todayKey(), -1);
+  },
+  toast: (msg, err = false) => {
     const t = document.getElementById('toast');
     t.textContent = msg;
     t.className = 'toast show' + (err ? ' error' : '');
-    setTimeout(() => t.classList.remove('show'), 3200);
+    clearTimeout(UTILS._toastT);
+    UTILS._toastT = setTimeout(() => t.classList.remove('show'), 3200);
   },
   avgLevel: () => {
     const s = STATE.stats;
-    return Math.floor((s.force+s.endurance+s.agility+s.perception+s.intelligence)/5);
+    return Math.floor((s.force + s.endurance + s.agility + s.perception + s.intelligence) / 5);
   },
   addStatXP: (stat, xp) => {
     STATE.statsXP[stat] += xp;
     while(STATE.statsXP[stat] >= CONFIG.XP_PER_LEVEL){
       STATE.statsXP[stat] -= CONFIG.XP_PER_LEVEL;
       STATE.stats[stat]++;
-      UTILS.toast('⬆️ '+stat.toUpperCase()+' niv '+STATE.stats[stat]);
+      UTILS.toast('⬆️ ' + stat.toUpperCase() + ' niv ' + STATE.stats[stat]);
     }
+  }
+};
+
+// ===== CYCLE (semaines S1 à S4) =====
+const CYCLE = {
+  info() {
+    if(!STATE.cycleStartDate) STATE.cycleStartDate = todayKey();
+    let diff = dayDiff(STATE.cycleStartDate, todayKey());
+    if(diff >= 28){
+      STATE.cycleStartDate = todayKey();
+      STATE.cycleNumber++;
+      diff = 0;
+    }
+    const week = Math.min(4, Math.floor(diff / 7) + 1);
+    return { week, isDecharge: week === 4 };
+  }
+};
+
+// ===== SÉRIE ET JOKER DE REPOS =====
+const STREAK = {
+  // Traite les jours passés (jusqu'à hier) : un jour manqué est couvert par le joker de la semaine,
+  // le second jour manqué dans la même semaine remet la série à zéro.
+  processMisses() {
+    const yesterday = addDays(todayKey(), -1);
+    let d = STATE.lastCheckedDay || yesterday;
+    while(d < yesterday){
+      d = addDays(d, 1);
+      if(STATE.validDays.includes(d)) continue;
+      const wk = weekKey(d);
+      if(STATE.restLog.some(r => r.week === wk)) STATE.streak = 0;
+      else STATE.restLog.push({ week: wk, date: d });
+    }
+    STATE.lastCheckedDay = yesterday;
+    STATE.restLog = STATE.restLog.filter(r => dayDiff(r.date, todayKey()) < 60);
+    STATE.validDays = STATE.validDays.filter(x => dayDiff(x, todayKey()) < 60);
+  },
+  jokerUsed() {
+    const wk = weekKey(todayKey());
+    return STATE.restLog.some(r => r.week === wk);
+  },
+  validateTraining() {
+    const td = todayKey();
+    this.processMisses();
+    if(!STATE.validDays.includes(td)) STATE.validDays.push(td);
+    if(STATE.lastStreakDate !== td){
+      STATE.streak++;
+      STATE.lastStreakDate = td;
+    }
+  }
+};
+
+// ===== QUÊTES DU SYSTÈME =====
+const LUCIDA = {
+  done() { return STATE.lucidaLog.includes(todayKey()); },
+  streak() {
+    let s = 0, d = todayKey();
+    if(!STATE.lucidaLog.includes(d)) d = addDays(d, -1);
+    while(STATE.lucidaLog.includes(d)){ s++; d = addDays(d, -1); }
+    return s;
+  },
+  validate() {
+    if(this.done()) return;
+    STATE.lucidaLog.push(todayKey());
+    UTILS.addStatXP('intelligence', 100);
+    const s = this.streak();
+    let msg = '✅ Anglais validé : +100 XP Intelligence';
+    if(s % 7 === 0){
+      UTILS.addStatXP('intelligence', 100);
+      msg += ' · bonus palier ' + s + ' jours : +100';
+    }
+    UTILS.save(); APP.updateUI(); UTILS.toast(msg);
+  }
+};
+
+const RUN = {
+  weekCount() {
+    const wk = weekKey(todayKey());
+    return STATE.runLog.filter(r => weekKey(r.date) === wk).length;
+  },
+  validate() {
+    const km = parseFloat(document.getElementById('runKm').value);
+    const min = parseFloat(document.getElementById('runMin').value);
+    if(!km || km <= 0){ UTILS.toast('⚠️ Entre la distance', true); return; }
+    const td = todayKey();
+    const before = this.weekCount();
+    STATE.runLog.push({ date: td, km, min: min > 0 ? min : null });
+    UTILS.addStatXP('endurance', 150);
+    let msg = '✅ Course validée : +150 XP Endurance';
+    if(before + 1 === 2){
+      UTILS.addStatXP('endurance', 100);
+      msg += ' · bonus 2e course : +100';
+    }
+    // Course validée : coche « Je cours aujourd'hui » si le programme maison n'est pas commencé
+    if(STATE.runDate !== td){
+      STATE.runDate = td;
+      const started = (STATE.setsDone || []).some(x => x > 0);
+      if(STATE.currentMode === 'maison' && !started){
+        APP.buildQuests(APP.durationValue());
+        msg += ' · programme sans squats';
+      }
+    }
+    UTILS.save(); APP.updateUI(); UTILS.toast(msg);
+  }
+};
+
+const SLEEP = {
+  today() { return STATE.sleepLog.find(x => x.date === todayKey()); },
+  hours(bed, wake) {
+    const [bh, bm] = bed.split(':').map(Number);
+    const [wh, wm] = wake.split(':').map(Number);
+    let m = (wh * 60 + wm) - (bh * 60 + bm);
+    if(m < 0) m += 1440;
+    return Math.round(m / 6) / 10;
+  },
+  xpFor(h) { return h >= 7 ? 100 : (h >= 6 ? 50 : 0); },
+  nightsInARow(date) {
+    let n = 0, d = date;
+    while(true){
+      const e = STATE.sleepLog.find(x => x.date === d);
+      if(!e || e.hours < 7) break;
+      n++; d = addDays(d, -1);
+    }
+    return n;
+  },
+  save() {
+    const bed = document.getElementById('sleepBed').value;
+    const wake = document.getElementById('sleepWake').value;
+    if(!bed || !wake){ UTILS.toast('⚠️ Heure de coucher et de lever requises', true); return; }
+    const hrv = parseFloat(document.getElementById('sleepHrv').value) || null;
+    const rec = document.getElementById('sleepRec').value.trim() || null;
+    const h = this.hours(bed, wake);
+    const xp = this.xpFor(h);
+    const td = todayKey();
+    let e = this.today();
+    const prevXp = e ? e.xp : 0;
+    const prevBonus = e ? !!e.bonus : false;
+    if(!e){ e = { date: td }; STATE.sleepLog.push(e); }
+    Object.assign(e, { bed, wake, hours: h, hrv, recharge: rec, xp });
+    const gain = Math.max(0, xp - prevXp); // une modification ne retire jamais d'XP
+    if(gain) UTILS.addStatXP('perception', gain);
+    let msg = '✅ Sommeil enregistré : ' + String(h).replace('.', ',') + ' h';
+    if(!prevBonus){
+      const run = this.nightsInARow(td);
+      if(run > 0 && run % 7 === 0){
+        UTILS.addStatXP('perception', 100);
+        e.bonus = true;
+        msg += ' · bonus 7 nuits : +100';
+      }
+    }
+    if(xp === 0) msg += ' · nuit courte notée, sans jugement : on repart demain';
+    UTILS.save(); APP.updateUI(); UTILS.toast(msg);
+  }
+};
+
+// ===== RANGS DE CHASSEUR =====
+const RANK_LIST = ['E','D','C','B','A','S'];
+const RANK = {
+  of(key) {
+    const max = STATE.maxReps[key] || 0;
+    const v = STATE.variant[key] || 'classique';
+    const isVar = v !== 'classique';
+    const pl = key === 'planche';
+    const hi = pl ? (isVar ? 45 : 60) : 15;
+    const reached = max >= hi;
+    const vest = (STATE.vest[key] || 0) > 0;
+    if(vest) return reached ? 'S' : 'A';
+    if(isVar) return reached ? 'B' : 'C';
+    return reached ? 'D' : 'E';
+  },
+  global() {
+    return ['pompes','tractions','squats','planche']
+      .map(k => this.of(k))
+      .reduce((a, b) => RANK_LIST.indexOf(a) <= RANK_LIST.indexOf(b) ? a : b);
+  },
+  // silent = true à l'initialisation ; sinon toast à chaque montée de rang
+  check(silent) {
+    STATE.ranks = STATE.ranks || {};
+    ['pompes','tractions','squats','planche'].forEach(k => {
+      const r = this.of(k);
+      const prev = STATE.ranks[k];
+      if(prev && !silent && RANK_LIST.indexOf(r) > RANK_LIST.indexOf(prev)) UTILS.toast('⚔️ Rang ' + r + ' atteint');
+      STATE.ranks[k] = r;
+    });
   }
 };
 
@@ -569,106 +831,108 @@ const MEASURES = [
 ];
 
 // ===== VARIANTES =====
-// coef = part approximative du max "classique" faisable dans la variante (estimation, ajustée au test suivant)
+// coef = part approximative du max « classique » faisable dans la variante (estimation, ajustée au test suivant)
 const VARIANTS = {
   pompes:    { classique:{label:'Pompes classiques',coef:1}, declinees:{label:'Pompes déclinées',coef:0.75}, diamant:{label:'Pompes diamant',coef:0.65} },
   tractions: { classique:{label:'Tractions pronation',coef:1}, lentes:{label:'Tractions lentes',coef:0.7} },
-  squats:    { classique:{label:'Squats classiques',coef:1}, bulgares:{label:'Squats bulgares',coef:0.3,perLeg:true}, goblet:{label:'Squats goblet',coef:0.5} }
+  squats:    { classique:{label:'Squats classiques',coef:1}, bulgares:{label:'Squats bulgares',coef:0.3,perLeg:true}, goblet:{label:'Squats goblet',coef:0.5} },
+  planche:   { classique:{label:'Planche frontale',coef:1}, hollow:{label:'Hollow body hold',coef:0.35}, unbras:{label:'Planche un bras',coef:0.5} }
 };
 
-// ===== GAME LOGIC =====
+// ===== LOGIQUE DE JEU =====
 const GAME = {
-  getCycleInfo: () => {
-    if(!STATE.cycleStartDate) STATE.cycleStartDate = UTILS.today();
-    const start = new Date(STATE.cycleStartDate);
-    const diffDays = Math.floor((new Date() - start) / 86400000);
-    const week = Math.min(4, Math.floor(diffDays / 7) + 1);
-    if(diffDays >= 28){
-      STATE.cycleStartDate = UTILS.today();
-      STATE.cycleNumber++;
-      return GAME.getCycleInfo();
-    }
-    return { week, isDecharge: week === 4 };
-  },
-
-  calculateProgramSpecs: (duration) => {
+  calculateProgramSpecs(duration) {
     if(duration <= 20) return { exercises: 3, series: 2, reps: 10, rest: 60 };
     if(duration <= 30) return { exercises: 5, series: 3, reps: 12, rest: 60 };
     if(duration <= 40) return { exercises: 6, series: 3, reps: 12, rest: 75 };
     return { exercises: 6, series: 3, reps: 15, rest: 90 };
   },
 
-  estimateTime: (specs) => {
-    const perExercise = (specs.series * (45 + specs.rest)) + 60; // temps exo + transition
-    const planche = 90; // planche finale
+  estimateTime(specs) {
+    const perExercise = (specs.series * (45 + specs.rest)) + 60;
+    const planche = 90;
     return Math.ceil((perExercise * specs.exercises + planche) / 60);
   },
 
-  getRecommendedReps: (exerciseName) => {
-    const name = exerciseName.toLowerCase();
-    let key, def, unit = 'reps';
-    if(name.includes('pompe')){ key='pompes'; def=30; }
-    else if(name.includes('traction')){ key='tractions'; def=14; }
-    else if(name.includes('squat') && !/machine|smith|hack/.test(name)){ key='squats'; def=100; }
-    else if(name.includes('planche')){ key='planche'; def=120; unit='sec'; }
+  getRecommendedReps(exerciseName) {
+    const n = exerciseName.toLowerCase();
+    let key, def, unit = 'reps', mult = 1;
+    if(n.includes('rowing sous table')){ key = 'tractions'; def = 14; mult = 2; }
+    else if(n.includes('pompe')){ key = 'pompes'; def = 30; }
+    else if(n.includes('traction')){ key = 'tractions'; def = 14; }
+    else if(n.includes('squat') && !/machine|smith|hack/.test(n)){ key = 'squats'; def = 100; }
+    else if(n.includes('planche') || n.includes('hollow')){ key = 'planche'; def = 120; unit = 'sec'; }
     else return null;
-    const max = STATE.maxReps[key] || def;
-    return { key, unit, series: 3, max, min: Math.ceil(max*0.6), top: Math.ceil(max*0.7), target: Math.round(max*2/3), perLeg: !!(VARIANTS[key] && STATE.variant && VARIANTS[key][STATE.variant[key]] && VARIANTS[key][STATE.variant[key]].perLeg) };
+    const base = STATE.maxReps[key] || def;
+    const max = Math.round(base * mult);
+    const v = VARIANTS[key][STATE.variant[key]] || {};
+    return { key, unit, series: 3, max, min: Math.ceil(max * 0.6), top: Math.ceil(max * 0.7), target: Math.round(max * 2 / 3), perLeg: !!v.perLeg };
   },
 
-  progressionTip: (key, max) => {
-    const g = STATE.gear || {};
-    const has = (k) => g[k] && g[k].has;
-    const kg = (k) => (g[k] && g[k].kg) ? ' ('+g[k].kg+' kg)' : '';
-    const vestUsed = (STATE.vest && STATE.vest[key]) || 0;
-    if(key === 'planche') return max > 60 ? '💡 Plus de 60 s : passe à une variante plus dure (hollow body, planche bras tendus).' : '';
-    if(max <= 15) return '';
-    const cur = (STATE.variant && STATE.variant[key]) || 'classique';
-    if(vestUsed > 0) return '💡 Max ≥ 15 avec le gilet : passe à '+(vestUsed+2)+' kg et refais un test.';
-    if(has('vest')) return '💡 Ton max dépasse 15 reps : mets ton gilet'+kg('vest')+', fais 1 série à fond, saisis-la dans Éval (avec le poids du gilet) : l\'app calcule ta charge exacte.';
-    if(cur !== 'classique'){
-      const tested = ((STATE.maxHistory && STATE.maxHistory[key]) || []).some(x => x.variant === cur);
-      return tested ? '💡 Même cette variante dépasse 15 reps : le gilet lesté est la suite logique.' : '';
-    }
-    let vk;
-    if(key === 'pompes') vk = 'declinees';
-    else if(key === 'tractions') vk = 'lentes';
-    else vk = (has('kettlebell') || has('dumbbells')) ? 'goblet' : 'bulgares';
+  // Variante plus difficile à adopter quand l'exercice est trop facile
+  variantTip(key, max) {
+    const vk = key === 'pompes' ? 'declinees'
+      : key === 'tractions' ? 'lentes'
+      : key === 'planche' ? 'hollow'
+      : ((STATE.gear.kettlebell.has || STATE.gear.dumbbells.has) ? 'goblet' : 'bulgares');
     const v = VARIANTS[key][vk];
-    const est = Math.max(1, Math.round(Math.round(max*v.coef)*2/3));
-    const how = { declinees:'pieds posés sur une chaise', diamant:'mains en diamant', lentes:'descente en 4-5 s', bulgares:'pied arrière sur une chaise', goblet:'tenu contre la poitrine'+(has('kettlebell') ? kg('kettlebell') : kg('dumbbells')) }[vk];
-    return '💡 Trop facile (max > 15). Variante conseillée : <strong>'+v.label+'</strong> ('+how+').<br>Recette estimée : <strong>3 × '+est+' reps'+(v.perLeg?' par jambe':'')+'</strong>, repos 60 s (estimation, ajustée à ton prochain test).<br>'+
-      '<button onclick="APP.setVariant(\''+key+'\',\''+vk+'\')" style="margin-top:8px; background:var(--orange); color:#1a1a1a; border:none; border-radius:8px; padding:8px 12px; font-weight:700; cursor:pointer;">Adopter cette variante</button>';
+    const est = Math.max(1, Math.round(Math.round(max * v.coef) * 2 / 3));
+    const how = {
+      declinees: 'pieds posés sur une chaise',
+      lentes: 'descente en 4-5 s',
+      hollow: 'allongé sur le dos, bas du dos collé, épaules et jambes décollées',
+      bulgares: 'pied arrière sur une chaise',
+      goblet: 'tenu contre la poitrine' + (STATE.gear.kettlebell.has && STATE.gear.kettlebell.kg ? ' (' + STATE.gear.kettlebell.kg + ' kg)' : '')
+    }[vk];
+    const unit = key === 'planche' ? ' s' : ' reps';
+    const rest = key === 'planche' ? 45 : 60;
+    return '💡 Trop facile. Variante conseillée : <strong>' + v.label + '</strong> (' + how + ').<br>' +
+      'Recette estimée : <strong>3 × ' + est + unit + (v.perLeg ? ' par jambe' : '') + '</strong>, repos ' + rest + ' s (estimation, ajustée à ton prochain test).<br>' +
+      '<button onclick="APP.setVariant(\'' + key + '\',\'' + vk + '\')" style="margin-top:8px; background:var(--orange); color:#1a1a1a; border:none; border-radius:8px; padding:8px 12px; font-weight:700; cursor:pointer;">Adopter cette variante</button>';
   },
 
-  generateGymProgram: (duration, format, focus) => {
-    const specs = GAME.calculateProgramSpecs(duration);
-    const exercises = CONFIG.GYM_EXERCISES[focus];
-    let selected = [];
+  progressionTip(key, max) {
+    const v = STATE.variant[key] || 'classique';
+    const vestKg = STATE.vest[key] || 0;
+    const g = STATE.gear.vest;
+    const runDay = STATE.runDate === todayKey();
+    const vestAllowed = !(key === 'squats' && runDay); // jamais de gilet pour les squats un jour de course
 
-    for(let i = 0; i < Math.min(specs.exercises - 1, exercises.length); i++){
-      const ex = exercises[i];
-      const variation = ex.variations[Math.floor(Math.random() * ex.variations.length)];
-      selected.push({
-        name: variation.toUpperCase(),
-        icon: ex.icon,
-        description: `${ex.name}: ${specs.series}x${specs.reps} reps, repos ${specs.rest}s`,
-        fullName: variation
-      });
+    if(key === 'planche'){
+      if(v !== 'classique' || max <= 60) return '';
+      return this.variantTip(key, max);
     }
+    if(max <= 15) return '';
 
-    // Ajouter planche finale
-    selected.push({
-      name: 'PLANCHE FINALE',
-      icon: '🧱',
-      description: `Planche: ${specs.series}x30-60s, repos ${specs.rest}s`,
-      fullName: 'planche'
-    });
-
-    return { exercises: selected, specs, estimatedTime: GAME.estimateTime(specs) };
+    // Déjà avec gilet
+    if(vestKg > 0){
+      if(!vestAllowed) return '';
+      if(g.type === 'reglable' && vestKg + 2 <= g.max){
+        return '💡 Max ≥ 15 avec ' + vestKg + ' kg : passe à <strong>' + (vestKg + 2) + ' kg</strong> et refais un test.';
+      }
+      if(v === 'classique') return this.variantTip(key, max).replace('Trop facile.', 'Avec le gilet, trop facile.');
+      return '';
+    }
+    // Gilet disponible mais pas encore utilisé
+    if(g.has && vestAllowed){
+      return '💡 Ton max dépasse 15 reps : mets ton gilet' + (g.kg ? ' (' + g.kg + ' kg)' : '') + ', fais 1 série à fond et saisis-la dans Éval.';
+    }
+    if(v !== 'classique') return '';
+    return this.variantTip(key, max);
   }
 };
 
+// ===== MACHINES DE SALLE : charge suggérée (double progression) =====
+const GYM = {
+  suggest(machine, dech) {
+    const h = STATE.gymLog[machine];
+    if(!h || !h.length) return null;
+    const last = h[h.length - 1];
+    let kg = last.hit ? last.kg + last.inc : last.kg;
+    if(dech) kg = Math.round(kg * 0.8 * 2) / 2; // semaine de décharge : −20 %
+    return kg;
+  }
+};
 
 // ===== GUIDE MACHINES =====
 const GUIDE = {
@@ -753,10 +1017,9 @@ const GUIDE = {
     }
   },
 
-  // associe un nom d'exercice à un type de guide
-  typeOf: (name) => {
+  typeOf(name) {
     const n = name.toLowerCase();
-    if(n.includes('planche') || n.includes('plank')) return 'plank';
+    if(n.includes('planche') || n.includes('plank') || n.includes('hollow')) return 'plank';
     if(n.includes('pompe')) return 'pushup';
     if(n.includes('traction')) return 'pullup';
     if(n.includes('abduct') || n.includes('adduct')) return 'abduct';
@@ -772,17 +1035,30 @@ const GUIDE = {
     return 'press';
   },
 
-  get: (name) => {
+  get(name) {
     const type = GUIDE.typeOf(name);
-    return Object.assign({ type }, GUIDE.DATA[type]);
+    const n = name.toLowerCase();
+    let extra = {};
+    if(n.includes('hollow')) extra = {
+      muscles: 'abdominaux profonds, fléchisseurs de hanche',
+      setup: ['Allongé sur le dos, bras tendus derrière la tête','Bas du dos plaqué au sol','Jambes tendues, pieds joints'],
+      move: 'Soulève épaules et jambes à quelques cm du sol, en gardant le bas du dos collé. Tiens sans bouger, en respirant. Trop dur : plie les genoux.',
+      points: ['Le bas du dos ne doit jamais décoller','Plus les bras et jambes sont bas, plus c\'est dur','Menton légèrement rentré']
+    };
+    else if(n.includes('un bras')) extra = {
+      muscles: 'abdominaux, obliques, épaules',
+      setup: ['Position de planche sur les mains, bras tendus','Pieds un peu écartés pour l\'équilibre','Corps en ligne droite'],
+      move: 'Lève un bras et tends-le devant toi sans faire pivoter le bassin. Tiens la durée, puis change de bras : même durée de chaque côté.',
+      points: ['Bassin immobile, ne tourne pas','Serre fessiers et abdos','Autant de temps à gauche qu\'à droite']
+    };
+    return Object.assign({ type }, GUIDE.DATA[type], extra);
   },
 
-  svg: (type) => {
+  svg(type) {
     const stroke = 'stroke="#e0e0e0" stroke-width="5" stroke-linecap="round" fill="none"';
     const mach = 'stroke="#7f8c9a" stroke-width="4" stroke-linecap="round" fill="none"';
     const move = 'stroke="#00d4ff" stroke-width="5" stroke-linecap="round" fill="none"';
     const dur = '2.4s';
-    const anim = (attr, a, b) => '<animate attributeName="'+attr+'" values="'+a+';'+b+';'+a+'" dur="'+dur+'" repeatCount="indefinite"/>';
     const head = (x,y) => '<circle cx="'+x+'" cy="'+y+'" r="13" fill="#e0e0e0"/>';
     const cap = (t) => '<text x="150" y="196" text-anchor="middle" fill="#7f8c9a" font-size="12">'+t+'</text>';
     const wrap = (inner, c) => '<svg viewBox="0 0 300 205" xmlns="http://www.w3.org/2000/svg">'+inner+cap(c)+'</svg>';
@@ -850,139 +1126,282 @@ const GUIDE = {
 
 // ===== UI =====
 const UI = {
-  updateHeader: () => {
+  selectIn(btn) {
+    btn.parentElement.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+  },
+
+  updateHeader() {
     const lvl = UTILS.avgLevel();
-    const cycle = GAME.getCycleInfo();
-    const avgXP = Object.values(STATE.statsXP).reduce((a,b)=>a+b,0)/5;
-    document.getElementById('lvlBadge').textContent = 'LVL '+lvl;
-    document.getElementById('streakBadge').textContent = '🔥 '+STATE.streak;
-    document.getElementById('cycleBadge').textContent = 'S'+cycle.week+'/4';
-    document.getElementById('xpFill').style.width = (avgXP/CONFIG.XP_PER_LEVEL*100)+'%';
-    document.getElementById('xpLabel').textContent = 'XP '+Math.floor(avgXP)+'/'+CONFIG.XP_PER_LEVEL;
+    const cycle = CYCLE.info();
+    const avgXP = Object.values(STATE.statsXP).reduce((a, b) => a + b, 0) / 5;
+    document.getElementById('lvlBadge').textContent = 'LVL ' + lvl;
+    document.getElementById('streakBadge').textContent = '🔥 ' + STATE.streak + ' · 🛌 ' + (STREAK.jokerUsed() ? 'utilisé' : 'dispo');
+    document.getElementById('cycleBadge').textContent = 'S' + cycle.week + '/4';
+    document.getElementById('rankBadge').textContent = 'RANG ' + RANK.global();
+    document.getElementById('xpFill').style.width = (avgXP / CONFIG.XP_PER_LEVEL * 100) + '%';
+    document.getElementById('xpLabel').textContent = 'XP ' + Math.floor(avgXP) + '/' + CONFIG.XP_PER_LEVEL;
   },
 
-  updateStats: () => {
-    const wrap = document.getElementById('statsWrap');
-    wrap.innerHTML = '';
-    ['force','endurance','agility','perception','intelligence'].forEach(s => {
-      const icons = {force:'💪',endurance:'🏃',agility:'⚡',perception:'👁️',intelligence:'🧠'};
-      const div = document.createElement('div');
-      div.className = 'stat-row '+s;
-      div.innerHTML =
-        '<div class="stat-icon">'+icons[s]+'</div>'+
-        '<div class="stat-info">'+
-          '<div class="stat-name">'+s.toUpperCase()+'</div>'+
-          '<div class="stat-val">'+STATE.stats[s]+'</div>'+
-          '<div class="stat-bar"><div class="stat-bar-fill" style="width:'+(STATE.statsXP[s]/CONFIG.XP_PER_LEVEL*100)+'%"></div></div>'+
-        '</div>'+
-        '<div style="font-size:0.75em; color:var(--muted); white-space:nowrap;">'+STATE.statsXP[s]+'/'+CONFIG.XP_PER_LEVEL+'</div>';
-      wrap.appendChild(div);
-    });
+  updateBanners() {
+    const dech = CYCLE.info().isDecharge;
+    document.getElementById('dechargeWrap').innerHTML = dech ? '<div class="info-banner">Semaine de décharge : récupère pour progresser</div>' : '';
+    document.getElementById('injuryWrap').innerHTML = STATE.injury
+      ? '<div class="warn-banner">⚠️ Blessure : ' + STATE.injury + ' — adapte ou passe les exercices concernés</div>' : '';
   },
 
-  renderQuests: () => {
+  updateTestBanner() {
+    const el = document.getElementById('testBanner');
+    const dech = CYCLE.info().isDecharge;
+    const dates = Object.values(STATE.maxHistory || {}).flat().map(x => x.date).sort();
+    let msg = '';
+    if(!dech){
+      if(!dates.length) msg = '🧪 Fais ton premier test de max (1 série à fond par exercice)';
+      else {
+        const days = dayDiff(dates[dates.length - 1], todayKey());
+        if(days >= 7) msg = '🧪 Test de max hebdo : dernier test il y a ' + days + ' jours';
+      }
+    }
+    el.innerHTML = msg ? '<div onclick="APP.goPage(\'Evaluation\')" style="cursor:pointer; background:rgba(255,165,2,0.12); border:1px solid var(--orange); color:var(--orange); border-radius:12px; padding:12px 14px; margin-bottom:14px; font-size:0.9em; font-weight:600;">' + msg + ' →</div>' : '';
+    if(!msg){
+      const ms = STATE.measures || [];
+      const ld = ms.length ? ms[ms.length - 1].date : null;
+      const dd = ld ? dayDiff(ld, todayKey()) : 999;
+      if(dd >= 30) el.innerHTML = '<div onclick="APP.goPage(\'Stats\')" style="cursor:pointer; background:rgba(0,212,255,0.1); border:1px solid var(--accent); color:var(--accent); border-radius:12px; padding:12px 14px; margin-bottom:14px; font-size:0.9em; font-weight:600;">📏 ' + (ld ? 'Mesures du mois : dernière il y a ' + dd + ' jours' : 'Prends tes premières mesures (poids, taille, bras, poitrine)') + ' →</div>';
+    }
+  },
+
+  renderSystem() {
+    const el = document.getElementById('systemWrap');
+    const lDone = LUCIDA.done();
+    const ls = LUCIDA.streak();
+    const next = 7 - (ls % 7);
+    const rdone = Math.min(RUN.weekCount(), 2);
+    const s = SLEEP.today();
+    const sleepTxt = s
+      ? 'Enregistré : ' + String(s.hours).replace('.', ',') + ' h · +' + s.xp + ' XP' + (s.bonus ? ' · bonus 7 nuits' : '')
+      : 'Pas encore saisi ce matin';
+    el.innerHTML =
+      '<div class="quest-card' + (lDone ? ' done' : '') + '">' +
+        '<div class="quest-head"><div class="quest-name" style="cursor:default; text-decoration:none;">Anglais — Lucida 15 min</div><div class="quest-xp">+100 INT</div></div>' +
+        '<div class="quest-desc">Série : <strong>' + ls + ' jour' + (ls > 1 ? 's' : '') + '</strong> · bonus +100 XP dans ' + next + ' jour' + (next > 1 ? 's' : '') + ' (palier de 7)</div>' +
+        '<button class="quest-btn" onclick="LUCIDA.validate()" ' + (lDone ? 'disabled' : '') + '>' + (lDone ? '✓ Fait aujourd\'hui' : '✓ Valider 15 min d\'anglais') + '</button>' +
+      '</div>' +
+      '<div class="quest-card">' +
+        '<div class="quest-head"><div class="quest-name" style="cursor:default; text-decoration:none;">Course 5 km</div><div class="quest-xp">+150 END</div></div>' +
+        '<div class="quest-desc">Cette semaine : <strong>' + rdone + '/2</strong> · bonus +100 XP à la 2e course</div>' +
+        '<div class="set-inputs">' +
+          '<div><span class="field-label">Distance (km)</span><input class="form-input" id="runKm" type="number" step="0.1" min="0" value="5"></div>' +
+          '<div><span class="field-label">Durée (min, facultatif)</span><input class="form-input" id="runMin" type="number" step="1" min="0" placeholder="ex: 30"></div>' +
+        '</div>' +
+        '<button class="quest-btn" onclick="RUN.validate()">✓ Course validée</button>' +
+      '</div>' +
+      '<div class="quest-card' + (s ? ' done' : '') + '" style="' + (s ? 'opacity:1; border-color:rgba(255,255,255,0.08);' : '') + '">' +
+        '<div class="quest-head"><div class="quest-name" style="cursor:default; text-decoration:none;">Sommeil de la nuit</div><div class="quest-xp">PER</div></div>' +
+        '<div class="quest-desc">≥ 7 h : +100 XP · 6 à 7 h : +50 XP · moins de 6 h : 0 XP. ' + sleepTxt + '.</div>' +
+        '<div class="set-inputs">' +
+          '<div><span class="field-label">Coucher</span><input class="form-input" id="sleepBed" type="time" value="' + (s ? s.bed : '') + '"></div>' +
+          '<div><span class="field-label">Lever</span><input class="form-input" id="sleepWake" type="time" value="' + (s ? s.wake : '') + '"></div>' +
+        '</div>' +
+        '<div class="set-inputs">' +
+          '<div><span class="field-label">HRV (ms, facultatif)</span><input class="form-input" id="sleepHrv" type="number" step="1" min="0" value="' + (s && s.hrv ? s.hrv : '') + '"></div>' +
+          '<div><span class="field-label">Nightly Recharge (facultatif)</span><input class="form-input" id="sleepRec" type="text" value="' + (s && s.recharge ? s.recharge : '') + '"></div>' +
+        '</div>' +
+        '<button class="quest-btn" onclick="SLEEP.save()">' + (s ? '✓ Modifier la nuit' : '✓ Enregistrer la nuit') + '</button>' +
+      '</div>';
+  },
+
+  renderQuests() {
     const w = document.getElementById('questsWrap');
     const h = document.getElementById('hintWrap');
     if(!STATE.todayQuests.length){ w.innerHTML = ''; h.style.display = 'block'; return; }
     h.style.display = 'none';
     w.innerHTML = '';
+    const dech = CYCLE.info().isDecharge;
     STATE.todayQuests.forEach((q, i) => {
       const done = STATE.questsDone[i];
       const sets = q.sets || 3;
-      const n = Math.min((STATE.setsDone && STATE.setsDone[i]) || 0, sets);
+      const n = Math.min((STATE.setsDone[i]) || 0, sets);
       const rec = GAME.getRecommendedReps(q.fullName || q.name);
-      const recTxt = rec ? '📌 '+sets+' × '+rec.target+' '+rec.unit+(rec.perLeg ? ' par jambe' : '')+((STATE.vest && STATE.vest[rec.key]) ? ' 🦺 +'+STATE.vest[rec.key]+' kg' : '')+' <span style="color:var(--muted); font-weight:400;">(60-70 % de ton max : '+rec.min+'-'+rec.top+')</span>' : '';
-      const qtip = rec ? GAME.progressionTip(rec.key, rec.max) : '';
-      const specs = q._specs;
-      const specTxt = (!rec && specs) ? 'Séries: '+specs.series+' | Reps: '+specs.reps+' | Repos: '+specs.rest+'s' : '';
-      const dots = Array.from({length: sets}, (_, k) => k < n ? '●' : '○').join(' ');
+      const isRow = (q.fullName || '').includes('rowing sous table');
+      const vest = rec && STATE.vest[rec.key] ? STATE.vest[rec.key] : 0;
+      const recTxt = rec
+        ? '📌 ' + sets + ' × ' + rec.target + ' ' + rec.unit + (rec.perLeg ? ' par jambe' : '') +
+          (vest ? ' · <strong>avec gilet ' + vest + ' kg</strong>' : '') +
+          ' <span style="color:var(--muted); font-weight:400;">(60-70 % de ton max : ' + rec.min + '-' + rec.top + ')</span>'
+        : '';
+      const tip = (rec && !isRow) ? GAME.progressionTip(rec.key, rec.max) : '';
+      const specTxt = (q.gym && q._specs) ? 'Séries: ' + q.sets + ' | Reps: ' + q.reps + ' | Repos: ' + q.rest + 's' : '';
+      const dots = Array.from({ length: sets }, (_, k) => k < n ? '●' : '○').join(' ');
+
+      let gymBlock = '';
+      if(q.gym && !done){
+        const hist = STATE.gymLog[q.fullName] || [];
+        const last = hist[hist.length - 1];
+        const sug = GYM.suggest(q.fullName, dech);
+        const curSet = (STATE.setLog[i] || []).slice(-1)[0];
+        const kgDef = curSet ? curSet.kg : (sug != null ? sug : '');
+        gymBlock =
+          '<div class="mini" style="margin-bottom:8px;">' +
+            (last ? 'Dernière charge : <strong>' + last.kg + ' kg</strong> (' + last.date + ')' : 'Première séance sur cette machine') +
+            (sug != null ? ' · Charge proposée : <strong>' + sug + ' kg</strong>' + (dech ? ' (−20 % décharge)' : '') : '') +
+          '</div>' +
+          '<div class="set-inputs">' +
+            '<div><span class="field-label">Charge (kg)</span><input class="form-input" id="kg_' + i + '" type="number" step="0.5" min="0" value="' + kgDef + '"></div>' +
+            '<div><span class="field-label">Reps réussies (cible ' + q.reps + ')</span><input class="form-input" id="rp_' + i + '" type="number" min="0" placeholder="' + q.reps + '"></div>' +
+          '</div>' +
+          '<button class="ghost-btn" onclick="APP.changeMachine(' + i + ')" ' + ((STATE.setsDone[i] || 0) > 0 ? 'disabled' : '') + '>🔄 Changer de machine</button>';
+      }
+
       const d = document.createElement('div');
-      d.className = 'quest-card'+(done?' done':'');
+      d.className = 'quest-card' + (done ? ' done' : '');
       d.innerHTML =
-        '<div class="quest-head"><div class="quest-name" onclick="APP.showExerciseInfo(\''+(q.fullName||q.name)+'\')">'+q.name+'</div><div class="quest-xp">+'+q.xp+'</div></div>'+
-        '<div class="quest-desc">'+q.description+'</div>'+
-        (recTxt ? '<div style="font-size:0.85em; color:var(--accent); margin-bottom:8px; font-weight:600;">'+recTxt+'</div>' : '')+
-        (qtip ? '<div style="font-size:0.78em; color:var(--orange); margin-bottom:8px;">'+qtip+'</div>' : '')+
-        (specTxt ? '<div class="quest-specs">'+specTxt+'</div>' : '')+
-        '<div style="letter-spacing:4px; color:var(--accent); margin-bottom:10px;">'+dots+'</div>'+
-        '<button class="quest-btn" onclick="APP.doneSet('+i+')" '+(done?'disabled':'')+'>'+
-        (done ? '✓ Terminé' : '✓ Série '+(n+1)+'/'+sets+' validée')+'</button>';
+        '<div class="quest-head"><div class="quest-name" onclick="APP.showExerciseInfo(\'' + (q.fullName || q.name) + '\')">' + q.name + '</div><div class="quest-xp">+' + q.xp + '</div></div>' +
+        '<div class="quest-desc">' + q.description + '</div>' +
+        (recTxt ? '<div style="font-size:0.85em; color:var(--accent); margin-bottom:8px; font-weight:600;">' + recTxt + '</div>' : '') +
+        (tip ? '<div style="font-size:0.78em; color:var(--orange); margin-bottom:8px;">' + tip + '</div>' : '') +
+        (specTxt ? '<div class="quest-specs">' + specTxt + '</div>' : '') +
+        gymBlock +
+        '<div style="letter-spacing:4px; color:var(--accent); margin-bottom:6px;">' + dots + '</div>' +
+        '<button class="quest-btn" onclick="APP.doneSet(' + i + ')" ' + (done ? 'disabled' : '') + '>' +
+        (done ? '✓ Terminé' : '✓ Série ' + (n + 1) + '/' + sets + ' validée') + '</button>';
       w.appendChild(d);
     });
   },
 
-  renderExercices: () => {
-    const wrap = document.getElementById('exerciceEditWrap');
+  updateStats() {
+    const wrap = document.getElementById('statsWrap');
+    const icons = { force:'💪', endurance:'🏃', agility:'⚡', perception:'👁️', intelligence:'🧠' };
+    const sources = { force:'exercices', endurance:'course', agility:'exercices', perception:'sommeil + exercices', intelligence:'anglais' };
     wrap.innerHTML = '';
-    Object.keys(CONFIG.EXERCISE_VARIATIONS).forEach(g => {
-      if(!STATE.exercicePrefs[g]) STATE.exercicePrefs[g] = {};
+    ['force','endurance','agility','perception','intelligence'].forEach(s => {
       const div = document.createElement('div');
-      div.className = 'exercise-group';
-      div.innerHTML = '<div class="exercise-group-title">'+CONFIG.PALIERS[g].icon+' '+CONFIG.PALIERS[g].name+'</div>';
-      const list = document.createElement('div');
-      list.className = 'exercise-list';
-      CONFIG.EXERCISE_VARIATIONS[g].forEach(ex => {
-        const checked = STATE.exercicePrefs[g][ex] !== false;
-        const label = document.createElement('label');
-        label.className = 'exercise-item';
-        label.innerHTML = '<input type="checkbox" data-g="'+g+'" data-e="'+ex+'" '+(checked?'checked':'')+'><span>'+ex+'</span>';
-        list.appendChild(label);
-      });
-      div.appendChild(list);
+      div.className = 'stat-row ' + s;
+      div.innerHTML =
+        '<div class="stat-icon">' + icons[s] + '</div>' +
+        '<div class="stat-info">' +
+          '<div class="stat-name">' + s.toUpperCase() + ' — ' + sources[s] + '</div>' +
+          '<div class="stat-val">' + STATE.stats[s] + '</div>' +
+          '<div class="stat-bar"><div class="stat-bar-fill" style="width:' + (STATE.statsXP[s] / CONFIG.XP_PER_LEVEL * 100) + '%"></div></div>' +
+        '</div>' +
+        '<div style="font-size:0.75em; color:var(--muted); white-space:nowrap;">' + STATE.statsXP[s] + '/' + CONFIG.XP_PER_LEVEL + '</div>';
       wrap.appendChild(div);
     });
+    PRES.sync();
+    const lv = PRES.level(), pts = PRES.points();
+    const pv = document.createElement('div');
+    pv.className = 'stat-row presence';
+    pv.innerHTML =
+      '<div class="stat-icon">🌑</div>' +
+      '<div class="stat-info">' +
+        '<div class="stat-name">PRÉSENCE — respiration, pause, écoute</div>' +
+        '<div class="stat-val">' + lv + '</div>' +
+        '<div class="stat-bar"><div class="stat-bar-fill" style="width:' + (lv >= 10 ? 100 : (pts % 15) / 15 * 100) + '%"></div></div>' +
+      '</div>' +
+      '<div style="font-size:0.75em; color:var(--muted); white-space:nowrap;">' + (lv >= 10 ? 'MAX' : (pts % 15) + '/15') + '</div>';
+    wrap.appendChild(pv);
   },
 
-  chart: (h) => {
+  renderRanks() {
+    const el = document.getElementById('ranksWrap');
+    const names = { pompes:'Pompes', tractions:'Tractions', squats:'Squats', planche:'Planche' };
+    const rows = Object.keys(names).map(k => {
+      const v = STATE.variant[k] || 'classique';
+      const label = VARIANTS[k][v] ? VARIANTS[k][v].label : VARIANTS[k].classique.label;
+      return '<div class="log-row"><span>' + names[k] + ' — ' + label + (STATE.vest[k] ? ' · gilet ' + STATE.vest[k] + ' kg' : '') + '</span><strong style="color:var(--accent);">' + RANK.of(k) + '</strong></div>';
+    }).join('');
+    el.innerHTML = '<div class="card"><div class="log-row" style="font-weight:700;"><span>Rang global</span><strong style="color:var(--gold);">' + RANK.global() + '</strong></div>' + rows + '</div>';
+  },
+
+  chart(h) {
     const vals = h.slice(-8).map(x => x.val);
-    const W=280, H=64, pad=12;
-    const mn=Math.min(...vals), mx=Math.max(...vals), rng=(mx-mn)||1;
-    const pts = vals.map((v,i) => [ vals.length===1 ? W/2 : pad+i*(W-2*pad)/(vals.length-1), H-pad-(v-mn)/rng*(H-2*pad) ]);
-    return '<svg viewBox="0 0 '+W+' '+H+'" style="width:100%; height:auto; display:block; margin:8px 0;">'+
-      '<polyline points="'+pts.map(p=>p.join(',')).join(' ')+'" fill="none" stroke="#00d4ff" stroke-width="2.5" stroke-linejoin="round"/>'+
-      pts.map((p,i)=>'<circle cx="'+p[0]+'" cy="'+p[1]+'" r="3.5" fill="#00d4ff"/><text x="'+p[0]+'" y="'+(p[1]-7)+'" text-anchor="middle" fill="#e0e0e0" font-size="10">'+vals[i]+'</text>').join('')+
+    const W = 280, H = 64, pad = 12;
+    const mn = Math.min(...vals), mx = Math.max(...vals), rng = (mx - mn) || 1;
+    const pts = vals.map((v, i) => [ vals.length === 1 ? W / 2 : pad + i * (W - 2 * pad) / (vals.length - 1), H - pad - (v - mn) / rng * (H - 2 * pad) ]);
+    return '<svg viewBox="0 0 ' + W + ' ' + H + '" style="width:100%; height:auto; display:block; margin:8px 0;">' +
+      '<polyline points="' + pts.map(p => p.join(',')).join(' ') + '" fill="none" stroke="#00d4ff" stroke-width="2.5" stroke-linejoin="round"/>' +
+      pts.map((p, i) => '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="3.5" fill="#00d4ff"/><text x="' + p[0] + '" y="' + (p[1] - 7) + '" text-anchor="middle" fill="#e0e0e0" font-size="10">' + Math.round(vals[i] * 10) / 10 + '</text>').join('') +
       '</svg>';
   },
 
-  renderMeasures: () => {
+  renderRecovery() {
+    const el = document.getElementById('recoveryWrap');
+    const thisWk = weekKey(todayKey());
+    const weeks = [3, 2, 1, 0].map(i => addDays(thisWk, -7 * i));
+    const avg = arr => arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : null;
+    const sleepW = weeks.map(wk => avg(STATE.sleepLog.filter(e => weekKey(e.date) === wk).map(e => e.hours)));
+    const hrvW = weeks.map(wk => avg(STATE.sleepLog.filter(e => weekKey(e.date) === wk && e.hrv).map(e => e.hrv)));
+    const runsW = weeks.map(wk => STATE.runLog.filter(r => weekKey(r.date) === wk).length);
+    const chartOf = arr => {
+      const s = arr.map(v => v == null ? null : { val: v }).filter(Boolean);
+      return s.length ? UI.chart(s) : '<div class="hint">Pas encore de données</div>';
+    };
+    const withRuns = hrvW.map((h, i) => ({ h, r: runsW[i] })).filter(x => x.h != null);
+    const two = withRuns.filter(x => x.r >= 2).map(x => x.h);
+    const few = withRuns.filter(x => x.r < 2).map(x => x.h);
+    const fmt = v => v == null ? '—' : Math.round(v) + ' ms';
+    const synth = 'HRV moyen les semaines à 2 courses : ' + fmt(avg(two)) + ' ; les semaines à moins de 2 courses : ' + fmt(avg(few)) +
+      ' (' + two.length + ' et ' + few.length + ' semaine(s) avec HRV).';
+    el.innerHTML =
+      '<div class="card"><div class="card-title">😴 Durée de sommeil (h), moyenne par semaine</div>' + chartOf(sleepW) + '</div>' +
+      '<div class="card"><div class="card-title">❤️ HRV (ms), moyenne par semaine</div>' + chartOf(hrvW) + '</div>' +
+      '<div class="card"><div class="card-title">🏃 Courses par semaine</div>' + chartOf(runsW) + '</div>' +
+      '<div class="mini" style="margin-bottom:14px;">' + synth + '</div>';
+  },
+
+  renderGymCharts() {
+    const el = document.getElementById('gymWrap');
+    const ms = Object.keys(STATE.gymLog);
+    el.innerHTML = ms.length
+      ? ms.map(m => {
+          const h = STATE.gymLog[m];
+          const last = h[h.length - 1];
+          return '<div class="card"><div style="font-weight:700;">' + m + '</div>' +
+            '<div class="mini">Dernière : ' + last.kg + ' kg · ' + (last.hit ? 'objectif atteint' : 'objectif non atteint') + '</div>' +
+            UI.chart(h.map(x => ({ val: x.kg }))) + '</div>';
+        }).join('')
+      : '<div class="hint">Les charges apparaîtront ici après ta première séance salle.</div>';
+  },
+
+  renderActivity() {
+    const el = document.getElementById('activityWrap');
+    const from = addDays(todayKey(), -13);
+    const groups = {};
+    STATE.activityLog.filter(a => a.date >= from).forEach(a => {
+      if(!groups[a.date]) groups[a.date] = { names: new Set(), xp: 0 };
+      groups[a.date].names.add(a.name.toLowerCase());
+      groups[a.date].xp += a.xp;
+    });
+    const days = Object.keys(groups).sort().reverse();
+    el.innerHTML = days.length
+      ? days.map(d => {
+          const label = parseKey(d).toLocaleDateString('fr-BE', { weekday:'short', day:'numeric', month:'short' });
+          return '<div class="log-row"><span>' + label + ' — ' + [...groups[d].names].join(', ') + '</span><strong style="color:var(--green); white-space:nowrap;">+' + groups[d].xp + ' XP</strong></div>';
+        }).join('')
+      : '<div class="hint">Aucune séance validée sur les 14 derniers jours.</div>';
+  },
+
+  renderMeasures() {
     const wrap = document.getElementById('measuresWrap');
     wrap.innerHTML = '';
     const list = STATE.measures || [];
     MEASURES.forEach(mt => {
       const h = list.filter(x => x[mt.k]).map(x => ({ date: x.date, val: x[mt.k] }));
       if(!h.length) return;
-      const last = h[h.length-1].val;
-      let msg = mt.l+' : '+last+' '+mt.u+' (première mesure)';
+      const last = h[h.length - 1].val;
+      let msg = mt.l + ' : ' + last + ' ' + mt.u + ' (première mesure)';
       if(h.length >= 2){
-        const d = Math.round((last - h[0].val)*10)/10;
-        msg = mt.l+' : '+h[0].val+' → '+last+' '+mt.u+' ('+(d>0?'+':'')+d+' '+mt.u+')';
+        const d = Math.round((last - h[0].val) * 10) / 10;
+        msg = mt.l + ' : ' + h[0].val + ' → ' + last + ' ' + mt.u + ' (' + (d > 0 ? '+' : '') + d + ' ' + mt.u + ')';
       }
       const card = document.createElement('div');
       card.className = 'card';
-      card.innerHTML = '<div style="font-weight:700; margin-bottom:4px;">'+mt.icon+' '+mt.l+'</div><div style="font-size:0.85em; color:var(--green); font-weight:600;">'+msg+'</div>'+UI.chart(h);
+      card.innerHTML = '<div style="font-weight:700; margin-bottom:4px;">' + mt.icon + ' ' + mt.l + '</div><div style="font-size:0.85em; color:var(--green); font-weight:600;">' + msg + '</div>' + UI.chart(h);
       wrap.appendChild(card);
     });
   },
 
-  updateTestBanner: () => {
-    const el = document.getElementById('testBanner');
-    const dates = Object.values(STATE.maxHistory||{}).flat().map(x => x.date).sort();
-    let msg = '';
-    if(!dates.length) msg = '🧪 Fais ton premier test de max (1 série à fond par exercice)';
-    else {
-      const days = Math.floor((new Date(UTILS.today()) - new Date(dates[dates.length-1])) / 86400000);
-      if(days >= 7) msg = '🧪 Test de max hebdo : dernier test il y a '+days+' jours';
-    }
-    el.innerHTML = msg ? '<div onclick="APP.goPage(\'Evaluation\')" style="cursor:pointer; background:rgba(255,165,2,0.12); border:1px solid var(--orange); color:var(--orange); border-radius:12px; padding:12px 14px; margin-bottom:14px; font-size:0.9em; font-weight:600;">'+msg+' →</div>' : '';
-    if(!msg){
-      const ms = STATE.measures || [];
-      const ld = ms.length ? ms[ms.length-1].date : null;
-      const dd = ld ? Math.floor((new Date(UTILS.today()) - new Date(ld)) / 86400000) : 999;
-      if(dd >= 30) el.innerHTML = '<div onclick="APP.goPage(\'Stats\')" style="cursor:pointer; background:rgba(0,212,255,0.1); border:1px solid var(--accent); color:var(--accent); border-radius:12px; padding:12px 14px; margin-bottom:14px; font-size:0.9em; font-weight:600;">📏 '+(ld ? 'Mesures du mois : dernière il y a '+dd+' jours' : 'Prends tes premières mesures (poids, taille, bras, poitrine)')+' →</div>';
-    }
-  },
-
-  renderEvaluationResults: () => {
+  renderEvaluationResults() {
     const resultsWrap = document.getElementById('resultsWrap');
     const resultsDiv = document.getElementById('evaluationResults');
     const m = STATE.maxReps;
@@ -997,28 +1416,31 @@ const UI = {
     ].forEach(e => {
       const rec = GAME.getRecommendedReps(e.ex);
       const vcur = (STATE.variant && STATE.variant[e.key]) || 'classique';
-      const vinfo = VARIANTS[e.key] ? (VARIANTS[e.key][vcur] || VARIANTS[e.key].classique) : null;
+      const vinfo = VARIANTS[e.key][vcur] || VARIANTS[e.key].classique;
       const h = ((STATE.maxHistory && STATE.maxHistory[e.key]) || []).filter(x => (x.variant || 'classique') === vcur);
-      let msg = 'Max '+(vinfo ? vinfo.label : e.label).toLowerCase()+' : '+m[e.key]+(rec.unit==='sec'?' s':'')+' (premier test — refais-en un dans 7 jours)';
-      if(!h.length && vcur !== 'classique') msg = 'Max '+vinfo.label.toLowerCase()+' : ~'+m[e.key]+' (estimation — fais 1 série à fond et saisis-la ci-dessus)';
+      let msg = 'Max ' + vinfo.label.toLowerCase() + ' : ' + m[e.key] + (rec.unit === 'sec' ? ' s' : '') + ' (premier test — refais-en un dans 7 jours)';
+      if(!h.length && vcur !== 'classique') msg = 'Max ' + vinfo.label.toLowerCase() + ' : ~' + m[e.key] + ' (estimation — fais 1 série à fond et saisis-la ci-dessus)';
       if(h.length >= 2){
-        const first = h[0].val, last = h[h.length-1].val;
-        const pct = Math.round((last-first)/first*100);
-        msg = 'Max '+(vinfo ? vinfo.label : e.label).toLowerCase()+' : '+first+' → '+last+' ('+(pct>0?'+':'')+pct+' %)';
+        const first = h[0].val, last = h[h.length - 1].val;
+        const pct = Math.round((last - first) / first * 100);
+        msg = 'Max ' + vinfo.label.toLowerCase() + ' : ' + first + ' → ' + last + ' (' + (pct > 0 ? '+' : '') + pct + ' %)';
       }
       const vest = (STATE.vest && STATE.vest[e.key]) || 0;
       const tip = GAME.progressionTip(e.key, m[e.key]);
       const card = document.createElement('div');
       card.className = 'card';
       card.innerHTML =
-        '<div style="font-weight:700; margin-bottom:6px;">'+e.icon+' '+(vinfo ? vinfo.label : e.label)+'</div>'+
-        '<div style="font-size:0.85em; color:var(--green); font-weight:600;">'+msg+'</div>'+
-        (h.length ? UI.chart(h) : '')+
-        '<div style="background:rgba(0,212,255,0.08); border-left:3px solid var(--accent); padding:10px 12px; border-radius:8px;">'+
-          '<div style="font-size:0.8em; color:var(--muted);">Charge du jour (≈ 2/3 du max)</div>'+
-          '<div style="font-size:1.1em; color:var(--accent); font-weight:700;">3 × '+rec.target+' '+rec.unit+(rec.perLeg ? ' par jambe' : '')+(vest ? ' 🦺 +'+vest+' kg' : '')+'</div>'+
-        '</div>'+
-        (tip ? '<div style="margin-top:10px; font-size:0.85em; color:var(--orange);">'+tip+'</div>' : '');
+        '<div style="font-weight:700; margin-bottom:6px;">' + e.icon + ' ' + vinfo.label + '</div>' +
+        '<div style="font-size:0.85em; color:var(--green); font-weight:600;">' + msg + '</div>' +
+        (h.length ? UI.chart(h) : '') +
+        '<div style="background:rgba(0,212,255,0.08); border-left:3px solid var(--accent); padding:10px 12px; border-radius:8px;">' +
+          '<div style="font-size:0.8em; color:var(--muted);">Charge du jour (≈ 2/3 du max)</div>' +
+          '<div style="font-size:1.1em; color:var(--accent); font-weight:700;">3 × ' + rec.target + ' ' + rec.unit + (rec.perLeg ? ' par jambe' : '') + (vest ? ' · avec gilet ' + vest + ' kg' : '') + '</div>' +
+        '</div>' +
+        (tip ? '<div style="margin-top:10px; font-size:0.85em; color:var(--orange);">' + tip + '</div>' : '') +
+        '<div style="margin-top:10px;"><label style="font-size:0.75em; color:var(--muted);">Changer de variante</label>' +
+        '<select onchange="APP.setVariant(\'' + e.key + '\', this.value)" style="width:100%; margin-top:4px; padding:8px; border-radius:8px; background:var(--bg3); color:inherit; border:1px solid rgba(255,255,255,0.15);">' +
+        Object.keys(VARIANTS[e.key]).map(vk => '<option value="' + vk + '"' + (vk === vcur ? ' selected' : '') + '>' + VARIANTS[e.key][vk].label + '</option>').join('') + '</select></div>';
       resultsWrap.appendChild(card);
     });
   }
@@ -1026,62 +1448,83 @@ const UI = {
 
 // ===== APP =====
 const APP = {
-  selectMode: (mode) => {
+  durationValue() {
+    const d = parseInt(document.getElementById('duration').value) || 30;
+    return Math.min(120, Math.max(15, d));
+  },
+
+  restoreOptions() {
+    document.querySelectorAll('#pageHome .option-btn').forEach(b => b.classList.remove('selected'));
+    [STATE.currentMode, STATE.currentFormat, STATE.currentFocus].forEach(v => {
+      document.querySelectorAll('#pageHome [data-v="' + v + '"]').forEach(b => b.classList.add('selected'));
+    });
+    document.getElementById('salleOptions').style.display = STATE.currentMode === 'salle' ? 'block' : 'none';
+    document.getElementById('splitOptions').style.display = STATE.currentFormat === 'split' ? 'block' : 'none';
+    document.getElementById('modeDisplay').textContent = STATE.currentMode === 'maison' ? 'Maison - 4 exercices' : 'Salle - Machine';
+  },
+
+  selectMode(btn, mode) {
     STATE.currentMode = mode;
-    document.querySelectorAll('[onclick*="selectMode"]').forEach(b => b.classList.remove('selected'));
-    event.target.classList.add('selected');
-    const salleOpts = document.getElementById('salleOptions');
-    if(mode === 'salle') salleOpts.style.display = 'block';
-    else salleOpts.style.display = 'none';
+    UI.selectIn(btn);
+    document.getElementById('salleOptions').style.display = mode === 'salle' ? 'block' : 'none';
     document.getElementById('modeDisplay').textContent = mode === 'maison' ? 'Maison - 4 exercices' : 'Salle - Machine';
     UTILS.save();
   },
 
-  selectFormat: (format) => {
+  selectFormat(btn, format) {
     STATE.currentFormat = format;
-    document.querySelectorAll('[onclick*="selectFormat"]').forEach(b => b.classList.remove('selected'));
-    event.target.classList.add('selected');
-    const splitOpts = document.getElementById('splitOptions');
-    if(format === 'split') splitOpts.style.display = 'block';
-    else splitOpts.style.display = 'none';
+    UI.selectIn(btn);
+    document.getElementById('splitOptions').style.display = format === 'split' ? 'block' : 'none';
     UTILS.save();
   },
 
-  selectFocus: (focus) => {
+  selectFocus(btn, focus) {
     STATE.currentFocus = focus;
-    document.querySelectorAll('[onclick*="selectFocus"]').forEach(b => b.classList.remove('selected'));
-    event.target.classList.add('selected');
+    UI.selectIn(btn);
     UTILS.save();
   },
 
-  showExerciseInfo: (exerciseName) => {
+  showExerciseInfo(exerciseName) {
     const info = GUIDE.get(exerciseName);
     document.getElementById('modalExerciseName').textContent = exerciseName.toUpperCase();
     document.getElementById('modalExerciseImg').innerHTML = GUIDE.svg(info.type);
     document.getElementById('modalExerciseDesc').innerHTML =
-      '<div style="margin-bottom:10px;"><strong style="color:var(--accent)">Muscles :</strong> '+info.muscles+'</div>'+
-      '<div style="margin-bottom:10px;"><strong style="color:var(--accent)">Installation :</strong><ol style="margin:6px 0 0 20px;">'+
-      info.setup.map(x=>'<li style="margin-bottom:4px;">'+x+'</li>').join('')+'</ol></div>'+
-      '<div><strong style="color:var(--accent)">Mouvement :</strong> '+info.move+'</div>';
-    document.getElementById('modalExercisePoints').innerHTML = info.points.map(p => '<li>'+p+'</li>').join('');
+      '<div style="margin-bottom:10px;"><strong style="color:var(--accent)">Muscles :</strong> ' + info.muscles + '</div>' +
+      '<div style="margin-bottom:10px;"><strong style="color:var(--accent)">Installation :</strong><ol style="margin:6px 0 0 20px;">' +
+      info.setup.map(x => '<li style="margin-bottom:4px;">' + x + '</li>').join('') + '</ol></div>' +
+      '<div><strong style="color:var(--accent)">Mouvement :</strong> ' + info.move + '</div>';
+    document.getElementById('modalExercisePoints').innerHTML = info.points.map(p => '<li>' + p + '</li>').join('');
     document.getElementById('exerciseModal').classList.add('active');
   },
 
-  closeExerciseModal: () => document.getElementById('exerciseModal').classList.remove('active'),
+  closeExerciseModal() { document.getElementById('exerciseModal').classList.remove('active'); },
 
-  openSettings: () => {
+  openSettings() {
     document.getElementById('injuryInput').value = STATE.injury;
     document.getElementById('settingsModal').classList.add('active');
   },
 
-  closeSettings: () => document.getElementById('settingsModal').classList.remove('active'),
+  closeSettings() { document.getElementById('settingsModal').classList.remove('active'); },
 
-  saveSettings: () => {
+  saveSettings() {
     STATE.injury = document.getElementById('injuryInput').value.trim();
     UTILS.save(); APP.updateUI(); APP.closeSettings(); UTILS.toast('✅ Paramètres sauvegardés');
   },
 
-  setVariant: (key, vk) => {
+  toggleRunDay(on) {
+    STATE.runDate = on ? todayKey() : '';
+    const started = (STATE.setsDone || []).some(x => x > 0);
+    if(on && STATE.currentMode === 'maison' && !started){
+      APP.buildQuests(APP.durationValue());
+      UTILS.save(); APP.updateUI();
+      UTILS.toast('🏃 Jour de course : programme sans squats');
+      return;
+    }
+    UTILS.save(); APP.updateUI();
+    UTILS.toast(on ? '🏃 Jour de course : appliqué au prochain programme' : 'Jour de course désactivé');
+  },
+
+  setVariant(key, vk) {
     const cur = (STATE.variant && STATE.variant[key]) || 'classique';
     const h = ((STATE.maxHistory && STATE.maxHistory[key]) || []);
     const lastClassic = [...h].reverse().find(x => (x.variant || 'classique') === 'classique');
@@ -1091,48 +1534,41 @@ const APP = {
     const lab = VARIANTS[key][vk].label;
     STATE.todayQuests.forEach(q => {
       const r = GAME.getRecommendedReps(q.fullName || q.name);
-      if(r && r.key === key){ q.name = lab.toUpperCase(); q.fullName = lab.toLowerCase(); }
+      if(r && r.key === key && !q.gym){ q.name = lab.toUpperCase(); q.fullName = lab.toLowerCase(); }
     });
-    UTILS.save(); UI.renderQuests(); UI.renderEvaluationResults();
-    UTILS.toast('✅ Variante adoptée : '+lab);
+    RANK.check(false);
+    UTILS.save(); APP.updateUI(); UI.renderEvaluationResults();
+    UTILS.toast('✅ Variante adoptée : ' + lab);
   },
 
-  saveMeasure: () => {
-    const td = UTILS.today();
+  saveMeasure() {
+    const td = todayKey();
     const e = { date: td };
     let any = false;
     MEASURES.forEach(mt => { const v = parseFloat(document.getElementById(mt.id).value); if(v > 0){ e[mt.k] = v; any = true; } });
     if(!any){ UTILS.toast('⚠️ Entre au moins une mesure', true); return; }
     if(!STATE.measures) STATE.measures = [];
-    const last = STATE.measures[STATE.measures.length-1];
+    const last = STATE.measures[STATE.measures.length - 1];
     if(last && last.date === td) Object.assign(last, e); else STATE.measures.push(e);
     MEASURES.forEach(mt => { document.getElementById(mt.id).value = ''; });
     UTILS.save(); UI.renderMeasures(); UI.updateTestBanner();
     UTILS.toast('✅ Mesures enregistrées');
   },
 
-  saveGear: () => {
-    const num = (id) => parseFloat(document.getElementById(id).value) || 0;
+  saveGear() {
+    const num = id => parseFloat(document.getElementById(id).value) || 0;
+    const chk = id => document.getElementById(id).checked;
     STATE.gear = {
-      pullup: document.getElementById('gearPullup').checked,
-      vest: { has: document.getElementById('gearVest').checked, kg: num('gearVestKg') },
-      kettlebell: { has: document.getElementById('gearKb').checked, kg: num('gearKbKg') },
-      dumbbells: { has: document.getElementById('gearDb').checked, kg: num('gearDbKg') }
+      pullup: chk('gearPullup'),
+      vest: { has: chk('gearVest'), kg: num('gearVestKg'), type: document.getElementById('gearVestType').value, max: num('gearVestMax') },
+      kettlebell: { has: chk('gearKb'), kg: num('gearKbKg') },
+      dumbbells: { has: chk('gearDb'), kg: num('gearDbKg') }
     };
-    UTILS.save(); UI.renderQuests(); UTILS.toast('✅ Matériel enregistré');
+    RANK.check(false);
+    UTILS.save(); APP.updateUI(); UTILS.toast('✅ Matériel enregistré');
   },
 
-  saveExercicePrefs: () => {
-    document.querySelectorAll('[data-g]').forEach(i => {
-      const g = i.getAttribute('data-g');
-      const e = i.getAttribute('data-e');
-      if(!STATE.exercicePrefs[g]) STATE.exercicePrefs[g] = {};
-      STATE.exercicePrefs[g][e] = i.checked ? true : false;
-    });
-    UTILS.save(); UTILS.toast('✅ Exercices sauvegardés');
-  },
-
-  saveEvaluation: () => {
+  saveEvaluation() {
     const maxPompes = parseInt(document.getElementById('maxPompes').value) || 0;
     const maxTractions = parseInt(document.getElementById('maxTractions').value) || 0;
     const maxSquats = parseInt(document.getElementById('maxSquats').value) || 0;
@@ -1144,190 +1580,179 @@ const APP = {
     }
 
     STATE.maxReps = { pompes: maxPompes, tractions: maxTractions, squats: maxSquats, planche: maxPlanche };
-    const vh = STATE.gear && STATE.gear.vest && STATE.gear.vest.has;
+    const vh = STATE.gear.vest.has;
     STATE.vest = {
       pompes: vh ? (parseFloat(document.getElementById('vestPompes').value) || 0) : 0,
       tractions: vh ? (parseFloat(document.getElementById('vestTractions').value) || 0) : 0,
       squats: vh ? (parseFloat(document.getElementById('vestSquats').value) || 0) : 0
     };
-    const td = UTILS.today();
+    const td = todayKey();
     if(!STATE.maxHistory) STATE.maxHistory = { pompes: [], tractions: [], squats: [], planche: [] };
     Object.keys(STATE.maxReps).forEach(k => {
       const h = STATE.maxHistory[k] = STATE.maxHistory[k] || [];
       const vr = (STATE.variant && STATE.variant[k]) || 'classique';
-      if(h.length && h[h.length-1].date === td) { h[h.length-1].val = STATE.maxReps[k]; h[h.length-1].variant = vr; }
+      if(h.length && h[h.length - 1].date === td){ h[h.length - 1].val = STATE.maxReps[k]; h[h.length - 1].variant = vr; }
       else h.push({ date: td, val: STATE.maxReps[k], variant: vr });
     });
+    RANK.check(false);
     UTILS.save();
-    UI.renderEvaluationResults(); UI.updateTestBanner();
-    UTILS.toast('✅ Test enregistré!');
+    APP.updateUI(); UI.renderEvaluationResults();
+    UTILS.toast('✅ Test enregistré !');
   },
 
-  goPage: (name) => {
+  goPage(name) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    document.getElementById('page'+name).classList.add('active');
-    document.getElementById('nav'+name).classList.add('active');
-    if(name === 'Stats'){ UI.updateStats(); UI.renderMeasures(); }
-    if(name === 'Exercices') UI.renderExercices();
+    document.getElementById('page' + name).classList.add('active');
+    document.getElementById('nav' + name).classList.add('active');
+    if(name === 'Stats'){
+      UI.updateStats(); UI.renderRanks(); UI.renderRecovery(); UI.renderGymCharts(); UI.renderActivity(); UI.renderMeasures();
+    }
     if(name === 'Materiel'){
       const g = STATE.gear;
       document.getElementById('gearPullup').checked = !!g.pullup;
-      document.getElementById('gearVest').checked = !!g.vest.has; document.getElementById('gearVestKg').value = g.vest.kg || '';
+      document.getElementById('gearVest').checked = !!g.vest.has;
+      document.getElementById('gearVestType').value = g.vest.type || 'fixe';
+      document.getElementById('gearVestKg').value = g.vest.kg || '';
+      document.getElementById('gearVestMax').value = g.vest.max || '';
       document.getElementById('gearKb').checked = !!g.kettlebell.has; document.getElementById('gearKbKg').value = g.kettlebell.kg || '';
       document.getElementById('gearDb').checked = !!g.dumbbells.has; document.getElementById('gearDbKg').value = g.dumbbells.kg || '';
     }
+    if(name === 'Rituel') RIT.render();
+    if(name === 'Home'){ const rd = document.getElementById('runDay'); if(rd) rd.checked = STATE.runDate === todayKey(); }
     if(name === 'Evaluation'){
       const ids = { pompes:'maxPompes', tractions:'maxTractions', squats:'maxSquats', planche:'maxPlanche' };
       Object.keys(ids).forEach(k => { if(STATE.maxReps[k]) document.getElementById(ids[k]).value = STATE.maxReps[k]; });
       const icons = { pompes:'💪', tractions:'🔙', squats:'🦵' };
-      ['pompes','tractions','squats'].forEach(k => { const v = VARIANTS[k][(STATE.variant && STATE.variant[k]) || 'classique'] || VARIANTS[k].classique; document.getElementById('label'+k[0].toUpperCase()+k.slice(1)).textContent = icons[k]+' '+v.label+' (reps max d\'un coup'+(v.perLeg?', par jambe':'')+')'; });
-      const vh = STATE.gear && STATE.gear.vest && STATE.gear.vest.has;
-      ['Pompes','Tractions','Squats'].forEach(n => { document.getElementById('vest'+n).style.display = vh ? '' : 'none'; });
-      ['Pompes','Tractions','Squats'].forEach(n => { const v = STATE.vest && STATE.vest[n.toLowerCase()]; if(v) document.getElementById('vest'+n).value = v; });
+      ['pompes','tractions','squats'].forEach(k => {
+        const v = VARIANTS[k][STATE.variant[k] || 'classique'] || VARIANTS[k].classique;
+        document.getElementById('label' + k[0].toUpperCase() + k.slice(1)).textContent = icons[k] + ' ' + v.label + ' (reps max d\'un coup' + (v.perLeg ? ', par jambe' : '') + ')';
+      });
+      const pv = VARIANTS.planche[STATE.variant.planche || 'classique'] || VARIANTS.planche.classique;
+      document.getElementById('labelPlanche').textContent = '🧱 ' + pv.label + ' (secondes max)';
+      const vh = STATE.gear.vest.has;
+      ['Pompes','Tractions','Squats'].forEach(n => {
+        document.getElementById('vest' + n).style.display = vh ? '' : 'none';
+        const v = STATE.vest[n.toLowerCase()];
+        if(v) document.getElementById('vest' + n).value = v;
+      });
       UI.renderEvaluationResults();
     }
   },
 
-  generateProgram: async function(){
-    const duration = parseInt(document.getElementById('duration').value) || 30;
+  // Construit le programme du jour (sync) : utilisé par la génération, la course et le bouton jour de course
+  buildQuests(duration) {
+    const dech = CYCLE.info().isDecharge;
+    const specs = GAME.calculateProgramSpecs(duration);
+    let quests = [];
+    let timing = '';
 
+    if(STATE.currentMode === 'maison'){
+      const runDay = STATE.runDate === todayKey();
+      const V = STATE.variant || {};
+      const keys = ['pompes','tractions','squats','planche'].filter(k => !(k === 'squats' && runDay));
+      quests = keys.map(k => {
+        let label = (VARIANTS[k][V[k] || 'classique'] || VARIANTS[k].classique).label;
+        if(k === 'tractions' && !STATE.gear.pullup) label = CONFIG.EXERCISE_EQUIPMENT.pullup.fallback;
+        return {
+          name: label.toUpperCase(), fullName: label.toLowerCase(),
+          description: 'Repos automatique entre les séries',
+          sets: dech ? 2 : 3,
+          rest: k === 'planche' ? 45 : 60,
+          xp: 100, gym: false
+        };
+      });
+      timing = '⏱️ <strong>Durée estimée:</strong> ~' + (runDay ? 12 : 15) + ' min (' + quests.length + ' exercices × ' + (dech ? 2 : 3) + ' séries' +
+        (runDay ? ', sans squats : jour de course' : '') + (dech ? ', semaine de décharge' : '') + ')';
+    } else {
+      const full = STATE.currentFormat === 'fullbody';
+      const groups = full
+        ? [['haut',0],['haut',1],['bas',0],['bas',1]]
+        : Array.from({ length: Math.min(specs.exercises - 1, CONFIG.GYM_EXERCISES[STATE.currentFocus].length) }, (_, i) => [STATE.currentFocus, i]);
+      const sets = dech ? Math.max(2, specs.series - 1) : specs.series;
+      quests = groups.map(([side, idx]) => {
+        const g = CONFIG.GYM_EXERCISES[side][idx];
+        const gk = side + idx;
+        const list = g.variations;
+        const m = list[(STATE.machineIdx[gk] || 0) % list.length];
+        return {
+          name: m.toUpperCase(), fullName: m, groupKey: gk, groupIdx: idx, side, icon: g.icon,
+          description: g.name + ' : ' + sets + ' × ' + specs.reps + ' reps, repos ' + specs.rest + ' s',
+          sets, reps: specs.reps, rest: specs.rest, xp: 100, gym: true, _specs: specs
+        };
+      });
+      quests.push({
+        name: 'PLANCHE FINALE', fullName: 'planche', icon: '🧱',
+        description: 'Planche : ' + sets + ' × 30-60 s, repos ' + Math.min(45, specs.rest) + ' s',
+        sets, reps: 0, rest: Math.min(45, specs.rest), xp: 100, gym: false
+      });
+      timing = '⏱️ <strong>Durée estimée:</strong> ' + GAME.estimateTime(specs) + ' min (config: ' + duration + ' min disponibles)' +
+        (dech ? ' · semaine de décharge : ' + sets + ' séries, charges −20 %' : '');
+    }
+
+    STATE.todayQuests = quests;
+    STATE.questsDone = quests.map(() => false);
+    STATE.setsDone = quests.map(() => 0);
+    STATE.setLog = quests.map(() => []);
+    STATE.lastGenDate = todayKey();
+    document.getElementById('timingInfo').innerHTML = '<div class="timing-info">' + timing + '</div>';
+    APP.stopRest();
+  },
+
+  generateProgram: async function() {
+    const duration = parseInt(document.getElementById('duration').value) || 30;
     if(duration < 15 || duration > 120){
       UTILS.toast('⚠️ Durée entre 15 et 120 min', true);
       return;
     }
-
     const btn = document.getElementById('genBtn');
     btn.disabled = true;
     document.getElementById('loadingOverlay').classList.add('active');
-
     try {
-      let program;
-
-      if(STATE.currentMode === 'maison'){
-        // Mode maison - générer les 4 exercices habituels
-        const V = STATE.variant || {};
-        const exercises = [ (VARIANTS.pompes[V.pompes]||VARIANTS.pompes.classique).label, (VARIANTS.tractions[V.tractions]||VARIANTS.tractions.classique).label, (VARIANTS.squats[V.squats]||VARIANTS.squats.classique).label, 'Planche frontale' ].map(x => x.toUpperCase());
-        STATE.todayQuests = exercises.map((ex) => ({
-          name: ex,
-          fullName: ex.toLowerCase(),
-          description: 'Repos automatique entre les séries',
-          sets: 3,
-          rest: ex.includes('PLANCHE') ? 45 : 60,
-          xp: 100
-        }));
-        STATE.questsDone = new Array(exercises.length).fill(false);
-        document.getElementById('timingInfo').innerHTML = '<div class="timing-info">⏱️ <strong>Durée estimée:</strong> ~15 min (4 exercices × 3 séries)</div>';
-      } else {
-        // Mode salle - générer programme gym
-        const result = GAME.generateGymProgram(duration, STATE.currentFormat, STATE.currentFocus);
-        STATE.todayQuests = result.exercises.map((ex) => ({
-          name: ex.name,
-          fullName: ex.fullName,
-          description: ex.description,
-          _specs: result.specs,
-          sets: result.specs.series,
-          rest: ex.fullName === 'planche' ? Math.min(45, result.specs.rest) : result.specs.rest,
-          xp: 100
-        }));
-        STATE.questsDone = new Array(result.exercises.length).fill(false);
-
-        // Afficher timing estimé
-        const timingInfo = document.getElementById('timingInfo');
-        timingInfo.innerHTML = '<div class="timing-info">⏱️ <strong>Durée estimée:</strong> '+result.estimatedTime+' min (config: '+duration+' min disponibles)</div>';
-      }
-
-      STATE.lastGenDate = UTILS.today();
-      STATE.setsDone = new Array(STATE.todayQuests.length).fill(0); APP.stopRest();
-      UTILS.save(); APP.updateUI(); UI.renderQuests(); UTILS.toast('⚡ Programme généré!');
+      APP.buildQuests(duration);
+      UTILS.save(); APP.updateUI();
+      UTILS.toast('⚡ Programme généré !');
     } catch(e){
-      UTILS.toast('❌ '+e.message, true);
+      UTILS.toast('❌ ' + e.message, true);
     } finally {
       btn.disabled = false;
       document.getElementById('loadingOverlay').classList.remove('active');
     }
   },
 
-  doneSet: (i) => {
+  changeMachine(i) {
+    const q = STATE.todayQuests[i];
+    if(!q || !q.gym) return;
+    if((STATE.setsDone[i] || 0) > 0){ UTILS.toast('⚠️ Série déjà commencée sur cette machine', true); return; }
+    const g = CONFIG.GYM_EXERCISES[q.side][q.groupIdx];
+    const next = ((STATE.machineIdx[q.groupKey] || 0) + 1) % g.variations.length;
+    STATE.machineIdx[q.groupKey] = next;
+    const m = g.variations[next];
+    q.name = m.toUpperCase();
+    q.fullName = m;
+    q.description = g.name + ' : ' + q.sets + ' × ' + q.reps + ' reps, repos ' + q.rest + ' s';
+    STATE.setLog[i] = [];
+    UTILS.save(); APP.updateUI();
+    UTILS.toast('🔄 Machine : ' + m);
+  },
+
+  doneSet(i) {
     if(STATE.questsDone[i]) return;
     const q = STATE.todayQuests[i];
-    const sets = q.sets || 3;
-    if(!STATE.setsDone) STATE.setsDone = [];
+    if(q.gym){
+      const reps = parseInt(document.getElementById('rp_' + i).value);
+      if(!reps){ UTILS.toast('⚠️ Entre le nombre de reps réussies', true); return; }
+      const kg = parseFloat(document.getElementById('kg_' + i).value) || 0;
+      (STATE.setLog[i] = STATE.setLog[i] || []).push({ kg, reps });
+    }
     STATE.setsDone[i] = (STATE.setsDone[i] || 0) + 1;
-    if(STATE.setsDone[i] >= sets){ APP.stopRest(); APP.doneQuest(i); return; }
+    if(STATE.setsDone[i] >= q.sets){ APP.stopRest(); APP.doneQuest(i); return; }
     UTILS.save(); UI.renderQuests();
-    APP.startRest(q.rest || 60, q.name+' — série '+STATE.setsDone[i]+'/'+sets+' validée');
+    APP.startRest(q.rest || 60, q.name + ' — série ' + STATE.setsDone[i] + '/' + q.sets + ' validée');
   },
 
   _restT: null,
-  startRest: (sec, label) => {
+  startRest(sec, label) {
     APP.stopRest();
-    const end = Date.now() + sec*1000;
-    document.getElementById('restLabel').textContent = label;
-    document.getElementById('restBar').classList.add('show');
-    const tick = () => {
-      const left = Math.max(0, Math.ceil((end - Date.now())/1000));
-      document.getElementById('restTime').textContent = left+'s';
-      document.getElementById('restFill').style.width = (100 - left/sec*100)+'%';
-      if(left <= 0) APP.restDone();
-    };
-    tick();
-    APP._restT = setInterval(tick, 250);
-  },
-  stopRest: () => {
-    if(APP._restT){ clearInterval(APP._restT); APP._restT = null; }
-    document.getElementById('restBar').classList.remove('show');
-  },
-  restDone: () => {
-    APP.stopRest();
-    try { const ac = new (window.AudioContext||window.webkitAudioContext)(); const o = ac.createOscillator(); o.connect(ac.destination); o.frequency.value = 880; o.start(); setTimeout(() => { o.stop(); ac.close(); }, 300); } catch(e){}
-    try { if(navigator.vibrate) navigator.vibrate([200,100,200]); } catch(e){}
-    UTILS.toast('⏱️ Repos fini — série suivante !');
-  },
-
-  calcEpley: () => {
-    const w = parseFloat(document.getElementById('epleyW').value);
-    const r = parseInt(document.getElementById('epleyR').value);
-    const out = document.getElementById('epleyOut');
-    if(!w || !r){ out.textContent = 'Entre le poids et le nombre de reps.'; return; }
-    const rm = w * (1 + r/30);
-    out.innerHTML = '1RM estimé : <strong style="color:var(--accent)">'+rm.toFixed(1)+' kg</strong><br>Charge de travail (65 %) : <strong>'+(rm*0.65).toFixed(1)+' kg</strong>';
-  },
-
-  doneQuest: (i) => {
-    if(STATE.questsDone[i]) return;
-    const q = STATE.todayQuests[i];
-    STATE.questsDone[i] = true;
-    UTILS.addStatXP('force', Math.floor(q.xp*0.5));
-    UTILS.addStatXP('perception', Math.floor(q.xp*0.3));
-    UTILS.addStatXP('agility', Math.floor(q.xp*0.2));
-    const td = UTILS.today();
-    if(STATE.questsDone.every(c=>c) && STATE.lastStreakDate !== td){
-      const ys = new Date(); ys.setDate(ys.getDate()-1);
-      const ysStr = ys.toISOString().split('T')[0];
-      if(!STATE.lastStreakDate || STATE.lastStreakDate === ysStr) STATE.streak++;
-      else STATE.streak = 1;
-      STATE.lastStreakDate = td;
-    }
-    STATE.activityLog.unshift({date:td,name:q.name,xp:q.xp});
-    UTILS.save(); APP.updateUI(); UI.renderQuests(); UTILS.toast('✅ +'+q.xp);
-  },
-
-  updateUI: () => { UI.updateHeader(); UI.renderQuests(); UI.updateTestBanner(); },
-
-  resetAll: () => { if(confirm('Réinitialiser?')){ localStorage.clear(); location.reload(); } },
-
-  init: () => {
-    UTILS.load();
-    if(STATE.lastGenDate && STATE.lastGenDate !== UTILS.today()){ STATE.todayQuests = []; STATE.questsDone = []; STATE.setsDone = []; }
-    if(!STATE.cycleStartDate) STATE.cycleStartDate = UTILS.today();
-    UTILS.save(); APP.updateUI();
-  }
-};
-
-APP.init();
-</script>
-</body>
-</html>
-
-</body></html>
+    const end = Date.now() + sec * 1000;
+    document.getEl
